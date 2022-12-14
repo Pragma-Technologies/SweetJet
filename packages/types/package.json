@@ -1,0 +1,37 @@
+{
+  "name": "@jjjj_test/types",
+  "keywords": [
+    "jjjj_test"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.1.6",
+  "files": [
+    "dist/*"
+  ],
+  "type": "commonjs",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "tsc",
+    "start": "tsc --watch"
+  },
+  "dependencies": {
+    "my-package": "^0.0.0",
+    "tron-format-address": "^0.1.8"
+  },
+  "description": "types",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JumboJet5/sweet-jet-test.git\".git"
+  },
+  "author": "JumboJet",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JumboJet5/sweet-jet-test.git\"/issues"
+  },
+  "homepage": "https://github.com/JumboJet5/sweet-jet-test.git\"#readme"
+}
