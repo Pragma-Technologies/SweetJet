@@ -77,4 +77,16 @@ describe('Address class', () => {
     expect(_toHex).toBeCalledTimes(1)
     expect(_fromHex).toBeCalledTimes(1)
   })
+
+  it('check setting new address', () => {
+    const address_1 = new Address(hexAddress_1)
+
+    expect(address_1.toHex()).toEqual(hexAddress_1)
+    expect(address_1.toBase58()).toEqual(base58Address_1)
+
+    address_1.set(hexAddress_2)
+
+    expect(address_1.toHex()).toEqual(hexAddress_2)
+    expect(address_1.toBase58()).toEqual(base58Address_2)
+  })
 })
