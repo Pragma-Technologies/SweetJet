@@ -6,7 +6,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.0",
+  "version": "0.0.1",
   "files": [
     "dist/*"
   ],
@@ -20,7 +20,7 @@
     "start": "tsc --watch"
   },
   "dependencies": {
-    "@pragma-web-utils/types": "^0.0.0",
+    "@pragma-web-utils/types": "^0.0.1",
     "ethereum-checksum-address": "^0.0.8",
     "tron-format-address": "^0.1.8"
   },
