@@ -1,12 +1,12 @@
 {
-  "name": "@jjjj_test/core",
+  "name": "@pragma-web-utils/core",
   "keywords": [
-    "jjjj_test"
+    "pragma-web-utils"
   ],
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.1.6",
+  "version": "0.0.0",
   "files": [
     "dist/*"
   ],
@@ -20,9 +20,9 @@
     "start": "tsc --watch"
   },
   "dependencies": {
-    "@jjjj_test/types": "^0.1.6",
-    "tron-format-address": "^0.1.8",
-    "ethereum-checksum-address": "^0.0.8"
+    "@pragma-web-utils/types": "^0.0.0",
+    "ethereum-checksum-address": "^0.0.8",
+    "tron-format-address": "^0.1.8"
   },
   "devDependencies": {
     "@types/ethereum-checksum-address": "0.0.0"
@@ -30,12 +30,12 @@
   "description": "core utils",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JumboJet5/sweet-jet-test.git"
+    "url": "git+https://github.com/Pragma-Technologies/pragma-web-utils.git"
   },
   "author": "JumboJet",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/JumboJet5/sweet-jet-test/issues"
+    "url": "https://github.com/Pragma-Technologies/pragma-web-utils/issues"
   },
-  "homepage": "https://github.com/JumboJet5/sweet-jet-test#readme"
+  "homepage": "https://github.com/Pragma-Technologies/pragma-web-utils#readme"
 }

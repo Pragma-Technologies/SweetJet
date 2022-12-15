@@ -23,6 +23,14 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
+"@pragma-web-utils/types@^0.0.0":
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/types/-/types-0.0.0.tgz#53fdb45673ea7297801ae5e2ef3edf7d960e31d3"
+  integrity sha512-NIT18jes7Qd9zZPzjaxrYdiJf5iGOYl7QkHqHnvUeuAMvVO6QErKLsnjraYtkZUuJlWOwSGs7tPUdO8+klqVwA==
+  dependencies:
+    my-package "^0.0.0"
+    tron-format-address "^0.1.8"
+
 "@types/ethereum-checksum-address@0.0.0":
   version "0.0.0"
   resolved "https://registry.npmjs.org/@types/ethereum-checksum-address/-/ethereum-checksum-address-0.0.0.tgz"
