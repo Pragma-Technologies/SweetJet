@@ -3,7 +3,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   moduleNameMapper: {
-    '^@jjjj_test/(.*)$': '<rootDir>/packages/$1/src',
+    '^@pragma-web-utils/(.*)$': '<rootDir>/packages/$1/src',
   },
   // roots: ['<rootDir>', 'src'],
   // modulePaths: ['<rootDir>', 'src'],

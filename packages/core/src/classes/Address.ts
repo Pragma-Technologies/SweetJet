@@ -1,6 +1,6 @@
 import { fromHex, toHex } from 'tron-format-address'
 import { EMPTY_ADDRESS } from '../constants/common'
-import { IAddress } from '@jjjj_test/types/src/interfaces/Address'
+import { IAddress } from '@pragma-web-utils/types/src/interfaces/Address'
 import { toChecksumAddress } from 'ethereum-checksum-address'
 
 const ERROR_ADDRESS_NOT_DEFINED = 'Tried to get not defined address'

@@ -1,12 +1,12 @@
 {
-  "name": "@jjjj_test/types",
+  "name": "@pragma-web-utils/types",
   "keywords": [
-    "jjjj_test"
+    "pragma-web-utils"
   ],
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.1.6",
+  "version": "0.0.0",
   "files": [
     "dist/*"
   ],
@@ -26,12 +26,13 @@
   "description": "types",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JumboJet5/sweet-jet-test.git\".git"
+    "url": "git+https://github.com/Pragma-Technologies/pragma-web-utils.git"
   },
   "author": "JumboJet",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/JumboJet5/sweet-jet-test.git\"/issues"
+    "url": "https://github.com/Pragma-Technologies/pragma-web-utils/issues"
   },
-  "homepage": "https://github.com/JumboJet5/sweet-jet-test.git\"#readme"
+  "homepage": "https://github.com/Pragma-Technologies/pragma-web-utils#readme",
+  "devDependencies": {}
 }
