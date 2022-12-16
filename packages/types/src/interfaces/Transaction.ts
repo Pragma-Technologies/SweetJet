@@ -1,9 +1,15 @@
 import { ConnectorBaseEnum } from '../enums/ConnectorBaseEnum'
 import { TransactionStatusEnum } from '../enums/TransactionStatusEnum'
-import { MultichainDestinationInfoCore, MultichainOriginInfoCore, MultichainTransaction } from './TransactionMultichain'
+import {
+  MultichainDestinationInfoCore,
+  MultichainOriginInfoCore,
+  MultichainTransaction,
+  PartialMultichainTransaction,
+} from './TransactionMultichain'
 import { RequestedTransaction } from './TransactionRequested'
 
 export type Tx = RequestedTransaction | Transaction | MultichainTransaction
+export type PartialTx = Partial<RequestedTransaction> | Partial<Transaction> | PartialMultichainTransaction
 export type Payload<Action extends string = string> = {
   action: Action
 } & {
@@ -41,3 +47,8 @@ export type GetDestinationTransactionHash = (
   origin: MultichainOriginInfoCore,
   destination: MultichainDestinationInfoCore,
 ) => Promise<string | null>
+
+export interface WaitTxStatusOptions {
+  waitConfirmations?: number
+  waitTimeout?: number
+}

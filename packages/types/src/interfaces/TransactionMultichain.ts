@@ -20,3 +20,8 @@ export interface MultichainOriginInfoCore {
   chainId: string | number
   base: ConnectorBaseEnum
 }
+
+export interface PartialMultichainTransaction<Origin = Payload, Destination = Payload> {
+  origin?: Partial<Transaction<Origin>>
+  destination?: Partial<Transaction<Destination>>
+}

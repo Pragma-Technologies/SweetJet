@@ -17,3 +17,7 @@ export interface TxListener<T extends TxListenerTypeEnum> {
 export interface TxListenerSubscription {
   unsubscribe: () => void
 }
+
+export type ListenersInfo = {
+  [key in TxListenerTypeEnum]: Set<TxListener<key>>
+}
