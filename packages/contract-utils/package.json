@@ -1,5 +1,5 @@
 {
-  "name": "@pragma-web-utils/core",
+  "name": "@pragma-web-utils/contract-utils",
   "keywords": [
     "pragma-web-utils"
   ],
@@ -17,20 +17,18 @@
   "scripts": {
     "prebuild": "rm -rf dist",
     "build": "tsc",
-    "start": "tsc --watch"
+    "start": "tsc --watch",
+    "clear-typing": "rm -rf src/abi/typings/",
+    "generate-typing": "typechain --target=ethers-v5 --out-dir src/abi/typings 'src/abi/*.json'",
+    "update-typing": "yarn run clear-typing && yarn run generate-typing"
   },
   "dependencies": {
-    "@pragma-web-utils/contract-utils": "^0.0.0",
-    "@pragma-web-utils/types": "^0.0.0",
-    "ethereum-checksum-address": "^0.0.8",
+    "@typechain/ethers-v5": "^10.1.0",
     "ethers": "^5.7.2",
-    "styled-breakpoints": "^11.1.0",
-    "tron-format-address": "^0.1.8"
+    "my-package": "^0.0.0",
+    "typechain": "^8.1.1"
   },
-  "devDependencies": {
-    "@types/ethereum-checksum-address": "0.0.0"
-  },
-  "description": "core utils",
+  "description": "types",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Pragma-Technologies/pragma-web-utils.git"
@@ -40,5 +38,6 @@
   "bugs": {
     "url": "https://github.com/Pragma-Technologies/pragma-web-utils/issues"
   },
-  "homepage": "https://github.com/Pragma-Technologies/pragma-web-utils#readme"
+  "homepage": "https://github.com/Pragma-Technologies/pragma-web-utils#readme",
+  "devDependencies": {}
 }
