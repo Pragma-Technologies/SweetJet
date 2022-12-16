@@ -22,6 +22,7 @@
   "dependencies": {
     "@pragma-web-utils/types": "^0.0.0",
     "ethereum-checksum-address": "^0.0.8",
+    "styled-breakpoints": "^11.1.0",
     "tron-format-address": "^0.1.8"
   },
   "devDependencies": {
