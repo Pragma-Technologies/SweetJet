@@ -1,13 +1,13 @@
 import { JsonRpcProvider } from '@ethersproject/providers'
 import { getEvmMulticallContract } from '@pragma-web-utils/contract-utils'
 import { AbiCoder } from 'ethers/lib/utils'
-import { Address } from '../classes'
+import { Address, RequestDelayUtils } from '../classes'
 import { MulticallCaller } from '../types'
 import { encodeParams } from './encodeUtils'
 
-export const getEvmMulticallCaller = (contractAddress: string, rpcUrl: string): MulticallCaller => {
+export const getEvmMulticallCaller = (contractAddress: Address, rpcUrl: string): MulticallCaller => {
   const provider = new JsonRpcProvider(rpcUrl)
-  const contract = getEvmMulticallContract(contractAddress, provider)
+  const contract = getEvmMulticallContract(contractAddress.toHex(), provider)
   return (targets, values) => contract.functions.aggregate(targets, values)
 }
 
@@ -18,6 +18,7 @@ export const getTvmMulticallCaller = (contractAddress: Address, rpcUrl: string):
       { type: 'bytes[]', value: values },
     ])
 
+    await RequestDelayUtils.addDelay()
     const url = `${rpcUrl}wallet/triggerconstantcontract`
     const response = await fetch(url, {
       method: 'POST',
