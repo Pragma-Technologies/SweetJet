@@ -1,0 +1,1 @@
+export const CANCEL_PROMISE = 'CANCEL_PROMISE'

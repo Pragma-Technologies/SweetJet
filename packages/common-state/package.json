@@ -1,5 +1,5 @@
 {
-  "name": "@pragma-web-utils/types",
+  "name": "@pragma-web-utils/common-state",
   "keywords": [
     "pragma-web-utils"
   ],
@@ -20,8 +20,13 @@
     "start": "tsc --watch"
   },
   "dependencies": {
+    "@testing-library/react-hooks": "^8.0.1",
+    "@types/react": "~18.0.26",
+    "@types/react-dom": "^18.0.9",
     "my-package": "^0.0.0",
-    "tron-format-address": "^0.1.8"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "4.0.3"
   },
   "description": "types",
   "repository": {

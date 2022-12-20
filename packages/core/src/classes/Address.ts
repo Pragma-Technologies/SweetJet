@@ -1,11 +1,10 @@
-import { fromHex, toHex } from 'tron-format-address'
-import { EMPTY_ADDRESS } from '../constants/common'
-import { IAddress } from '@pragma-web-utils/types/src/interfaces/Address'
 import { toChecksumAddress } from 'ethereum-checksum-address'
+import { fromHex, toHex } from 'tron-format-address'
+import { EMPTY_ADDRESS } from '../constants'
 
 const ERROR_ADDRESS_NOT_DEFINED = 'Tried to get not defined address'
 
-export class Address implements IAddress {
+export class Address {
   protected _hexAddress: string | undefined
   protected _base58Address: string | undefined
 
