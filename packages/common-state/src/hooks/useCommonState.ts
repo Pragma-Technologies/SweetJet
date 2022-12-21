@@ -1,7 +1,7 @@
 // hook types overloading
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { CANCEL_PROMISE } from '../constants'
-import { CommonState, State, StateRefreshOption } from '../types'
+import { CacheableState, CommonState, StateRefreshOption } from '../types'
 import { useCancelableFactory } from './useCancelableFactory'
 import { useIsMounted } from './useIsMounted'
 import { useRequestMemo } from './useRequestMemo'
@@ -14,11 +14,12 @@ export function useCommonState<Value, Error = unknown>(initial: Value): CommonSt
   const { memoizedRequest } = useRequestMemo()
   const isMounted = useIsMounted()
   const refreshRef = useRef<StateRefreshOption<Value>>()
-  const [state, setState] = useState<State<Value, Error>>({
+  const [state, setState] = useState<CacheableState<Value, Error>>({
     value: initial,
     isLoading: false,
     isActual: !!initial,
     error: undefined,
+    cached: initial,
   })
 
   const refreshCallback = useCallback(() => {
@@ -38,13 +39,19 @@ export function useCommonState<Value, Error = unknown>(initial: Value): CommonSt
     const tryUpdate = async () => {
       try {
         setState((prevState) => ({ ...prevState, isLoading: true, error: undefined }))
-        const promiseValue = await cancellable.cancellablePromise
+        const _value = await cancellable.cancellablePromise
         if (isMounted()) {
-          setState((prevState) => ({ ...prevState, value: promiseValue, isActual: true, isLoading: false }))
+          setState((prevState) => ({ ...prevState, value: _value, isActual: true, isLoading: false, cached: _value }))
         }
       } catch (error) {
         if (error !== CANCEL_PROMISE && isMounted()) {
-          setState({ error: error as Error, value: initial, isActual: true, isLoading: false })
+          setState((prevState) => ({
+            ...prevState,
+            value: initial,
+            isActual: true,
+            isLoading: false,
+            error: error as Error,
+          }))
         }
       }
     }

@@ -8,22 +8,26 @@ export interface State<T = unknown, E = unknown> {
   isActual: boolean
 }
 
-export interface RefreshableState<T = unknown, E = unknown> extends State<T, E> {
+export interface Refreshable {
   softRefresh: () => Destructor | void
   hardRefresh: () => Destructor | void
 }
 
-export interface HookCommonState<T = unknown, E = unknown> extends RefreshableState<T, E> {
+export interface Cacheable<T = unknown> {
   cached?: T
 }
 
+export interface CacheableState<T = unknown, E = unknown> extends State<T, E>, Cacheable<T> {}
+
+export interface HookCommonState<T = unknown, E = unknown> extends State<T, E>, Refreshable, Cacheable<T> {}
+
 export interface StateRefreshOption<T> {
   refreshFn: () => Promise<T>
-  requestKey: string
+  requestKey?: string
 }
 
 export interface CommonState<T = unknown, E = unknown> {
-  state: RefreshableState<T, E>
+  state: HookCommonState<T, E>
   setState: Dispatch<SetStateAction<State<T, E>>>
   setRefresh: (params: StateRefreshOption<T>) => void
 }
