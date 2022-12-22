@@ -1,0 +1,43 @@
+{
+  "name": "@pragma-web-utils/contract-utils",
+  "keywords": [
+    "pragma-web-utils"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.0.0",
+  "files": [
+    "dist/*"
+  ],
+  "type": "commonjs",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "tsc",
+    "start": "tsc --watch",
+    "clear-typing": "rm -rf src/abi/typings/",
+    "generate-typing": "typechain --target=ethers-v5 --out-dir src/abi/typings 'src/abi/*.json'",
+    "update-typing": "yarn run clear-typing && yarn run generate-typing"
+  },
+  "dependencies": {
+    "@typechain/ethers-v5": "^10.1.0",
+    "ethers": "^5.7.2",
+    "my-package": "^0.0.0",
+    "typechain": "^8.1.1"
+  },
+  "description": "types",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pragma-Technologies/pragma-web-utils.git"
+  },
+  "author": "JumboJet",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Pragma-Technologies/pragma-web-utils/issues"
+  },
+  "homepage": "https://github.com/Pragma-Technologies/pragma-web-utils#readme",
+  "devDependencies": {}
+}

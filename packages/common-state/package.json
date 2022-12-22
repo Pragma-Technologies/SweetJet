@@ -1,0 +1,44 @@
+{
+  "name": "@pragma-web-utils/common-state",
+  "keywords": [
+    "pragma-web-utils"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.0.0",
+  "files": [
+    "dist/*"
+  ],
+  "type": "commonjs",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "tsc",
+    "start": "tsc --watch"
+  },
+  "dependencies": {
+    "@pragma-web-utils/core": "^0.0.0",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@types/react": "~18.0.26",
+    "@types/react-dom": "^18.0.9",
+    "my-package": "^0.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "4.0.3"
+  },
+  "description": "types",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pragma-Technologies/pragma-web-utils.git"
+  },
+  "author": "JumboJet",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Pragma-Technologies/pragma-web-utils/issues"
+  },
+  "homepage": "https://github.com/Pragma-Technologies/pragma-web-utils#readme",
+  "devDependencies": {}
+}
