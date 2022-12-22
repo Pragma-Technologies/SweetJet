@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "@pragma-web-utils/contract-utils": "^0.0.0",
-    "@pragma-web-utils/types": "^0.0.0",
     "ethereum-checksum-address": "^0.0.8",
     "ethers": "^5.7.2",
     "styled-breakpoints": "^11.1.0",
