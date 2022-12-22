@@ -1,8 +1,4 @@
-import { PartialTx, Transaction, Tx } from '@pragma-web-utils/types/src/interfaces/Transaction'
-import {
-  MultichainTransaction,
-  PartialMultichainTransaction,
-} from '@pragma-web-utils/types/src/interfaces/TransactionMultichain'
+import { MultichainTransaction, PartialMultichainTransaction, PartialTx, Transaction, Tx } from '../../../types/dist'
 
 export function isMultichainTx(tx: Tx): tx is MultichainTransaction {
   return 'origin' in tx

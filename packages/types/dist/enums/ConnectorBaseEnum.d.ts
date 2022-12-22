@@ -1,4 +1,4 @@
 export declare enum ConnectorBaseEnum {
-    TVM = "TVM",
-    EVM = "EVM"
+  TVM = 'TVM',
+  EVM = 'EVM',
 }

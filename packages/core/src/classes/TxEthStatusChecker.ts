@@ -1,6 +1,5 @@
 import { TransactionReceipt } from '@ethersproject/abstract-provider'
-import { TransactionStatusEnum } from '@pragma-web-utils/types/src/enums/TransactionStatusEnum'
-import { Transaction, WaitTxStatusOptions } from '@pragma-web-utils/types/src/interfaces/Transaction'
+import { Transaction, TransactionStatusEnum, WaitTxStatusOptions } from '../../../types/dist'
 import { ethers } from 'ethers'
 import { TxStatusChecker } from './TxStatusChecker'
 

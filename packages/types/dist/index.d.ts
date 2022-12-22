@@ -1,1 +1,12 @@
-export * from './interfaces/Address';
+export * from './enums/ChainId'
+export * from './enums/ConnectorBaseEnum'
+export * from './enums/TransactionStatusEnum'
+export * from './enums/TxListenerTypeEnum'
+
+export * from './interfaces/Address'
+export * from './interfaces/Transaction'
+export * from './interfaces/TransactionContext'
+export * from './interfaces/TransactionMultichain'
+export * from './interfaces/TransactionRequested'
+export * from './interfaces/TxListener'
+export * from './interfaces/TxService'

@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-import { wait } from './Wait'
-import moment from 'moment'
-
-export class RequestDelayUtils {
-  private static _MAX_REQUEST_COUNT_IN_PERIOD = 3
-  private static _PERIOD = 1000 // in milliseconds
-  private static _queue: number[] = []
-
-  public static async addDelay(): Promise<void> {
-    const now = moment.now()
-=======
 import { wait } from '../utils'
 
 export class RequestDelayUtils {
@@ -19,7 +7,6 @@ export class RequestDelayUtils {
 
   public static async addDelay(): Promise<void> {
     const now = Date.now()
->>>>>>> d148c9f23c83a9eef92ccde2986a0adbf4e3b01b
     // remove all request time moments which are not included more in the checked period
     RequestDelayUtils._queue = RequestDelayUtils._queue.filter((time) => time >= now - RequestDelayUtils._PERIOD)
 
@@ -37,8 +24,6 @@ export class RequestDelayUtils {
     RequestDelayUtils._queue.push(currentRequestTime)
     await wait(currentRequestTime - now)
   }
-<<<<<<< HEAD
-=======
 
   public static setMaxRequestCount(value: number): void {
     if (value <= 0) {
@@ -61,5 +46,4 @@ export class RequestDelayUtils {
   public static getDefaultDelay(): number {
     return this._PERIOD
   }
->>>>>>> d148c9f23c83a9eef92ccde2986a0adbf4e3b01b
 }

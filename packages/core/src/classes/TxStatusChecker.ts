@@ -1,5 +1,4 @@
-import { TransactionStatusEnum } from '@pragma-web-utils/types/src/enums/TransactionStatusEnum'
-import { Transaction, WaitTxStatusOptions } from '@pragma-web-utils/types/src/interfaces/Transaction'
+import { Transaction, TransactionStatusEnum, WaitTxStatusOptions } from '../../../types/dist'
 
 export abstract class TxStatusChecker {
   abstract checkStatus(tx: Transaction): Promise<TransactionStatusEnum>

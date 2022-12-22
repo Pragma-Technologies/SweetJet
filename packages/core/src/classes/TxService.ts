@@ -1,14 +1,14 @@
-import { TxListenerTypeEnum } from '@pragma-web-utils/types/src/enums/TxListenerTypeEnum'
 import {
   EthNetworkInfo,
   GetDestinationTransactionHash,
   TronNetworkInfo,
   Tx,
-} from '@pragma-web-utils/types/src/interfaces/Transaction'
-import { TxListenerEventInfo, TxListenerSubscription } from '@pragma-web-utils/types/src/interfaces/TxListener'
+  TxListenerEventInfo,
+  TxListenerSubscription,
+  TxListenerTypeEnum,
+} from '../../../types/dist/index'
 import { TxStorage } from './TxStorage'
 import { TxUpdater } from './TxUpdater'
-
 export class TxService {
   protected _storage: TxStorage
   protected _updater: TxUpdater

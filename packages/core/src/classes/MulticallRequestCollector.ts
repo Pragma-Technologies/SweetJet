@@ -1,18 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { AbiCoder } from 'ethers/lib/utils'
 import { ADDRESS_PREFIX_REGEX } from '../constants'
-import { ConnectorBaseEnum } from '../enums'
-import {
-  CallOption,
-  MulticallOptions,
-  Output,
-  OutputTuple,
-  UnwrapCallOption,
-  UnwrapOutput,
-  UnwrapOutputs,
-} from '../types'
+import { ConnectorBaseEnum } from '../../../types/dist'
+import { CallOption, MulticallOptions, Output, UnwrapCallOption, UnwrapOutput, UnwrapOutputs } from '../types'
 import { getEvmMulticallCaller, getTvmMulticallCaller } from '../utils'
 import { ObservableSubject } from './ObservableSubject'
+import { OutputTuple } from '../types'
 
 export class MulticallRequestCollector {
   protected _needCollection = false

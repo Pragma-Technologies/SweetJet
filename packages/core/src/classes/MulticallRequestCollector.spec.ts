@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { ConnectorBaseEnum } from '../enums'
+import { ConnectorBaseEnum } from '../../../types/dist'
 import { MulticallCaller, Output } from '../types'
 import { wait } from '../utils'
 import * as MulticallCallers from '../utils/multicall'
@@ -23,10 +23,10 @@ const _testMulticallCaller: MulticallCaller = async () => {
 const scInterface = new ethers.utils.Interface([abiItem])
 
 describe('MulticallRequestCollector class', () => {
-  let _getEvmMulticallCaller: jest.SpyInstance = jest
+  const _getEvmMulticallCaller: jest.SpyInstance = jest
     .spyOn(MulticallCallers, 'getEvmMulticallCaller')
     .mockImplementation(() => _testMulticallCaller)
-  let _getTvmMulticallCaller: jest.SpyInstance = jest
+  const _getTvmMulticallCaller: jest.SpyInstance = jest
     .spyOn(MulticallCallers, 'getTvmMulticallCaller')
     .mockImplementation(() => _testMulticallCaller)
 

@@ -1,8 +1,14 @@
-import { ConnectorBaseEnum } from '@pragma-web-utils/types/src/enums/ConnectorBaseEnum'
-import { TxListenerTypeEnum } from '@pragma-web-utils/types/src/enums/TxListenerTypeEnum'
-import { PartialTx, Transaction, Tx } from '@pragma-web-utils/types/src/interfaces/Transaction'
-import { MultichainTransaction } from '@pragma-web-utils/types/src/interfaces/TransactionMultichain'
-import { ListenersInfo, TxListener, TxListenerSubscription } from '@pragma-web-utils/types/src/interfaces/TxListener'
+import {
+  ListenersInfo,
+  MultichainTransaction,
+  PartialTx,
+  Transaction,
+  Tx,
+  TxListener,
+  TxListenerSubscription,
+  TxListenerTypeEnum,
+} from '../../../types/dist'
+import { ConnectorBaseEnum } from '../../../types/dist'
 import { isMultichainTx, isPartialMultichainTx } from './TxChecksUtils'
 
 export class TxStorage {

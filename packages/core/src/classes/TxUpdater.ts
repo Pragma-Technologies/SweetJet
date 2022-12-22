@@ -1,25 +1,23 @@
-import { ConnectorBaseEnum } from '@pragma-web-utils/types/src/enums/ConnectorBaseEnum'
-import { TransactionStatusEnum } from '@pragma-web-utils/types/src/enums/TransactionStatusEnum'
-import { TxListenerTypeEnum } from '@pragma-web-utils/types/src/enums/TxListenerTypeEnum'
 import {
+  ConnectorBaseEnum,
   EthNetworkInfo,
   GetDestinationTransactionHash,
-  Transaction,
-  TronNetworkInfo,
-  Tx,
-  WaitTxStatusOptions,
-} from '@pragma-web-utils/types/src/interfaces/Transaction'
-import {
   MultichainDestinationInfoCore,
   MultichainTransaction,
-} from '@pragma-web-utils/types/src/interfaces/TransactionMultichain'
-import { TxListenerSubscription } from '@pragma-web-utils/types/src/interfaces/TxListener'
+  Transaction,
+  TransactionStatusEnum,
+  TronNetworkInfo,
+  Tx,
+  TxListenerSubscription,
+  TxListenerTypeEnum,
+  WaitTxStatusOptions,
+} from '../../../types/dist'
+import { wait } from '../utils'
 import { isMultichainTx, isTransaction } from './TxChecksUtils'
 import { EthTxStatusChecker } from './TxEthStatusChecker'
 import { TxStatusChecker } from './TxStatusChecker'
 import { TxStorage } from './TxStorage'
 import { TronTxStatusChecker } from './TxTronStatusChecker'
-import { wait } from './Wait'
 
 export class TxUpdater {
   protected _ethCheckers: Map<string | number, EthTxStatusChecker> = new Map<string | number, EthTxStatusChecker>()

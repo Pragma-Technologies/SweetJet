@@ -1,7 +1,7 @@
 export declare enum TransactionStatusEnum {
-    SUCCESS = "SUCCESS",
-    CANCELED = "CANCELED",
-    PENDING = "PENDING",
-    FAILED = "FAILED",
-    UNKNOWN = "UNKNOWN"
+  SUCCESS = 'SUCCESS',
+  CANCELED = 'CANCELED',
+  PENDING = 'PENDING',
+  FAILED = 'FAILED',
+  UNKNOWN = 'UNKNOWN',
 }

@@ -1,6 +1,6 @@
 import { BigNumber, ethers } from 'ethers'
+import { ConnectorBaseEnum } from '../../../types/dist'
 import { Address } from '../classes'
-import { ConnectorBaseEnum } from '../enums'
 
 export type AbiDataTypes =
   | 'string'
