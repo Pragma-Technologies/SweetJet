@@ -1,5 +1,5 @@
 import { JsonRpcProvider } from '@ethersproject/providers'
-import { getEvmMulticallContract } from '@pragma-web-utils/contract-utils/src'
+import { getEvmMulticallContract } from '@pragma-web-utils/contract-utils'
 import { AbiCoder } from 'ethers/lib/utils'
 import { Address, RequestDelayUtils } from '../classes'
 import { MulticallCaller } from '../types'
