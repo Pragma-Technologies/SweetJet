@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { ConnectorBaseEnum } from '../../../types/dist'
+import { ConnectorBaseEnum } from '../enums'
 import { MulticallCaller, Output } from '../types'
 import { wait } from '../utils'
 import * as MulticallCallers from '../utils/multicall'

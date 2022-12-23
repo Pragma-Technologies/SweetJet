@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { AbiCoder } from 'ethers/lib/utils'
 import { ADDRESS_PREFIX_REGEX } from '../constants'
-import { ConnectorBaseEnum } from '../../../types/dist'
+import { ConnectorBaseEnum } from '../enums'
 import { CallOption, MulticallOptions, Output, UnwrapCallOption, UnwrapOutput, UnwrapOutputs } from '../types'
 import { getEvmMulticallCaller, getTvmMulticallCaller } from '../utils'
 import { ObservableSubject } from './ObservableSubject'

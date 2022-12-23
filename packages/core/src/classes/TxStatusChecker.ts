@@ -1,4 +1,5 @@
-import { Transaction, TransactionStatusEnum, WaitTxStatusOptions } from '../../../types/dist'
+import { TransactionStatusEnum } from '../enums'
+import { Transaction, WaitTxStatusOptions } from '../types'
 
 export abstract class TxStatusChecker {
   abstract checkStatus(tx: Transaction): Promise<TransactionStatusEnum>

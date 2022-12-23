@@ -1,19 +1,17 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { ConnectorBaseEnum, TransactionStatusEnum, TxListenerTypeEnum } from '../enums'
 import {
-  ConnectorBaseEnum,
   EthNetworkInfo,
   GetDestinationTransactionHash,
   MultichainDestinationInfoCore,
   MultichainTransaction,
   Transaction,
-  TransactionStatusEnum,
   TronNetworkInfo,
   Tx,
   TxListenerSubscription,
-  TxListenerTypeEnum,
   WaitTxStatusOptions,
-} from '../../../types/dist'
-import { wait } from '../utils'
-import { isMultichainTx, isTransaction } from './TxChecksUtils'
+} from '../types'
+import { isMultichainTx, isTransaction, wait } from '../utils'
 import { EthTxStatusChecker } from './TxEthStatusChecker'
 import { TxStatusChecker } from './TxStatusChecker'
 import { TxStorage } from './TxStorage'

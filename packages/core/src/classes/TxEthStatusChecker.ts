@@ -1,6 +1,7 @@
 import { TransactionReceipt } from '@ethersproject/abstract-provider'
-import { Transaction, TransactionStatusEnum, WaitTxStatusOptions } from '../../../types/dist'
 import { ethers } from 'ethers'
+import { TransactionStatusEnum } from '../enums'
+import { Transaction, WaitTxStatusOptions } from '../types'
 import { TxStatusChecker } from './TxStatusChecker'
 
 export class EthTxStatusChecker extends TxStatusChecker {

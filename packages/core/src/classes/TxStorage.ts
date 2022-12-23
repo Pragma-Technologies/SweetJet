@@ -1,3 +1,4 @@
+import { ConnectorBaseEnum, TxListenerTypeEnum } from '../enums'
 import {
   ListenersInfo,
   MultichainTransaction,
@@ -6,10 +7,8 @@ import {
   Tx,
   TxListener,
   TxListenerSubscription,
-  TxListenerTypeEnum,
-} from '../../../types/dist'
-import { ConnectorBaseEnum } from '../../../types/dist'
-import { isMultichainTx, isPartialMultichainTx } from './TxChecksUtils'
+} from '../types'
+import { isMultichainTx, isPartialMultichainTx } from '../utils'
 
 export class TxStorage {
   protected _store: Map<string, Tx> = new Map<string, Tx>()

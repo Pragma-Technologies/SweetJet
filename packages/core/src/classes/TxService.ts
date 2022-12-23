@@ -1,3 +1,4 @@
+import { TxListenerTypeEnum } from '../enums'
 import {
   EthNetworkInfo,
   GetDestinationTransactionHash,
@@ -5,8 +6,7 @@ import {
   Tx,
   TxListenerEventInfo,
   TxListenerSubscription,
-  TxListenerTypeEnum,
-} from '../../../types/dist/index'
+} from '../types'
 import { TxStorage } from './TxStorage'
 import { TxUpdater } from './TxUpdater'
 export class TxService {

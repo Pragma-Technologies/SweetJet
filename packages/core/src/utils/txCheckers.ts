@@ -1,4 +1,4 @@
-import { MultichainTransaction, PartialMultichainTransaction, PartialTx, Transaction, Tx } from '../../../types/dist'
+import { MultichainTransaction, PartialMultichainTransaction, PartialTx, Transaction, Tx } from '../types'
 
 export function isMultichainTx(tx: Tx): tx is MultichainTransaction {
   return 'origin' in tx

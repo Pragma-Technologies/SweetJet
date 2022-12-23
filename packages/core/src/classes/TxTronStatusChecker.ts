@@ -1,8 +1,8 @@
-import { TransactionStatusEnum } from '@pragma-web-utils/types/src/enums/TransactionStatusEnum'
-import { Transaction, WaitTxStatusOptions } from '@pragma-web-utils/types/src/interfaces/Transaction'
+import { TransactionStatusEnum } from '../enums'
+import { Transaction, WaitTxStatusOptions } from '../types'
+import { wait } from '../utils'
 import { RequestDelayUtils } from './RequestDelayUtils'
 import { TxStatusChecker } from './TxStatusChecker'
-import { wait } from './Wait'
 
 const waitingStatuses = new Set([TransactionStatusEnum.UNKNOWN, TransactionStatusEnum.PENDING])
 
