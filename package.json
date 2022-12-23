@@ -7,23 +7,17 @@
     "start": "lerna run start",
     "versions": "lerna version",
     "publish": "lerna publish",
-    "test": "jest",
+    "test": "lerna run test",
     "lint": "eslint ./ --fix"
   },
   "dependencies": {
     "@types/jest": "^29.2.4",
-    "@types/react": "~18.0.26",
-    "@types/react-dom": "^18.0.9",
     "@typescript-eslint/eslint-plugin": "^5.46.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "lerna": "^6.1.0",
-    "prettier": "^2.8.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "4.0.3",
-    "ts-jest": "^26.5.6"
+    "prettier": "^2.8.1"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.1"

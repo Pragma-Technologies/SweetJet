@@ -1,4 +1,4 @@
-import { Listener, Subscription } from '../types/ObservableSubject'
+import { Listener, Subscription } from '../types'
 
 export class ObservableSubject<T = unknown> {
   protected _listeners = new Map<string, Set<Listener<T>>>()

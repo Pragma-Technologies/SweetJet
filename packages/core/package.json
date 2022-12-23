@@ -17,7 +17,8 @@
   "scripts": {
     "prebuild": "rm -rf dist",
     "build": "tsc",
-    "start": "tsc --watch"
+    "start": "tsc --watch",
+    "test": "jest"
   },
   "dependencies": {
     "@pragma-web-utils/contract-utils": "^0.0.0",
@@ -27,7 +28,9 @@
     "tron-format-address": "^0.1.8"
   },
   "devDependencies": {
-    "@types/ethereum-checksum-address": "0.0.0"
+    "@types/ethereum-checksum-address": "0.0.0",
+    "jest": "^29.3.1",
+    "ts-jest": "^29.0.3"
   },
   "description": "core utils",
   "repository": {
