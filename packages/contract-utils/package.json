@@ -18,6 +18,7 @@
     "prebuild": "rm -rf dist",
     "build": "tsc",
     "start": "tsc --watch",
+    "test": "jest --passWithNoTests",
     "clear-typing": "rm -rf src/abi/typings/",
     "generate-typing": "typechain --target=ethers-v5 --out-dir src/abi/typings 'src/abi/*.json'",
     "update-typing": "yarn run clear-typing && yarn run generate-typing"
@@ -39,5 +40,8 @@
     "url": "https://github.com/Pragma-Technologies/pragma-web-utils/issues"
   },
   "homepage": "https://github.com/Pragma-Technologies/pragma-web-utils#readme",
-  "devDependencies": {}
+  "devDependencies": {
+    "jest": "^29.3.1",
+    "ts-jest": "^29.0.3"
+  }
 }
