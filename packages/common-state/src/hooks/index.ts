@@ -1,6 +1,7 @@
 export * from './useIsMounted'
 export * from './useCommonState'
 export * from './useMapCommonState'
+export * from './useCombineCommonStates'
 export * from './useRequestMemo'
 export * from './useCancelableFactory'
 export * from './useCancelablePool'
