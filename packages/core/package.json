@@ -23,9 +23,10 @@
   "dependencies": {
     "@pragma-web-utils/contract-utils": "^0.0.0",
     "ethereum-checksum-address": "^0.0.8",
-    "ethers": "^5.7.2",
-    "styled-breakpoints": "^11.1.0",
-    "tron-format-address": "^0.1.8"
+    "tron-format-address": "^0.1.8",
+    "ethers": "^5.4.1",
+    "moment": "^2.29.1",
+    "styled-breakpoints": "^11.1.0"
   },
   "devDependencies": {
     "@types/ethereum-checksum-address": "0.0.0",
