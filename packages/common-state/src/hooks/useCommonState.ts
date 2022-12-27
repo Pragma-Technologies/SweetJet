@@ -3,6 +3,7 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 import { CANCEL_PROMISE } from '../constants'
 import { CacheableState, CommonState, StateRefreshOption } from '../types'
 import { useCancelableFactory } from './useCancelableFactory'
+import { useCancelablePool } from './useCancelablePool'
 import { useIsMounted } from './useIsMounted'
 import { useRequestMemo } from './useRequestMemo'
 
@@ -10,7 +11,8 @@ export function useCommonState<Value, Error = unknown>(initial?: undefined): Com
 export function useCommonState<Value, Error = unknown>(initial: Value | (() => Value)): CommonState<Value, Error>
 
 export function useCommonState<Value, Error = unknown>(initial: Value): CommonState<Value, Error> {
-  const { createCancelableFactory, addToCancelablePool, clearCancelablePool } = useCancelableFactory()
+  const createCancelableFactory = useCancelableFactory()
+  const { addToCancelablePool, clearCancelablePool } = useCancelablePool()
   const { memoizedRequest } = useRequestMemo()
   const isMounted = useIsMounted()
   const refreshRef = useRef<StateRefreshOption<Value>>()

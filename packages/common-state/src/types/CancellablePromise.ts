@@ -11,8 +11,10 @@ export interface CancellableFactory {
   cancel(): void
 }
 
-export interface CancellableFactoryFactory {
+export type CreateCancelableFactory = (onCancel?: () => void) => CancellableFactory
+
+export interface CancellablePool {
   clearCancelablePool(...exceptedKeys: string[]): void
+
   addToCancelablePool(key: string, value: CancellablePromise): void
-  createCancelableFactory(onCancel?: () => void): CancellableFactory
 }
