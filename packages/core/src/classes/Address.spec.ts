@@ -1,7 +1,7 @@
-import { Address } from './Address'
-import { EMPTY_ADDRESS } from '../constants/common'
 import * as AddressFormatter from 'tron-format-address'
-import { fromHex, toHex } from 'tron-format-address'
+import { fromHex } from 'tron-format-address'
+import { EMPTY_ADDRESS } from '../constants/common'
+import { Address } from './Address'
 
 const hexAddress_1 = '0xc2132D05D31c914a87C6611C10748AEb04B58e8F'
 const base58Address_1 = 'TTfP4dtqSpxK5z3DXPmhFEd9f8SDe3JoyQ'
