@@ -1,4 +1,4 @@
-export enum ConnectorBaseEnum {
-  TVM = 'TVM', // Tron
-  EVM = 'EVM', // Ethereum
+export declare enum ConnectorBaseEnum {
+  TVM = 'TVM',
+  EVM = 'EVM',
 }

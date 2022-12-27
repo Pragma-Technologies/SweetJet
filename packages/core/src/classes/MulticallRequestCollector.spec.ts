@@ -23,10 +23,10 @@ const _testMulticallCaller: MulticallCaller = async () => {
 const scInterface = new ethers.utils.Interface([abiItem])
 
 describe('MulticallRequestCollector class', () => {
-  let _getEvmMulticallCaller: jest.SpyInstance = jest
+  const _getEvmMulticallCaller: jest.SpyInstance = jest
     .spyOn(MulticallCallers, 'getEvmMulticallCaller')
     .mockImplementation(() => _testMulticallCaller)
-  let _getTvmMulticallCaller: jest.SpyInstance = jest
+  const _getTvmMulticallCaller: jest.SpyInstance = jest
     .spyOn(MulticallCallers, 'getTvmMulticallCaller')
     .mockImplementation(() => _testMulticallCaller)
 
