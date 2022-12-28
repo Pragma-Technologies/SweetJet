@@ -6,7 +6,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.1",
+  "version": "0.0.2",
   "files": [
     "dist/*"
   ],
@@ -21,12 +21,12 @@
     "test": "jest"
   },
   "dependencies": {
-    "@pragma-web-utils/contract-utils": "^0.0.1",
+    "@pragma-web-utils/contract-utils": "^0.0.2",
     "ethereum-checksum-address": "^0.0.8",
-    "tron-format-address": "^0.1.8",
     "ethers": "^5.4.1",
     "moment": "^2.29.1",
-    "styled-breakpoints": "^11.1.0"
+    "styled-breakpoints": "^11.1.0",
+    "tron-format-address": "^0.1.8"
   },
   "devDependencies": {
     "@types/ethereum-checksum-address": "0.0.0",
