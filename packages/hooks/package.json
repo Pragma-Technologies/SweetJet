@@ -1,5 +1,5 @@
 {
-  "name": "@pragma-web-utils/common-state",
+  "name": "@pragma-web-utils/hooks",
   "keywords": [
     "pragma-web-utils"
   ],
@@ -21,7 +21,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@pragma-web-utils/hooks": "^0.0.0",
     "my-package": "^0.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -40,8 +39,6 @@
   "homepage": "https://github.com/Pragma-Technologies/pragma-web-utils#readme",
   "devDependencies": {
     "@pragma-web-utils/core": "^0.0.0",
-    "@testing-library/react-hooks": "^8.0.1",
-    "@types/react": "~17.0.52",
-    "@types/react-dom": "^17.0.18"
+    "@testing-library/react-hooks": "^8.0.1"
   }
 }
