@@ -13,10 +13,10 @@ import { isMultichainTx, isPartialMultichainTx } from '../utils'
 export class TxStorage {
   protected _store: Map<string, Tx> = new Map<string, Tx>()
   protected _listeners: ListenersInfo = {
-    [TxListenerTypeEnum.ON_ADD_TX]: new Set(),
-    [TxListenerTypeEnum.ON_UPDATE_TX]: new Set(),
-    [TxListenerTypeEnum.ON_REMOVE_TX]: new Set(),
-    [TxListenerTypeEnum.ON_LIST_CHANGES]: new Set(),
+    [TxListenerTypeEnum.ON_ADD_TX]: new Set<TxListener<TxListenerTypeEnum.ON_ADD_TX>>(),
+    [TxListenerTypeEnum.ON_UPDATE_TX]: new Set<TxListener<TxListenerTypeEnum.ON_UPDATE_TX>>(),
+    [TxListenerTypeEnum.ON_REMOVE_TX]: new Set<TxListener<TxListenerTypeEnum.ON_REMOVE_TX>>(),
+    [TxListenerTypeEnum.ON_LIST_CHANGES]: new Set<TxListener<TxListenerTypeEnum.ON_LIST_CHANGES>>(),
   }
 
   constructor(_store: Tx[] = []) {
@@ -106,13 +106,14 @@ export class TxStorage {
     onEvent: TxListener<T>['onEvent'],
     filter?: TxListener<T>['filter'],
   ): TxListenerSubscription {
+    const _set = this._listeners[type] as Set<TxListener<T>>
     const newListener: TxListener<T> = {
       type,
       onEvent,
       filter,
-      subscription: { unsubscribe: () => this._listeners[type].delete(newListener) },
+      subscription: { unsubscribe: () => _set.delete(newListener) },
     }
-    this._listeners[type].add(newListener)
+    _set.add(newListener)
     return newListener.subscription
   }
 
