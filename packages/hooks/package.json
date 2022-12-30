@@ -6,7 +6,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.2",
+  "version": "0.0.3",
   "files": [
     "dist/*"
   ],
@@ -41,7 +41,7 @@
   },
   "homepage": "https://github.com/Pragma-Technologies/pragma-web-utils#readme",
   "devDependencies": {
-    "@pragma-web-utils/core": "^0.0.2",
+    "@pragma-web-utils/core": "^0.0.3",
     "@testing-library/react-hooks": "^8.0.1"
   }
 }
