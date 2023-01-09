@@ -6,7 +6,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.6",
+  "version": "0.0.7",
   "files": [
     "dist/*"
   ],
@@ -27,8 +27,6 @@
     "moment": "^2.29.1",
     "styled-breakpoints": "^11.1.0",
     "tron-format-address": "^0.1.8"
-  },
-  "peerDependencies": {
   },
   "devDependencies": {
     "@types/ethereum-checksum-address": "0.0.0",

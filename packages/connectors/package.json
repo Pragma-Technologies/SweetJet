@@ -6,7 +6,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.6",
+  "version": "0.0.7",
   "files": [
     "dist/*"
   ],
@@ -20,8 +20,6 @@
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
   "exports": "./dist/index.js",
-  "dependencies": {
-  },
   "peerDependencies": {
     "@coinbase/wallet-sdk": "^3.3.0",
     "@metamask/detect-provider": "^2.0.0",
