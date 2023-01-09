@@ -21,6 +21,8 @@
   "main": "./dist/index.js",
   "exports": "./dist/index.js",
   "dependencies": {
+  },
+  "peerDependencies": {
     "@coinbase/wallet-sdk": "^3.3.0",
     "@metamask/detect-provider": "^2.0.0",
     "@walletconnect/ethereum-provider": "^1.7.8",
