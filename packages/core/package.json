@@ -21,11 +21,11 @@
     "test": "jest"
   },
   "dependencies": {
-    "@pragma-web-utils/contract-utils": "^0.0.6",
-    "ethers": "^5.4.1",
-    "moment": "^2.29.1"
+    "@pragma-web-utils/contract-utils": "^0.0.6"
   },
   "peerDependencies": {
+    "ethers": "^5.4.1",
+    "moment": "^2.29.1",
     "ethereum-checksum-address": "^0.0.8",
     "styled-breakpoints": "^11.1.0",
     "tron-format-address": "^0.1.8"
