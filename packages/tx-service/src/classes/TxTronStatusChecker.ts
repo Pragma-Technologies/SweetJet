@@ -1,16 +1,16 @@
 import { RequestDelayUtils, wait } from '@pragma-web-utils/core'
 import { TransactionStatusEnum } from '../enums'
-import { Transaction, WaitTxStatusOptions } from '../types'
+import { TxCheckInfo, WaitTxStatusOptions } from '../types'
 import { TxStatusChecker } from './TxStatusChecker'
 
-const waitingStatuses = new Set([TransactionStatusEnum.UNKNOWN, TransactionStatusEnum.PENDING])
+const waitingStatuses = new Set([TransactionStatusEnum.UNKNOWN, TransactionStatusEnum.PENDING, undefined])
 
 export class TronTxStatusChecker extends TxStatusChecker {
   constructor(protected _chainId: string | number, protected _grpcUrl: string) {
     super()
   }
 
-  async checkStatus(tx: Transaction): Promise<TransactionStatusEnum> {
+  async checkStatus(tx: TxCheckInfo): Promise<TransactionStatusEnum | undefined> {
     if (tx.chainId !== this._chainId) {
       console.warn('Unsupported chainId for check status of tx:', tx)
       return tx.status
@@ -36,7 +36,7 @@ export class TronTxStatusChecker extends TxStatusChecker {
     }
   }
 
-  async waitStatus(tx: Transaction, options?: WaitTxStatusOptions): Promise<TransactionStatusEnum> {
+  async waitStatus(tx: TxCheckInfo, options?: WaitTxStatusOptions): Promise<TransactionStatusEnum | undefined> {
     if (tx.chainId !== this._chainId) {
       console.warn('Unsupported chainId for check status of tx:', tx)
       return tx.status

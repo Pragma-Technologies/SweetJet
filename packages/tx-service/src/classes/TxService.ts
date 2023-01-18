@@ -1,54 +1,45 @@
-import { TxListenerTypeEnum } from '@pragma-web-utils/core'
 import {
-  EthNetworkInfo,
-  GetDestinationTransactionHash,
-  TronNetworkInfo,
-  Tx,
-  TxListenerEventInfo,
-  TxListenerSubscription,
-} from '../types'
-import { TxStorage } from './TxStorage'
-import { TxUpdater } from './TxUpdater'
+  IStorable,
+  IStorageSubscription,
+  StorageListenerTypeEnum,
+  StorageManager,
+  TStorageListenerEventInfo,
+} from '@pragma-web-utils/core'
+import { TransactionLike, Payload } from '../types'
 
-export class TxService {
-  protected _storage: TxStorage
-  protected _updater: TxUpdater
+export class TxService<
+  C extends string | number = string | number,
+  P extends Payload = Payload,
+  Tx extends IStorable<TransactionLike<C, P>> = IStorable<TransactionLike<C, P>>,
+> {
+  protected _storageManager: StorageManager<Tx> = new StorageManager<Tx>([])
 
-  constructor(
-    _store: Tx[] = [],
-    protected _networkInfos: (EthNetworkInfo | TronNetworkInfo)[],
-    _getDestinationTransactionHash: GetDestinationTransactionHash,
-    protected _waitTimeout = 5 * 60 * 1000,
-  ) {
-    this._storage = new TxStorage(_store)
-    this._updater = new TxUpdater(this._storage, _networkInfos, _getDestinationTransactionHash, _waitTimeout)
+  getList(filter?: (tx: Tx) => boolean): Tx[] {
+    return this._storageManager.getStoredList(filter)
   }
 
-  startUpdater(): void {
-    this._updater.initListeners()
+  add(...list: Tx[]): void {
+    list.forEach((tx) => this._storageManager.addItem(tx))
   }
 
-  stopUpdater(): void {
-    this._updater.stopListeners()
+  remove(id: string): Tx | undefined {
+    return this._storageManager.removeTx(id)
   }
 
-  getTransactions(filter?: (tx: Tx) => boolean): Tx[] {
-    return this._storage.getTxList(filter)
-  }
-
-  addTransaction(tx: Tx): boolean {
-    return this._storage.addTx(tx)
-  }
-
-  removeTransaction(id: Tx['id']): Tx | null {
-    return this._storage.removeTx(id)
-  }
-
-  addListener<T extends TxListenerTypeEnum>(
+  addListener<T extends StorageListenerTypeEnum>(
     type: T,
-    onEvent: (info: TxListenerEventInfo<T>) => void,
+    onEvent: (info: TStorageListenerEventInfo<T, TransactionLike<C, P>>) => void,
     filter?: (tx: Tx) => boolean,
-  ): TxListenerSubscription {
-    return this._storage.addListener(type, onEvent, filter)
+  ): IStorageSubscription {
+    return this._storageManager.addListener(
+      type,
+      (data) =>
+        onEvent(
+          (type === StorageListenerTypeEnum.ON_LIST_CHANGES
+            ? (data as Tx[]).map((tx) => tx.getDTO())
+            : (data as Tx).getDTO()) as TStorageListenerEventInfo<T, TransactionLike<C, P>>,
+        ),
+      filter,
+    )
   }
 }

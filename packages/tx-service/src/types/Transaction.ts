@@ -1,104 +1,90 @@
-import { ConnectorBaseEnum, TransactionStatusEnum, TxListenerTypeEnum } from '../enums'
+import { ConnectorBaseEnum } from '@pragma-web-utils/core'
+import { TransactionStatusEnum } from '../enums'
 
-export type TransactionApp = 'Tron' | 'Web3'
+type Chain = string | number
 export type Tx = RequestedTransaction | Transaction | MultichainTransaction
-export type PartialTx = Partial<RequestedTransaction> | Partial<Transaction> | PartialMultichainTransaction
 
-export type Payload<Action extends string = string> = {
-  action: Action
-} & {
-  [key in string]: unknown // action: string
-}
+export type Payload<Action extends string = string> = { action: Action } & { [key in string]: unknown }
 
-export interface TransactionLike<P = Payload> {
+export interface TransactionLike<C extends Chain = Chain, P = Payload> {
   readonly id: string
-  account: string
-  chainId: string | number
-  created: number
-  payload: P
-  base: ConnectorBaseEnum
+  readonly account: string
+  readonly chainId: C
+  readonly created: number
+  readonly payload: P
+  readonly base: ConnectorBaseEnum
 }
 
-export interface Transaction<P = Payload> extends TransactionLike<P> {
+export interface Transaction<C extends Chain = Chain, P extends Payload = Payload> extends TransactionLike<C, P> {
+  // `${base}_${chainId}_${hash}`
   readonly id: `${ConnectorBaseEnum}_${string | number}_${string}`
-  hash: string
+  readonly hash: string
   status: TransactionStatusEnum
 }
 
-export interface RequestedTransaction<P = Payload> extends TransactionLike<P> {
+export interface RequestedTransaction<C extends Chain = Chain, P extends Payload = Payload>
+  extends TransactionLike<C, P> {
   // `${base}_${chainId}_${created}`
   readonly id: `${ConnectorBaseEnum}_${string | number}_${number}`
 }
 
-export interface MultichainTransaction<Origin = Payload, Destination = Payload> {
-  // repeat origin.id value
+export interface MultichainTransaction<
+  OriginChain extends Chain = Chain,
+  DestinationChain extends Chain = Chain,
+  P extends Payload = Payload,
+> extends Transaction<OriginChain, P> {
+  // `${base}_${chainId}_${created}` (all values relate to origin transaction)
   readonly id: `${ConnectorBaseEnum}_${string | number}_${string}`
-  origin: Transaction<Origin>
-  destination?: Transaction<Destination>
-  destinationChainId: string | number
-  destinationBase: ConnectorBaseEnum
+  readonly destination: {
+    hash?: string
+    created?: number
+    status: TransactionStatusEnum
+    readonly chainId: DestinationChain
+    readonly base: ConnectorBaseEnum
+  }
 }
 
-export interface PartialMultichainTransaction<Origin = Payload, Destination = Payload> {
-  origin?: Partial<Transaction<Origin>>
-  destination?: Partial<Transaction<Destination>>
-}
-
-export interface PartialMultichainTransaction<Origin = Payload, Destination = Payload> {
-  origin?: Partial<Transaction<Origin>>
-  destination?: Partial<Transaction<Destination>>
-}
-
-export interface MultichainOriginInfoCore {
+export type TxInfo<C extends Chain = Chain, P extends Payload = Payload> = {
+  account: string
+  chainId: C
+  base: ConnectorBaseEnum
+  payload: P
   hash: string
-  chainId: string | number
+  status?: TransactionStatusEnum
+}
+
+export type MultichainTxInfo<
+  OriginChain extends string | number = string | number,
+  DestinationChain extends string | number = string | number,
+  P extends Payload = Payload,
+> = {
+  account: string
+  chainId: OriginChain
   base: ConnectorBaseEnum
+  payload: P
+  hash: string
+  status?: TransactionStatusEnum
+  destination:
+    | {
+        chainId: DestinationChain
+        base: ConnectorBaseEnum
+      }
+    | {
+        hash: string
+        created: number
+        status: TransactionStatusEnum
+        chainId: DestinationChain
+        base: ConnectorBaseEnum
+      }
 }
 
-export interface MultichainDestinationInfoCore {
-  chainId: string | number
-  base: ConnectorBaseEnum
-}
-
-export type GetDestinationTransactionHash = (
-  origin: MultichainOriginInfoCore,
-  destination: MultichainDestinationInfoCore,
-) => Promise<string | null>
-
-export interface EthNetworkInfo {
-  chainId: string | number
-  rpcUrl: string
-  base: ConnectorBaseEnum.EVM
-}
-
-export interface TronNetworkInfo {
-  chainId: string | number
-  grpcUrl: string
-  base: ConnectorBaseEnum.TVM
+export type TxCheckInfo<C extends Chain = Chain> = {
+  chainId: C
+  hash: string
+  status?: TransactionStatusEnum
 }
 
 export interface WaitTxStatusOptions {
   waitConfirmations?: number
   waitTimeout?: number
-}
-
-export interface TxListener<T extends TxListenerTypeEnum> {
-  type: T
-  filter?: (tx: Tx) => boolean
-  onEvent: (info: TxListenerEventInfo<T>) => void
-  subscription: TxListenerSubscription
-}
-
-export type TxListenerEventInfo<T extends TxListenerTypeEnum> = T extends TxListenerTypeEnum.ON_LIST_CHANGES
-  ? Tx[]
-  : T extends TxListenerTypeEnum.ON_UPDATE_TX
-  ? { oldValue: Tx; newValue: Tx }
-  : Tx
-
-export interface TxListenerSubscription {
-  unsubscribe: () => void
-}
-
-export type ListenersInfo = {
-  [key in TxListenerTypeEnum]: Set<TxListener<key>>
 }

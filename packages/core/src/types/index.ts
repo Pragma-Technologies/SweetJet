@@ -1,5 +1,5 @@
 export * from './ObservableSubject'
 export * from './MulticallCollector'
 export * from './multicall'
-export * from './Transaction'
 export * from './CurrencyService'
+export * from './Storage'
