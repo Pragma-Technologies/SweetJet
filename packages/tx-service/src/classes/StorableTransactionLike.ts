@@ -10,7 +10,7 @@ export class StorableTransactionLike<C extends string | number, P extends Payloa
     return this._dto.id
   }
 
-  getDTO(): Tx {
+  getValue(): Tx {
     return this._dto
   }
 

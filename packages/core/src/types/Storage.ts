@@ -36,5 +36,5 @@ export interface IStorage<D = unknown> {
 
 export interface IStorable<T = unknown> {
   getId(): string
-  getDTO(): T
+  getValue(): T
 }

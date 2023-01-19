@@ -29,11 +29,11 @@ export class StorageManager<D extends IStorable = IStorable> {
 
   addItem(item: D): string | undefined {
     const id = item.getId()
-    if (!this.hasItem(id)) {
+    if (this.hasItem(id)) {
       return undefined
     }
     this._store.set(id, item)
-    this._onAddTx(item)
+    this._onAddItem(item)
     return id
   }
 
@@ -42,19 +42,19 @@ export class StorageManager<D extends IStorable = IStorable> {
 
     if (!!oldItem) {
       this._store.set(id, newItem)
-      this._onUpdateTx(newItem, oldItem)
+      this._onUpdateItem(newItem, oldItem)
       return true
     }
 
     return false
   }
 
-  removeTx(id: string): D | undefined {
+  removeItem(id: string): D | undefined {
     const removed = this.getItem(id)
 
     if (!!removed) {
       this._store.delete(id)
-      this._onRemoveTx(removed)
+      this._onRemoveItem(removed)
       return removed
     }
 
@@ -83,14 +83,14 @@ export class StorageManager<D extends IStorable = IStorable> {
     )
   }
 
-  protected _onAddTx(item: D): void {
+  protected _onAddItem(item: D): void {
     this._listeners[StorageListenerTypeEnum.ON_ADD].forEach(
       (listener) => (!listener.filter || listener.filter(item)) && listener.onEvent(item),
     )
     this._onListChanges()
   }
 
-  protected _onUpdateTx(newValue: D, oldValue: D): void {
+  protected _onUpdateItem(newValue: D, oldValue: D): void {
     this._listeners[StorageListenerTypeEnum.ON_UPDATE].forEach((listener) => {
       const isValid = !listener.filter || listener.filter(newValue) || listener.filter(oldValue)
       isValid && listener.onEvent({ oldValue: oldValue, newValue: newValue })
@@ -98,7 +98,7 @@ export class StorageManager<D extends IStorable = IStorable> {
     this._onListChanges()
   }
 
-  protected _onRemoveTx(item: D): void {
+  protected _onRemoveItem(item: D): void {
     this._listeners[StorageListenerTypeEnum.ON_REMOVE].forEach((listener) => {
       ;(!listener.filter || listener.filter(item)) && listener.onEvent(item)
     })

@@ -23,7 +23,7 @@ export class TxService<
   }
 
   remove(id: string): Tx | undefined {
-    return this._storageManager.removeTx(id)
+    return this._storageManager.removeItem(id)
   }
 
   addListener<T extends StorageListenerTypeEnum>(
@@ -36,8 +36,8 @@ export class TxService<
       (data) =>
         onEvent(
           (type === StorageListenerTypeEnum.ON_LIST_CHANGES
-            ? (data as Tx[]).map((tx) => tx.getDTO())
-            : (data as Tx).getDTO()) as TStorageListenerEventInfo<T, TransactionLike<C, P>>,
+            ? (data as Tx[]).map((tx) => tx.getValue())
+            : (data as Tx).getValue()) as TStorageListenerEventInfo<T, TransactionLike<C, P>>,
         ),
       filter,
     )
