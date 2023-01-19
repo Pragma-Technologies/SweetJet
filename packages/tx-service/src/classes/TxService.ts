@@ -22,6 +22,14 @@ export class TxService<
     list.forEach((tx) => this._storageManager.addItem(tx))
   }
 
+  getItem(id: string): Tx | undefined {
+    return this._storageManager.getItem(id)
+  }
+
+  hasItem(id: string): boolean {
+    return this._storageManager.hasItem(id)
+  }
+
   remove(id: string): Tx | undefined {
     return this._storageManager.removeItem(id)
   }
