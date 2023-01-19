@@ -1,6 +1,7 @@
 import { IStorable, StorageManager } from '@pragma-web-utils/core'
+import { PendingStatuses } from '../core'
 import { TransactionStatusEnum } from '../enums'
-import { Transaction, Payload, TxInfo } from '../types'
+import { Payload, Transaction, TxInfo } from '../types'
 import { StorableTransactionLike } from './StorableTransactionLike'
 import { TxStatusChecker } from './TxStatusChecker'
 
@@ -12,23 +13,26 @@ function getTxDTO<C extends string | number = string | number, P extends Payload
   return { ...info, created, id, status: info.status ?? TransactionStatusEnum.UNKNOWN }
 }
 
-export abstract class StorableTx<
+export class StorableTx<
   C extends string | number = string | number,
   P extends Payload = Payload,
 > extends StorableTransactionLike<C, P, Transaction<C, P>> {
-  constructor(
-    _txInfo: TxInfo<C, P>,
-    protected _checker: TxStatusChecker,
-    protected _waitTimeout = 5 * 60 * 1000,
-    _storageManager: StorageManager<IStorable<Transaction<C, P>>>,
-  ) {
-    super(getTxDTO(_txInfo), _storageManager)
-    if (this._dto.status === TransactionStatusEnum.UNKNOWN || this._dto.status === TransactionStatusEnum.PENDING) {
-      this._checkStatus()
-    }
+  protected _storageManager?: StorageManager<IStorable<Transaction<C, P>>>
+
+  constructor(_txInfo: TxInfo<C, P>, protected _checker: TxStatusChecker, protected _waitTimeout = 5 * 60 * 1000) {
+    super(getTxDTO(_txInfo))
+  }
+
+  addToStorage(storageManager: StorageManager<IStorable<Transaction<C, P>>>): void {
+    super.addToStorage(storageManager)
+    this._checkStatus()
   }
 
   protected async _checkStatus(): Promise<void> {
+    if (!PendingStatuses.has(this._dto.status)) {
+      return
+    }
+
     const status = await this._checker.waitStatus(this._dto, { waitTimeout: this._waitTimeout })
     if (!!status && status !== this._dto.status) {
       this._dto.status = status ?? this._dto.status

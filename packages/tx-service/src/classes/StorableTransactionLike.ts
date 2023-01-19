@@ -1,10 +1,20 @@
 import { IStorable, StorageManager } from '@pragma-web-utils/core'
-import { TransactionLike, Payload } from '../types'
+import { Payload, TransactionLike } from '../types'
 
 export class StorableTransactionLike<C extends string | number, P extends Payload, Tx extends TransactionLike<C, P>>
   implements IStorable<Tx>
 {
-  protected constructor(protected _dto: Tx, protected _storageManager: StorageManager<IStorable<Tx>>) {}
+  protected _storageManager?: StorageManager<IStorable<Tx>>
+
+  constructor(protected _dto: Tx) {}
+
+  addToStorage(storageManager: StorageManager<IStorable<Tx>>): void {
+    this._storageManager = storageManager
+  }
+
+  removeFromStorage(): void {
+    this._storageManager = undefined
+  }
 
   getId(): string {
     return this._dto.id
@@ -15,6 +25,6 @@ export class StorableTransactionLike<C extends string | number, P extends Payloa
   }
 
   protected _updateStoreValue(): void {
-    this._storageManager.updateItem(this.getId(), this)
+    this._storageManager?.updateItem(this.getId(), this)
   }
 }

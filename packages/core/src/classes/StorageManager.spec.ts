@@ -2,13 +2,24 @@ import { StorageListenerTypeEnum } from '../enums'
 import { IStorable } from '../types'
 import { StorageManager } from './StorageManager'
 
-const getStorable = (id: string, value: string): IStorable<string> => {
+const getStorable = (
+  id: string,
+  value: string,
+  onAdd: (storageManager: StorageManager<string>) => void,
+  onRemove: () => void,
+): IStorable<string> => {
   return {
     getId(): string {
       return id
     },
     getValue(): string {
       return value
+    },
+    addToStorage(storageManager: StorageManager<string>) {
+      onAdd(storageManager)
+    },
+    removeFromStorage() {
+      onRemove()
     },
   }
 }
@@ -22,16 +33,18 @@ const value3 = 'value3'
 
 describe('StorageManager', () => {
   it('init and adding items', () => {
+    const onAddToStorage = jest.fn()
+    const onRemoveFromStorage = jest.fn()
     const onAdd = jest.fn()
     const onListChanges = jest.fn()
     const onAddFiltered = jest.fn()
     const onListChangesFiltered = jest.fn()
-    const storable1 = getStorable(id1, value1)
-    const storable2 = getStorable(id2, value2)
-    const storable2_1 = getStorable(id2, value1)
-    const storable3 = getStorable(id3, value3)
+    const storable1 = getStorable(id1, value1, onAddToStorage, onRemoveFromStorage)
+    const storable2 = getStorable(id2, value2, onAddToStorage, onRemoveFromStorage)
+    const storable2_1 = getStorable(id2, value1, onAddToStorage, onRemoveFromStorage)
+    const storable3 = getStorable(id3, value3, onAddToStorage, onRemoveFromStorage)
     const initValues = [storable1, storable2]
-    const storageManager = new StorageManager<IStorable<string>>(initValues)
+    const storageManager = new StorageManager<string>(initValues)
 
     storageManager.addListener(StorageListenerTypeEnum.ON_ADD, onAdd)
     storageManager.addListener(StorageListenerTypeEnum.ON_LIST_CHANGES, onListChanges)
@@ -42,9 +55,13 @@ describe('StorageManager', () => {
       (data) => data.getId() === id2,
     )
 
+    expect(onAddToStorage).toBeCalledTimes(2)
     expect(storageManager.getStoredList().length).toBe(2)
+    expect(storageManager.hasItem(id1)).toBe(true)
     expect(storageManager.getItem(id1)).toBe(storable1)
+    expect(storageManager.hasItem(id2)).toBe(true)
     expect(storageManager.getItem(id2)).toBe(storable2)
+    expect(storageManager.hasItem(id3)).toBe(false)
     expect(storageManager.getItem(id3)).toBe(undefined)
     expect(onAdd).toBeCalledTimes(0)
     expect(onListChanges).toBeCalledTimes(0)
@@ -53,9 +70,13 @@ describe('StorageManager', () => {
 
     storageManager.addItem(storable2_1)
 
+    expect(onAddToStorage).toBeCalledTimes(2)
     expect(storageManager.getStoredList().length).toBe(2)
+    expect(storageManager.hasItem(id1)).toBe(true)
     expect(storageManager.getItem(id1)).toBe(storable1)
+    expect(storageManager.hasItem(id2)).toBe(true)
     expect(storageManager.getItem(id2)).toBe(storable2)
+    expect(storageManager.hasItem(id3)).toBe(false)
     expect(storageManager.getItem(id3)).toBe(undefined)
     expect(onAdd).toBeCalledTimes(0)
     expect(onListChanges).toBeCalledTimes(0)
@@ -64,9 +85,14 @@ describe('StorageManager', () => {
 
     storageManager.addItem(storable3)
 
+    expect(onRemoveFromStorage).toBeCalledTimes(0)
+    expect(onAddToStorage).toBeCalledTimes(3)
     expect(storageManager.getStoredList().length).toBe(3)
+    expect(storageManager.hasItem(id1)).toBe(true)
     expect(storageManager.getItem(id1)).toBe(storable1)
+    expect(storageManager.hasItem(id2)).toBe(true)
     expect(storageManager.getItem(id2)).toBe(storable2)
+    expect(storageManager.hasItem(id3)).toBe(true)
     expect(storageManager.getItem(id3)).toBe(storable3)
     expect(onAdd).toBeCalledTimes(1)
     expect(onListChanges).toBeCalledTimes(1)
@@ -82,14 +108,16 @@ describe('StorageManager', () => {
   })
 
   it('remove item', () => {
+    const onAddToStorage = jest.fn()
+    const onRemoveFromStorage = jest.fn()
     const onRemove = jest.fn()
     const onListChanges = jest.fn()
     const onRemoveFiltered = jest.fn()
     const onListChangesFiltered = jest.fn()
-    const storable1 = getStorable(id1, value1)
-    const storable2 = getStorable(id2, value2)
+    const storable1 = getStorable(id1, value1, onAddToStorage, onRemoveFromStorage)
+    const storable2 = getStorable(id2, value2, onAddToStorage, onRemoveFromStorage)
     const initValues = [storable1, storable2]
-    const storageManager = new StorageManager<IStorable<string>>(initValues)
+    const storageManager = new StorageManager<string>(initValues)
 
     storageManager.addListener(StorageListenerTypeEnum.ON_REMOVE, onRemove)
     storageManager.addListener(StorageListenerTypeEnum.ON_LIST_CHANGES, onListChanges)
@@ -100,9 +128,14 @@ describe('StorageManager', () => {
       (data) => data.getId() === id3,
     )
 
+    expect(onRemoveFromStorage).toBeCalledTimes(0)
+    expect(onAddToStorage).toBeCalledTimes(2)
     expect(storageManager.getStoredList().length).toBe(2)
+    expect(storageManager.hasItem(id1)).toBe(true)
     expect(storageManager.getItem(id1)).toBe(storable1)
+    expect(storageManager.hasItem(id2)).toBe(true)
     expect(storageManager.getItem(id2)).toBe(storable2)
+    expect(storageManager.hasItem(id3)).toBe(false)
     expect(storageManager.getItem(id3)).toBe(undefined)
     expect(onRemove).toBeCalledTimes(0)
     expect(onListChanges).toBeCalledTimes(0)
@@ -111,9 +144,14 @@ describe('StorageManager', () => {
 
     storageManager.removeItem(id3)
 
+    expect(onRemoveFromStorage).toBeCalledTimes(0)
+    expect(onAddToStorage).toBeCalledTimes(2)
     expect(storageManager.getStoredList().length).toBe(2)
+    expect(storageManager.hasItem(id1)).toBe(true)
     expect(storageManager.getItem(id1)).toBe(storable1)
+    expect(storageManager.hasItem(id2)).toBe(true)
     expect(storageManager.getItem(id2)).toBe(storable2)
+    expect(storageManager.hasItem(id3)).toBe(false)
     expect(storageManager.getItem(id3)).toBe(undefined)
     expect(onRemove).toBeCalledTimes(0)
     expect(onListChanges).toBeCalledTimes(0)
@@ -122,9 +160,14 @@ describe('StorageManager', () => {
 
     storageManager.removeItem(id2)
 
+    expect(onRemoveFromStorage).toBeCalledTimes(1)
+    expect(onAddToStorage).toBeCalledTimes(2)
     expect(storageManager.getStoredList().length).toBe(1)
+    expect(storageManager.hasItem(id1)).toBe(true)
     expect(storageManager.getItem(id1)).toBe(storable1)
+    expect(storageManager.hasItem(id2)).toBe(false)
     expect(storageManager.getItem(id2)).toBe(undefined)
+    expect(storageManager.hasItem(id3)).toBe(false)
     expect(storageManager.getItem(id3)).toBe(undefined)
     expect(onRemove).toBeCalledTimes(1)
     expect(onListChanges).toBeCalledTimes(1)
@@ -136,15 +179,17 @@ describe('StorageManager', () => {
   })
 
   it('update item', () => {
+    const onAddToStorage = jest.fn()
+    const onRemoveFromStorage = jest.fn()
     const onUpdate = jest.fn()
     const onListChanges = jest.fn()
     const onUpdateFiltered = jest.fn()
     const onListChangesFiltered = jest.fn()
-    const storable1 = getStorable(id1, value1)
-    const storable2 = getStorable(id2, value2)
-    const storable2_1 = getStorable(id2, value1)
+    const storable1 = getStorable(id1, value1, onAddToStorage, onRemoveFromStorage)
+    const storable2 = getStorable(id2, value2, onAddToStorage, onRemoveFromStorage)
+    const storable2_1 = getStorable(id2, value1, onAddToStorage, onRemoveFromStorage)
     const initValues = [storable1, storable2]
-    const storageManager = new StorageManager<IStorable<string>>(initValues)
+    const storageManager = new StorageManager<string>(initValues)
 
     storageManager.addListener(StorageListenerTypeEnum.ON_UPDATE, onUpdate)
     storageManager.addListener(StorageListenerTypeEnum.ON_LIST_CHANGES, onListChanges)
@@ -155,9 +200,14 @@ describe('StorageManager', () => {
       (data) => data.getId() === id3,
     )
 
+    expect(onRemoveFromStorage).toBeCalledTimes(0)
+    expect(onAddToStorage).toBeCalledTimes(2)
     expect(storageManager.getStoredList().length).toBe(2)
+    expect(storageManager.hasItem(id1)).toBe(true)
     expect(storageManager.getItem(id1)).toBe(storable1)
+    expect(storageManager.hasItem(id2)).toBe(true)
     expect(storageManager.getItem(id2)).toBe(storable2)
+    expect(storageManager.hasItem(id3)).toBe(false)
     expect(storageManager.getItem(id3)).toBe(undefined)
     expect(onUpdate).toBeCalledTimes(0)
     expect(onListChanges).toBeCalledTimes(0)
@@ -166,9 +216,14 @@ describe('StorageManager', () => {
 
     storageManager.updateItem(id3, storable2_1)
 
+    expect(onRemoveFromStorage).toBeCalledTimes(0)
+    expect(onAddToStorage).toBeCalledTimes(2)
     expect(storageManager.getStoredList().length).toBe(2)
+    expect(storageManager.hasItem(id1)).toBe(true)
     expect(storageManager.getItem(id1)).toBe(storable1)
+    expect(storageManager.hasItem(id2)).toBe(true)
     expect(storageManager.getItem(id2)).toBe(storable2)
+    expect(storageManager.hasItem(id3)).toBe(false)
     expect(storageManager.getItem(id3)).toBe(undefined)
     expect(onUpdate).toBeCalledTimes(0)
     expect(onListChanges).toBeCalledTimes(0)
@@ -177,9 +232,14 @@ describe('StorageManager', () => {
 
     storageManager.updateItem(id2, storable2_1)
 
+    expect(onRemoveFromStorage).toBeCalledTimes(1)
+    expect(onAddToStorage).toBeCalledTimes(3)
     expect(storageManager.getStoredList().length).toBe(2)
+    expect(storageManager.hasItem(id1)).toBe(true)
     expect(storageManager.getItem(id1)).toBe(storable1)
+    expect(storageManager.hasItem(id2)).toBe(true)
     expect(storageManager.getItem(id2)).toBe(storable2_1)
+    expect(storageManager.hasItem(id3)).toBe(false)
     expect(storageManager.getItem(id3)).toBe(undefined)
     expect(onUpdate).toBeCalledTimes(1)
     expect(onListChanges).toBeCalledTimes(1)
