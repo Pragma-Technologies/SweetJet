@@ -1,5 +1,5 @@
 import { IStorable, StorageManager, wait } from '@pragma-web-utils/core'
-import { PendingStatuses } from '../core'
+import { pendingStatuses } from '../core'
 import { TransactionStatusEnum } from '../enums'
 import { MultichainTransaction, MultichainTxInfo, Payload } from '../types'
 import { isTxCheckInfo } from '../utils'
@@ -52,10 +52,10 @@ export class StorableMultichainTx<
   }
 
   protected async _checkStatus(): Promise<void> {
-    if (PendingStatuses.has(this._dto.status)) {
+    if (pendingStatuses.has(this._dto.status)) {
       await this._checkOriginStatus()
     }
-    if (PendingStatuses.has(this._dto.destination.status)) {
+    if (pendingStatuses.has(this._dto.destination.status)) {
       await this._checkDestinationStatus()
     }
   }

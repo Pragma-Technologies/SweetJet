@@ -1,5 +1,5 @@
 import { IStorable, StorageManager } from '@pragma-web-utils/core'
-import { PendingStatuses } from '../core'
+import { pendingStatuses } from '../core'
 import { TransactionStatusEnum } from '../enums'
 import { Payload, Transaction, TxInfo } from '../types'
 import { StorableTransactionLike } from './StorableTransactionLike'
@@ -29,7 +29,7 @@ export class StorableTx<
   }
 
   protected async _checkStatus(): Promise<void> {
-    if (!PendingStatuses.has(this._dto.status)) {
+    if (!pendingStatuses.has(this._dto.status)) {
       return
     }
 

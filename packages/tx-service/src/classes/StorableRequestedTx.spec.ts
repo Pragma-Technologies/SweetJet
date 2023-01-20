@@ -10,7 +10,7 @@ const dto: RequestedTransaction = {
   payload: { action: 'test' },
   base: ConnectorBaseEnum.EVM,
 }
-
+jest.spyOn(Date, 'now').mockImplementation(() => 0)
 describe('StorableRequestedTx', () => {
   it('check id', () => {
     const storable = new StorableRequestedTx(dto)
@@ -19,7 +19,7 @@ describe('StorableRequestedTx', () => {
 
   it('check value', () => {
     const storable = new StorableRequestedTx(dto)
-    expect(storable.getValue()).toBe(dto)
+    expect(storable.getValue()).toEqual(dto)
   })
 
   it('check connection with StorageManager', () => {

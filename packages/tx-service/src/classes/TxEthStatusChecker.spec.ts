@@ -24,17 +24,19 @@ const emptyReceipt: TransactionReceipt = {
   transactionIndex: 1,
 }
 const txInfo: TxCheckInfo = { status: TransactionStatusEnum.UNKNOWN, hash: 'hash', chainId: 1 }
-let checkStatus: jest.SpyInstance<Promise<TransactionReceipt>, [hash: string | Promise<string>]>
-let waitStatus: jest.SpyInstance<
-  Promise<TransactionReceipt>,
-  [hash: string, waitConfirmations?: number | undefined, waitTimeout?: number | undefined]
->
+
+const provider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/', 1)
+let _provider = jest.spyOn(ethers.providers, 'JsonRpcProvider').mockImplementation(() => provider)
+let checkStatus = jest.spyOn(provider, 'getTransactionReceipt').mockImplementation(async () => emptyReceipt)
+let waitStatus = jest.spyOn(provider, 'waitForTransaction').mockImplementation(async () => emptyReceipt)
 describe('EthTxStatusChecker', () => {
-  beforeAll(() => {
-    const provider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/', 1)
+  beforeEach(() => {
+    checkStatus.mockReset()
+    waitStatus?.mockReset()
+    _provider.mockReset()
     checkStatus = jest.spyOn(provider, 'getTransactionReceipt').mockImplementation(async () => emptyReceipt)
     waitStatus = jest.spyOn(provider, 'waitForTransaction').mockImplementation(async () => emptyReceipt)
-    jest.spyOn(ethers.providers, 'JsonRpcProvider').mockImplementation(() => provider)
+    _provider = jest.spyOn(ethers.providers, 'JsonRpcProvider').mockImplementation(() => provider)
   })
   it('checkStatus', async () => {
     const checker = new EthTxStatusChecker(1, 'https://mainnet.infura.io/v3/')

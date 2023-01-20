@@ -1,9 +1,8 @@
 import { RequestDelayUtils, wait } from '@pragma-web-utils/core'
+import { pendingStatuses } from '../core'
 import { TransactionStatusEnum } from '../enums'
 import { TxCheckInfo, WaitTxStatusOptions } from '../types'
 import { TxStatusChecker } from './TxStatusChecker'
-
-const waitingStatuses = new Set([TransactionStatusEnum.UNKNOWN, TransactionStatusEnum.PENDING, undefined])
 
 export class TronTxStatusChecker extends TxStatusChecker {
   constructor(protected _chainId: string | number, protected _grpcUrl: string) {
@@ -29,7 +28,7 @@ export class TronTxStatusChecker extends TxStatusChecker {
         case 'REVERT':
           return TransactionStatusEnum.FAILED
         default:
-          return TransactionStatusEnum.UNKNOWN
+          return tx.status ?? TransactionStatusEnum.UNKNOWN
       }
     } catch (e) {
       return TransactionStatusEnum.UNKNOWN
@@ -44,7 +43,7 @@ export class TronTxStatusChecker extends TxStatusChecker {
     const startTimestamp = Date.now()
     let status = await this.checkStatus(tx)
     let isWaitTransactionTimeoutExpired = !!options?.waitTimeout && Date.now() - startTimestamp < options?.waitTimeout
-    while (waitingStatuses.has(status) && isWaitTransactionTimeoutExpired) {
+    while (pendingStatuses.has(status) && isWaitTransactionTimeoutExpired) {
       await wait(30_000)
       status = await this.checkStatus(tx)
       isWaitTransactionTimeoutExpired = !!options?.waitTimeout && Date.now() - startTimestamp < options?.waitTimeout
