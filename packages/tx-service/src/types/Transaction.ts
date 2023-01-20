@@ -1,10 +1,13 @@
 import { ConnectorBaseEnum } from '@pragma-web-utils/core'
 import { TransactionStatusEnum } from '../enums'
 
-type Chain = string | number
+export type Chain = string | number
 export type Tx = RequestedTransaction | Transaction | MultichainTransaction
 
 export type Payload<Action extends string = string> = { action: Action } & { [key in string]: unknown }
+
+export type TransactionChain<T extends TransactionLike> = T extends TransactionLike<infer C> ? C : never
+export type TransactionPayload<T extends TransactionLike> = T extends TransactionLike<Chain, infer P> ? P : never
 
 export interface TransactionLike<C extends Chain = Chain, P = Payload> {
   readonly id: string
@@ -61,8 +64,8 @@ export type TxInfo<C extends Chain = Chain, P extends Payload = Payload> = {
 }
 
 export type MultichainTxInfo<
-  OriginChain extends string | number = string | number,
-  DestinationChain extends string | number = string | number,
+  OriginChain extends Chain = Chain,
+  DestinationChain extends Chain = Chain,
   P extends Payload = Payload,
 > = {
   account: string

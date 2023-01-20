@@ -42,3 +42,5 @@ export interface IStorable<T = unknown> {
   addToStorage(storageManager: StorageManager<T>): void
   removeFromStorage(): void
 }
+
+export type StorableValue<T extends IStorable> = T extends IStorable<infer I> ? I : never

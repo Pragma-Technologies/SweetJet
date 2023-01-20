@@ -1,8 +1,11 @@
 import { IStorable, StorageManager } from '@pragma-web-utils/core'
 import { Payload, TransactionLike } from '../types'
 
-export class StorableTransactionLike<C extends string | number, P extends Payload, Tx extends TransactionLike<C, P>>
-  implements IStorable<Tx>
+export class StorableTransactionLike<
+  C extends string | number = string | number,
+  P extends Payload = Payload,
+  Tx extends TransactionLike<C, P> = TransactionLike<C, P>,
+> implements IStorable<Tx>
 {
   protected _storageManager?: StorageManager<IStorable<Tx>>
 

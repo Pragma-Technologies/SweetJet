@@ -114,9 +114,7 @@ describe('TxService', () => {
     expect(onListChanges).toHaveBeenCalledWith([storable1.getValue(), storable2.getValue(), storable3.getValue()])
     expect(onListChangesFiltered).toHaveBeenCalledWith([storable2.getValue()])
 
-    const filteredList = txService.getList(
-      (item) => item.getId() === storable1.getId() || item.getValue() === storable2.getValue(),
-    )
+    const filteredList = txService.getList((item) => item.id === storable1.getId() || item === storable2.getValue())
     expect(filteredList.length).toBe(2)
     expect(filteredList).toEqual([storable1, storable2])
   })
