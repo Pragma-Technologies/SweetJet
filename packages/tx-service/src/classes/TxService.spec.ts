@@ -54,7 +54,7 @@ const storable2 = new StorableTx(dto2, testChecker)
 const storable2_1 = new StorableTx(dto2_1, testChecker)
 const storable3 = new StorableTx(dto3, testChecker)
 
-describe('StorageManager', () => {
+describe('TxService', () => {
   it('init and adding items', () => {
     const onAdd = jest.fn()
     const onListChanges = jest.fn()
