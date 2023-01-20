@@ -33,7 +33,7 @@ export interface MultichainTransaction<
   DestinationChain extends Chain = Chain,
   P extends Payload = Payload,
 > extends Transaction<OriginChain, P> {
-  // `${base}_${chainId}_${created}` (all values relate to origin transaction)
+  // `${base}_${chainId}_${hash}` (all values relate to origin transaction)
   readonly id: `${ConnectorBaseEnum}_${string | number}_${string}`
   readonly destination: {
     hash?: string
@@ -42,6 +42,13 @@ export interface MultichainTransaction<
     readonly chainId: DestinationChain
     readonly base: ConnectorBaseEnum
   }
+}
+
+export type TxRequestedInfo<C extends Chain = Chain, P extends Payload = Payload> = {
+  account: string
+  chainId: C
+  base: ConnectorBaseEnum
+  payload: P
 }
 
 export type TxInfo<C extends Chain = Chain, P extends Payload = Payload> = {

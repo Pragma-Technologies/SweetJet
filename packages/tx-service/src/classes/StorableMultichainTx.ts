@@ -1,5 +1,5 @@
 import { IStorable, StorageManager, wait } from '@pragma-web-utils/core'
-import { PendingStatuses } from '../core'
+import { pendingStatuses } from '../core'
 import { TransactionStatusEnum } from '../enums'
 import { MultichainTransaction, MultichainTxInfo, Payload } from '../types'
 import { isTxCheckInfo } from '../utils'
@@ -25,29 +25,37 @@ function getTxDTO<
   }
 }
 
-export abstract class StorableMultichainTx<
+export class StorableMultichainTx<
   OriginChain extends string | number = string | number,
   DestinationChain extends string | number = string | number,
   P extends Payload = Payload,
 > extends StorableTransactionLike<OriginChain, P, MultichainTransaction<OriginChain, DestinationChain, P>> {
+  protected _storageManager?: StorageManager<IStorable<MultichainTransaction<OriginChain, DestinationChain, P>>>
+
   constructor(
     _txInfo: MultichainTxInfo<OriginChain, DestinationChain, P>,
     protected _checker: TxStatusChecker,
-    protected _waitTimeout = 5 * 60 * 1000,
-    _storageManager: StorageManager<IStorable<MultichainTransaction<OriginChain, DestinationChain, P>>>,
     protected _getDestinationHash: (
       tx: MultichainTxInfo<OriginChain, DestinationChain, P>,
     ) => Promise<string | undefined>,
+    protected _waitTimeout = 5 * 60 * 1000,
   ) {
-    super(getTxDTO(_txInfo), _storageManager)
+    super(getTxDTO(_txInfo))
+  }
+
+  addToStorage(
+    storageManager: StorageManager<IStorable<MultichainTransaction<OriginChain, DestinationChain, P>>>,
+  ): void {
+    super.addToStorage(storageManager)
+
     this._checkStatus()
   }
 
   protected async _checkStatus(): Promise<void> {
-    if (PendingStatuses.has(this._dto.status)) {
+    if (pendingStatuses.has(this._dto.status)) {
       await this._checkOriginStatus()
     }
-    if (PendingStatuses.has(this._dto.destination.status)) {
+    if (pendingStatuses.has(this._dto.destination.status)) {
       await this._checkDestinationStatus()
     }
   }
@@ -64,7 +72,12 @@ export abstract class StorableMultichainTx<
     const destination = this._dto.destination
     // if hash not defined wait hash
     if (!destination.hash) {
-      destination.hash = await this._getDestinationTx()
+      const hash = await this._getDestinationTx()
+      if (!hash) {
+        return
+      }
+
+      destination.hash = hash
       this._updateStoreValue()
     }
     if (!isTxCheckInfo(destination)) {

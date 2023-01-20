@@ -5,7 +5,7 @@ import {
   StorageManager,
   TStorageListenerEventInfo,
 } from '@pragma-web-utils/core'
-import { TransactionLike, Payload } from '../types'
+import { Payload, TransactionLike } from '../types'
 
 export class TxService<
   C extends string | number = string | number,
@@ -22,24 +22,32 @@ export class TxService<
     list.forEach((tx) => this._storageManager.addItem(tx))
   }
 
+  getItem(id: string): Tx | undefined {
+    return this._storageManager.getItem(id)
+  }
+
+  hasItem(id: string): boolean {
+    return this._storageManager.hasItem(id)
+  }
+
   remove(id: string): Tx | undefined {
-    return this._storageManager.removeTx(id)
+    return this._storageManager.removeItem(id)
   }
 
   addListener<T extends StorageListenerTypeEnum>(
     type: T,
     onEvent: (info: TStorageListenerEventInfo<T, TransactionLike<C, P>>) => void,
-    filter?: (tx: Tx) => boolean,
+    filter?: (tx: TransactionLike<C, P>) => boolean,
   ): IStorageSubscription {
     return this._storageManager.addListener(
       type,
       (data) =>
         onEvent(
           (type === StorageListenerTypeEnum.ON_LIST_CHANGES
-            ? (data as Tx[]).map((tx) => tx.getDTO())
-            : (data as Tx).getDTO()) as TStorageListenerEventInfo<T, TransactionLike<C, P>>,
+            ? (data as Tx[]).map((tx) => tx.getValue())
+            : (data as Tx).getValue()) as TStorageListenerEventInfo<T, TransactionLike<C, P>>,
         ),
-      filter,
+      filter && ((data) => filter(data.getValue())),
     )
   }
 }

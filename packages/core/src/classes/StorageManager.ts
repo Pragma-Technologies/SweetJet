@@ -1,13 +1,16 @@
 import { StorageListenerTypeEnum } from '../enums'
 import { IStorable, IStorageListener, IStorageSubscription, TStorageListenersInfo } from '../types'
 
-export class StorageManager<D extends IStorable = IStorable> {
+export class StorageManager<T = unknown, D extends IStorable<T> = IStorable<T>> {
   protected _store: Map<string, D> = new Map<string, D>()
-  protected _listeners: TStorageListenersInfo<D> = {
-    [StorageListenerTypeEnum.ON_ADD]: new Set<IStorageListener<StorageListenerTypeEnum.ON_ADD, D>>(),
-    [StorageListenerTypeEnum.ON_UPDATE]: new Set<IStorageListener<StorageListenerTypeEnum.ON_UPDATE, D>>(),
-    [StorageListenerTypeEnum.ON_REMOVE]: new Set<IStorageListener<StorageListenerTypeEnum.ON_REMOVE, D>>(),
-    [StorageListenerTypeEnum.ON_LIST_CHANGES]: new Set<IStorageListener<StorageListenerTypeEnum.ON_LIST_CHANGES, D>>(),
+  // TODO: rollback to TStorageListenersInfo<D>
+  protected _listeners: TStorageListenersInfo<IStorable<T>> = {
+    [StorageListenerTypeEnum.ON_ADD]: new Set<IStorageListener<StorageListenerTypeEnum.ON_ADD, IStorable<T>>>(),
+    [StorageListenerTypeEnum.ON_UPDATE]: new Set<IStorageListener<StorageListenerTypeEnum.ON_UPDATE, IStorable<T>>>(),
+    [StorageListenerTypeEnum.ON_REMOVE]: new Set<IStorageListener<StorageListenerTypeEnum.ON_REMOVE, IStorable<T>>>(),
+    [StorageListenerTypeEnum.ON_LIST_CHANGES]: new Set<
+      IStorageListener<StorageListenerTypeEnum.ON_LIST_CHANGES, IStorable<T>>
+    >(),
   }
 
   constructor(_store: D[] = []) {
@@ -29,45 +32,52 @@ export class StorageManager<D extends IStorable = IStorable> {
 
   addItem(item: D): string | undefined {
     const id = item.getId()
-    if (!this.hasItem(id)) {
+    if (this.hasItem(id)) {
       return undefined
     }
     this._store.set(id, item)
-    this._onAddTx(item)
+    item.addToStorage(this)
+    this._onAddItem(item)
     return id
   }
 
   updateItem(id: string, newItem: D): boolean {
     const oldItem = this.getItem(id)
 
-    if (!!oldItem) {
-      this._store.set(id, newItem)
-      this._onUpdateTx(newItem, oldItem)
-      return true
+    if (!oldItem) {
+      return false
     }
 
-    return false
+    this._store.set(id, newItem)
+    if (newItem !== oldItem) {
+      oldItem.removeFromStorage()
+      newItem.addToStorage(this)
+    }
+    this._onUpdateItem(newItem, oldItem)
+    return true
   }
 
-  removeTx(id: string): D | undefined {
+  removeItem(id: string): D | undefined {
     const removed = this.getItem(id)
 
     if (!!removed) {
       this._store.delete(id)
-      this._onRemoveTx(removed)
+      removed.removeFromStorage()
+      this._onRemoveItem(removed)
       return removed
     }
 
     return undefined
   }
 
-  addListener<T extends StorageListenerTypeEnum>(
-    type: T,
-    onEvent: IStorageListener<T, D>['onEvent'],
-    filter?: IStorageListener<T, D>['filter'],
+  // TODO: rollback IStorable<T> to D
+  addListener<L extends StorageListenerTypeEnum>(
+    type: L,
+    onEvent: IStorageListener<L, IStorable<T>>['onEvent'],
+    filter?: IStorageListener<L, IStorable<T>>['filter'],
   ): IStorageSubscription {
-    const _set = this._listeners[type] as Set<IStorageListener<T, D>>
-    const newListener: IStorageListener<T, D> = {
+    const _set = this._listeners[type] as Set<IStorageListener<L, IStorable<T>>>
+    const newListener: IStorageListener<L, IStorable<T>> = {
       type,
       onEvent,
       filter,
@@ -83,14 +93,14 @@ export class StorageManager<D extends IStorable = IStorable> {
     )
   }
 
-  protected _onAddTx(item: D): void {
+  protected _onAddItem(item: D): void {
     this._listeners[StorageListenerTypeEnum.ON_ADD].forEach(
       (listener) => (!listener.filter || listener.filter(item)) && listener.onEvent(item),
     )
     this._onListChanges()
   }
 
-  protected _onUpdateTx(newValue: D, oldValue: D): void {
+  protected _onUpdateItem(newValue: D, oldValue: D): void {
     this._listeners[StorageListenerTypeEnum.ON_UPDATE].forEach((listener) => {
       const isValid = !listener.filter || listener.filter(newValue) || listener.filter(oldValue)
       isValid && listener.onEvent({ oldValue: oldValue, newValue: newValue })
@@ -98,7 +108,7 @@ export class StorageManager<D extends IStorable = IStorable> {
     this._onListChanges()
   }
 
-  protected _onRemoveTx(item: D): void {
+  protected _onRemoveItem(item: D): void {
     this._listeners[StorageListenerTypeEnum.ON_REMOVE].forEach((listener) => {
       ;(!listener.filter || listener.filter(item)) && listener.onEvent(item)
     })

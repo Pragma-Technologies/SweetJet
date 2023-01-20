@@ -1,3 +1,4 @@
+import { StorageManager } from '../classes'
 import { StorageListenerTypeEnum } from '../enums'
 
 export interface IStorageListener<T extends StorageListenerTypeEnum, S = unknown> {
@@ -36,5 +37,8 @@ export interface IStorage<D = unknown> {
 
 export interface IStorable<T = unknown> {
   getId(): string
-  getDTO(): T
+  getValue(): T
+  // TODO: try another type of communication between store manager and storable
+  addToStorage(storageManager: StorageManager<T>): void
+  removeFromStorage(): void
 }
