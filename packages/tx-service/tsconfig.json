@@ -5,6 +5,7 @@
   ],
   "compilerOptions": {
     "outDir": "./dist",
+    "jsx": "react-jsx",
     "lib": [
       "dom",
       "dom.iterable",
@@ -15,7 +16,6 @@
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
     "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
+    "noEmit": true
   }
 }

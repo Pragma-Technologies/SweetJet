@@ -4,7 +4,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
-    "start": "lerna run start",
+    "start": "yarn build && lerna run start",
     "versions": "lerna version",
     "publish": "lerna publish",
     "test": "lerna run test",

@@ -1,17 +1,15 @@
+import { RequestDelayUtils, wait } from '@pragma-web-utils/core'
+import { pendingStatuses } from '../core'
 import { TransactionStatusEnum } from '../enums'
-import { Transaction, WaitTxStatusOptions } from '../types'
-import { wait } from '../utils'
-import { RequestDelayUtils } from './RequestDelayUtils'
+import { TxCheckInfo, WaitTxStatusOptions } from '../types'
 import { TxStatusChecker } from './TxStatusChecker'
-
-const waitingStatuses = new Set([TransactionStatusEnum.UNKNOWN, TransactionStatusEnum.PENDING])
 
 export class TronTxStatusChecker extends TxStatusChecker {
   constructor(protected _chainId: string | number, protected _grpcUrl: string) {
     super()
   }
 
-  async checkStatus(tx: Transaction): Promise<TransactionStatusEnum> {
+  async checkStatus(tx: TxCheckInfo): Promise<TransactionStatusEnum | undefined> {
     if (tx.chainId !== this._chainId) {
       console.warn('Unsupported chainId for check status of tx:', tx)
       return tx.status
@@ -30,14 +28,14 @@ export class TronTxStatusChecker extends TxStatusChecker {
         case 'REVERT':
           return TransactionStatusEnum.FAILED
         default:
-          return TransactionStatusEnum.UNKNOWN
+          return tx.status ?? TransactionStatusEnum.UNKNOWN
       }
     } catch (e) {
       return TransactionStatusEnum.UNKNOWN
     }
   }
 
-  async waitStatus(tx: Transaction, options?: WaitTxStatusOptions): Promise<TransactionStatusEnum> {
+  async waitStatus(tx: TxCheckInfo, options?: WaitTxStatusOptions): Promise<TransactionStatusEnum | undefined> {
     if (tx.chainId !== this._chainId) {
       console.warn('Unsupported chainId for check status of tx:', tx)
       return tx.status
@@ -45,7 +43,7 @@ export class TronTxStatusChecker extends TxStatusChecker {
     const startTimestamp = Date.now()
     let status = await this.checkStatus(tx)
     let isWaitTransactionTimeoutExpired = !!options?.waitTimeout && Date.now() - startTimestamp < options?.waitTimeout
-    while (waitingStatuses.has(status) && isWaitTransactionTimeoutExpired) {
+    while (pendingStatuses.has(status) && isWaitTransactionTimeoutExpired) {
       await wait(30_000)
       status = await this.checkStatus(tx)
       isWaitTransactionTimeoutExpired = !!options?.waitTimeout && Date.now() - startTimestamp < options?.waitTimeout

@@ -9,9 +9,4 @@ module.exports = {
     '^@pragma-web-utils/(.*)$': '<rootDir>/../$1/src',
   },
   testTimeout: 100000,
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.jest.json',
-    },
-  },
 }
