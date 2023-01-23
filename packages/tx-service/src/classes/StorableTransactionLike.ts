@@ -7,11 +7,11 @@ export class StorableTransactionLike<
   Tx extends TransactionLike<C, P> = TransactionLike<C, P>,
 > implements IStorable<Tx>
 {
-  protected _storageManager?: StorageManager<IStorable<Tx>>
+  protected _storageManager?: StorageManager<this>
 
   constructor(protected _dto: Tx) {}
 
-  addToStorage(storageManager: StorageManager<IStorable<Tx>>): void {
+  addToStorage(storageManager: StorageManager<this>): void {
     this._storageManager = storageManager
   }
 

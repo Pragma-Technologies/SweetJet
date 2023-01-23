@@ -7,6 +7,7 @@ import {
   TStorageListenerEventInfo,
 } from '@pragma-web-utils/core'
 import { TransactionLike } from '../types'
+import { getUnwrapStorageListenerEventInfo } from '../utils'
 
 export class TxService<Tx extends IStorable<TransactionLike> = IStorable<TransactionLike>> {
   protected _storageManager: StorageManager<Tx> = new StorageManager<Tx>([])
@@ -22,7 +23,7 @@ export class TxService<Tx extends IStorable<TransactionLike> = IStorable<Transac
   }
 
   getItem(id: string): Tx | undefined {
-    return this._storageManager.getItem(id)
+    return this._storageManager.getItem(id) as Tx | undefined
   }
 
   hasItem(id: string): boolean {
@@ -40,12 +41,7 @@ export class TxService<Tx extends IStorable<TransactionLike> = IStorable<Transac
   ): IStorageSubscription {
     return this._storageManager.addListener(
       type,
-      (data) =>
-        onEvent(
-          (type === StorageListenerTypeEnum.ON_LIST_CHANGES
-            ? (data as Tx[]).map((tx) => tx.getValue())
-            : (data as Tx).getValue()) as TStorageListenerEventInfo<T, StorableValue<Tx>>,
-        ),
+      (data) => onEvent(getUnwrapStorageListenerEventInfo(type, data)),
       filter && ((data) => filter(data.getValue() as StorableValue<Tx>)),
     )
   }

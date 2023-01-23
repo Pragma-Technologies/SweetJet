@@ -1,8 +1,8 @@
 import { ConnectorBaseEnum, EMPTY_ADDRESS, IStorable, StorageManager } from '@pragma-web-utils/core'
+import { TestTxChecker } from '../utils'
 import { TransactionStatusEnum } from '../enums'
-import { MultichainTxInfo, TransactionLike, TxCheckInfo, WaitTxStatusOptions } from '../types'
+import { MultichainTxInfo, TransactionLike } from '../types'
 import { StorableMultichainTx } from './StorableMultichainTx'
-import { TxStatusChecker } from './TxStatusChecker'
 
 const dto: MultichainTxInfo = {
   account: EMPTY_ADDRESS,
@@ -18,17 +18,7 @@ const dto: MultichainTxInfo = {
 }
 const id = `${dto.base}_${dto.chainId}_${dto.hash}`
 
-class TestTxStatusChecker extends TxStatusChecker {
-  async checkStatus(tx: TxCheckInfo): Promise<TransactionStatusEnum | undefined> {
-    return TransactionStatusEnum.SUCCESS
-  }
-
-  async waitStatus(tx: TxCheckInfo, options?: WaitTxStatusOptions): Promise<TransactionStatusEnum | undefined> {
-    return TransactionStatusEnum.SUCCESS
-  }
-}
-
-const testChecker = new TestTxStatusChecker()
+const testChecker = new TestTxChecker()
 
 describe('StorableMultichainTx', () => {
   it('check id', () => {

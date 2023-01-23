@@ -5,7 +5,7 @@ import { TransactionLike } from '../types'
 
 export const TxServiceContext = React.createContext<unknown>(undefined)
 
-export const useTxService = <T extends IStorable<TransactionLike>>(): TxService<T> => {
+export function useTxService<T extends IStorable<TransactionLike>>(): TxService<T> {
   const contextValue = useContext(TxServiceContext) as TxService<T>
   if (contextValue === undefined || contextValue === null) {
     throw 'Not provided transaction service context'
