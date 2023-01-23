@@ -1,7 +1,7 @@
 import { ConnectorBaseEnum, EMPTY_ADDRESS, StorageListenerTypeEnum } from '@pragma-web-utils/core'
-import { TxStatusChecker } from './TxStatusChecker'
 import { TransactionStatusEnum } from '../enums'
-import { TxCheckInfo, TxInfo, WaitTxStatusOptions } from '../types'
+import { TxInfo } from '../types'
+import { TestTxChecker } from '../utils'
 import { StorableTx } from './StorableTx'
 import { TxService } from './TxService'
 
@@ -38,17 +38,7 @@ const dto3: TxInfo = {
   status: TransactionStatusEnum.UNKNOWN,
 }
 
-class TestTxStatusChecker extends TxStatusChecker {
-  async checkStatus(tx: TxCheckInfo): Promise<TransactionStatusEnum | undefined> {
-    return TransactionStatusEnum.SUCCESS
-  }
-
-  async waitStatus(tx: TxCheckInfo, options?: WaitTxStatusOptions): Promise<TransactionStatusEnum | undefined> {
-    return TransactionStatusEnum.SUCCESS
-  }
-}
-
-const testChecker = new TestTxStatusChecker()
+const testChecker = new TestTxChecker()
 const storable1 = new StorableTx(dto1, testChecker)
 const storable2 = new StorableTx(dto2, testChecker)
 const storable2_1 = new StorableTx(dto2_1, testChecker)
@@ -114,11 +104,9 @@ describe('TxService', () => {
     expect(onListChanges).toHaveBeenCalledWith([storable1.getValue(), storable2.getValue(), storable3.getValue()])
     expect(onListChangesFiltered).toHaveBeenCalledWith([storable2.getValue()])
 
-    const filteredList = txService.getList(
-      (item) => item.getId() === storable1.getId() || item.getValue() === storable2.getValue(),
-    )
+    const filteredList = txService.getList((item) => item.id === storable1.getId() || item === storable2.getValue())
     expect(filteredList.length).toBe(2)
-    expect(filteredList).toEqual([storable1, storable2])
+    expect(filteredList).toEqual([storable1.getValue(), storable2.getValue()])
   })
 
   it('remove item', () => {

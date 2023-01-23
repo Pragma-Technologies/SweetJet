@@ -1,21 +1,21 @@
 import {
   IStorable,
   IStorageSubscription,
+  StorableValue,
   StorageListenerTypeEnum,
   StorageManager,
   TStorageListenerEventInfo,
 } from '@pragma-web-utils/core'
-import { Payload, TransactionLike } from '../types'
+import { TransactionLike } from '../types'
+import { getUnwrapStorageListenerEventInfo } from '../utils'
 
-export class TxService<
-  C extends string | number = string | number,
-  P extends Payload = Payload,
-  Tx extends IStorable<TransactionLike<C, P>> = IStorable<TransactionLike<C, P>>,
-> {
+export class TxService<Tx extends IStorable<TransactionLike> = IStorable<TransactionLike>> {
   protected _storageManager: StorageManager<Tx> = new StorageManager<Tx>([])
 
-  getList(filter?: (tx: Tx) => boolean): Tx[] {
-    return this._storageManager.getStoredList(filter)
+  getList(filter?: (tx: StorableValue<Tx>) => boolean): StorableValue<Tx>[] {
+    return this._storageManager
+      .getStoredList(filter && ((data) => filter(data.getValue() as StorableValue<Tx>)))
+      .map((item) => item.getValue() as StorableValue<Tx>)
   }
 
   add(...list: Tx[]): void {
@@ -23,7 +23,7 @@ export class TxService<
   }
 
   getItem(id: string): Tx | undefined {
-    return this._storageManager.getItem(id)
+    return this._storageManager.getItem(id) as Tx | undefined
   }
 
   hasItem(id: string): boolean {
@@ -36,18 +36,13 @@ export class TxService<
 
   addListener<T extends StorageListenerTypeEnum>(
     type: T,
-    onEvent: (info: TStorageListenerEventInfo<T, TransactionLike<C, P>>) => void,
-    filter?: (tx: TransactionLike<C, P>) => boolean,
+    onEvent: (info: TStorageListenerEventInfo<T, StorableValue<Tx>>) => void,
+    filter?: (tx: StorableValue<Tx>) => boolean,
   ): IStorageSubscription {
     return this._storageManager.addListener(
       type,
-      (data) =>
-        onEvent(
-          (type === StorageListenerTypeEnum.ON_LIST_CHANGES
-            ? (data as Tx[]).map((tx) => tx.getValue())
-            : (data as Tx).getValue()) as TStorageListenerEventInfo<T, TransactionLike<C, P>>,
-        ),
-      filter && ((data) => filter(data.getValue())),
+      (data) => onEvent(getUnwrapStorageListenerEventInfo(type, data)),
+      filter && ((data) => filter(data.getValue() as StorableValue<Tx>)),
     )
   }
 }

@@ -1,4 +1,4 @@
-import { IStorable, StorageManager, wait } from '@pragma-web-utils/core'
+import { StorageManager, wait } from '@pragma-web-utils/core'
 import { pendingStatuses } from '../core'
 import { TransactionStatusEnum } from '../enums'
 import { MultichainTransaction, MultichainTxInfo, Payload } from '../types'
@@ -30,8 +30,6 @@ export class StorableMultichainTx<
   DestinationChain extends string | number = string | number,
   P extends Payload = Payload,
 > extends StorableTransactionLike<OriginChain, P, MultichainTransaction<OriginChain, DestinationChain, P>> {
-  protected _storageManager?: StorageManager<IStorable<MultichainTransaction<OriginChain, DestinationChain, P>>>
-
   constructor(
     _txInfo: MultichainTxInfo<OriginChain, DestinationChain, P>,
     protected _checker: TxStatusChecker,
@@ -43,11 +41,8 @@ export class StorableMultichainTx<
     super(getTxDTO(_txInfo))
   }
 
-  addToStorage(
-    storageManager: StorageManager<IStorable<MultichainTransaction<OriginChain, DestinationChain, P>>>,
-  ): void {
+  addToStorage(storageManager: StorageManager<this>): void {
     super.addToStorage(storageManager)
-
     this._checkStatus()
   }
 

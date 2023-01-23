@@ -1,4 +1,4 @@
-import { IStorable, StorageManager } from '@pragma-web-utils/core'
+import { StorageManager } from '@pragma-web-utils/core'
 import { pendingStatuses } from '../core'
 import { TransactionStatusEnum } from '../enums'
 import { Payload, Transaction, TxInfo } from '../types'
@@ -17,13 +17,11 @@ export class StorableTx<
   C extends string | number = string | number,
   P extends Payload = Payload,
 > extends StorableTransactionLike<C, P, Transaction<C, P>> {
-  protected _storageManager?: StorageManager<IStorable<Transaction<C, P>>>
-
   constructor(_txInfo: TxInfo<C, P>, protected _checker: TxStatusChecker, protected _waitTimeout = 5 * 60 * 1000) {
     super(getTxDTO(_txInfo))
   }
 
-  addToStorage(storageManager: StorageManager<IStorable<Transaction<C, P>>>): void {
+  addToStorage(storageManager: StorageManager<this>): void {
     super.addToStorage(storageManager)
     this._checkStatus()
   }

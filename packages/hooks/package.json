@@ -16,12 +16,16 @@
   "exports": "./dist/index.js",
   "scripts": {
     "prebuild": "rm -rf dist",
-    "build": "tsc",
+    "build": "tsc --build tsconfig.build.json",
     "start": "tsc --watch",
     "test": "jest"
   },
   "dependencies": {
-    "my-package": "^0.0.0",
+    "my-package": "^0.0.0"
+  },
+  "devDependencies": {
+    "@pragma-web-utils/core": "^0.0.11",
+    "@testing-library/react-hooks": "^8.0.1",
     "ts-jest": "26.5.6"
   },
   "peerDependencies": {
@@ -39,9 +43,5 @@
   "bugs": {
     "url": "https://github.com/Pragma-Technologies/pragma-web-utils/issues"
   },
-  "homepage": "https://github.com/Pragma-Technologies/pragma-web-utils#readme",
-  "devDependencies": {
-    "@pragma-web-utils/core": "^0.0.11",
-    "@testing-library/react-hooks": "^8.0.1"
-  }
+  "homepage": "https://github.com/Pragma-Technologies/pragma-web-utils#readme"
 }

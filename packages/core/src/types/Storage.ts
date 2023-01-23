@@ -35,10 +35,12 @@ export interface IStorage<D = unknown> {
   removeItem: (id: string) => D | undefined
 }
 
-export interface IStorable<T = unknown> {
+export interface IStorable<T = any> {
   getId(): string
   getValue(): T
   // TODO: try another type of communication between store manager and storable
-  addToStorage(storageManager: StorageManager<T>): void
+  addToStorage(storageManager: StorageManager<IStorable<T>>): void
   removeFromStorage(): void
 }
+
+export type StorableValue<T extends IStorable> = T extends IStorable<infer I> ? I : never

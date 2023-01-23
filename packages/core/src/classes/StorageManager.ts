@@ -1,16 +1,13 @@
 import { StorageListenerTypeEnum } from '../enums'
-import { IStorable, IStorageListener, IStorageSubscription, TStorageListenersInfo } from '../types'
+import { IStorable, IStorageListener, IStorageSubscription, StorableValue, TStorageListenersInfo } from '../types'
 
-export class StorageManager<T = unknown, D extends IStorable<T> = IStorable<T>> {
-  protected _store: Map<string, D> = new Map<string, D>()
-  // TODO: rollback to TStorageListenersInfo<D>
-  protected _listeners: TStorageListenersInfo<IStorable<T>> = {
-    [StorageListenerTypeEnum.ON_ADD]: new Set<IStorageListener<StorageListenerTypeEnum.ON_ADD, IStorable<T>>>(),
-    [StorageListenerTypeEnum.ON_UPDATE]: new Set<IStorageListener<StorageListenerTypeEnum.ON_UPDATE, IStorable<T>>>(),
-    [StorageListenerTypeEnum.ON_REMOVE]: new Set<IStorageListener<StorageListenerTypeEnum.ON_REMOVE, IStorable<T>>>(),
-    [StorageListenerTypeEnum.ON_LIST_CHANGES]: new Set<
-      IStorageListener<StorageListenerTypeEnum.ON_LIST_CHANGES, IStorable<T>>
-    >(),
+export class StorageManager<D extends IStorable> {
+  protected _store: Map<string, IStorable> = new Map<string, IStorable>()
+  protected _listeners: TStorageListenersInfo<IStorable<StorableValue<D>>> = {
+    [StorageListenerTypeEnum.ON_ADD]: new Set(),
+    [StorageListenerTypeEnum.ON_UPDATE]: new Set(),
+    [StorageListenerTypeEnum.ON_REMOVE]: new Set(),
+    [StorageListenerTypeEnum.ON_LIST_CHANGES]: new Set(),
   }
 
   constructor(_store: D[] = []) {
@@ -19,11 +16,11 @@ export class StorageManager<T = unknown, D extends IStorable<T> = IStorable<T>> 
 
   getStoredList(filter?: (item: D) => boolean): D[] {
     const items = [...this._store.values()]
-    return filter ? items.filter(filter) : items
+    return (filter ? items.filter((item) => filter(item as D)) : items) as D[]
   }
 
   getItem(id: string): D | undefined {
-    return this._store.get(id)
+    return this._store.get(id) as D | undefined
   }
 
   hasItem(id: string): boolean {
@@ -70,14 +67,13 @@ export class StorageManager<T = unknown, D extends IStorable<T> = IStorable<T>> 
     return undefined
   }
 
-  // TODO: rollback IStorable<T> to D
   addListener<L extends StorageListenerTypeEnum>(
     type: L,
-    onEvent: IStorageListener<L, IStorable<T>>['onEvent'],
-    filter?: IStorageListener<L, IStorable<T>>['filter'],
+    onEvent: IStorageListener<L, IStorable<StorableValue<D>>>['onEvent'],
+    filter?: IStorageListener<L, IStorable<StorableValue<D>>>['filter'],
   ): IStorageSubscription {
-    const _set = this._listeners[type] as Set<IStorageListener<L, IStorable<T>>>
-    const newListener: IStorageListener<L, IStorable<T>> = {
+    const _set = this._listeners[type] as Set<IStorageListener<L, IStorable<StorableValue<D>>>>
+    const newListener: IStorageListener<L, IStorable<StorableValue<D>>> = {
       type,
       onEvent,
       filter,
