@@ -13,6 +13,6 @@ export function useTxService<T extends IStorable<TransactionLike>>(): TxService<
   return contextValue as TxService<T>
 }
 
-const TxServiceProvider: FC<{ txService: TxService }> = ({ children, txService }) => {
+export const TxServiceProvider: FC<{ txService: TxService }> = ({ children, txService }) => {
   return <TxServiceContext.Provider value={txService}>{children}</TxServiceContext.Provider>
 }

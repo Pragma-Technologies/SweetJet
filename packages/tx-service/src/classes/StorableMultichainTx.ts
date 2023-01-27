@@ -47,10 +47,10 @@ export class StorableMultichainTx<
   }
 
   protected async _checkStatus(): Promise<void> {
-    if (pendingStatuses.has(this._dto.status)) {
+    if (this._storageManager?.getItem(this._dto.id) === this && pendingStatuses.has(this._dto.status)) {
       await this._checkOriginStatus()
     }
-    if (pendingStatuses.has(this._dto.destination.status)) {
+    if (this._storageManager?.getItem(this._dto.id) === this && pendingStatuses.has(this._dto.destination.status)) {
       await this._checkDestinationStatus()
     }
   }
@@ -58,8 +58,9 @@ export class StorableMultichainTx<
   protected async _checkOriginStatus(): Promise<void> {
     const status = await this._checker.waitStatus(this._dto, { waitTimeout: this._waitTimeout })
     if (!!status && status !== this._dto.status) {
-      this._dto.status = status ?? this._dto.status
-      this._updateStoreValue()
+      this._updateStoreValue(
+        new StorableMultichainTx({ ...this._dto, status }, this._checker, this._getDestinationHash, this._waitTimeout),
+      )
     }
   }
 
@@ -72,16 +73,36 @@ export class StorableMultichainTx<
         return
       }
 
-      destination.hash = hash
-      this._updateStoreValue()
+      this._updateStoreValue(
+        new StorableMultichainTx(
+          {
+            ...this._dto,
+            destination: { ...this._dto.destination, hash },
+          },
+          this._checker,
+          this._getDestinationHash,
+          this._waitTimeout,
+        ),
+      )
+      return
     }
+
     if (!isTxCheckInfo(destination)) {
       return
     }
     const status = await this._checker.waitStatus(destination, { waitTimeout: this._waitTimeout })
     if (!!status && status !== this._dto.destination.status) {
-      this._dto.destination.status = status ?? this._dto.destination.status
-      this._updateStoreValue()
+      this._updateStoreValue(
+        new StorableMultichainTx(
+          {
+            ...this._dto,
+            destination: { ...this._dto.destination, status },
+          },
+          this._checker,
+          this._getDestinationHash,
+          this._waitTimeout,
+        ),
+      )
     }
   }
 

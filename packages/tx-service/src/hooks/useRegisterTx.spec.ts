@@ -68,7 +68,7 @@ describe('register Tx by hook', () => {
     expect(resultTx.payload).toEqual({ action: 'test' })
     expect(resultTx.base).toEqual(ConnectorBaseEnum.EVM)
     expect(resultTx.hash).toEqual('testHash')
-    expect(resultTx.destination.hash).toEqual('testDestinationHash')
+    expect(resultTx.destination.hash).toEqual(undefined)
     expect(resultTx.destination.chainId).toEqual(2)
     expect(resultTx.destination.base).toEqual(ConnectorBaseEnum.EVM)
 
