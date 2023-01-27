@@ -33,8 +33,7 @@ export class StorableTx<
 
     const status = await this._checker.waitStatus(this._dto, { waitTimeout: this._waitTimeout })
     if (!!status && status !== this._dto.status) {
-      this._dto.status = status ?? this._dto.status
-      this._updateStoreValue()
+      this._updateStoreValue(new StorableTx({ ...this._dto, status }, this._checker, this._waitTimeout))
     }
   }
 }

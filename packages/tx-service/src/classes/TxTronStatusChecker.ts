@@ -1,7 +1,8 @@
-import { RequestDelayUtils, wait } from '@pragma-web-utils/core'
+import { wait } from '@pragma-web-utils/core'
 import { pendingStatuses } from '../core'
 import { TransactionStatusEnum } from '../enums'
 import { TxCheckInfo, WaitTxStatusOptions } from '../types'
+import { getTxStatus } from '../utils'
 import { TxStatusChecker } from './TxStatusChecker'
 
 export class TronTxStatusChecker extends TxStatusChecker {
@@ -16,20 +17,7 @@ export class TronTxStatusChecker extends TxStatusChecker {
     }
 
     try {
-      const body = JSON.stringify({ value: tx.hash })
-      await RequestDelayUtils.addDelay()
-      const response = await fetch(`${this._grpcUrl}walletsolidity/gettransactionbyid`, { method: 'POST', body })
-
-      const res = await response.json()
-      const status = res?.ret && res.ret[0]?.contractRet
-      switch (status) {
-        case 'SUCCESS':
-          return TransactionStatusEnum.SUCCESS
-        case 'REVERT':
-          return TransactionStatusEnum.FAILED
-        default:
-          return tx.status ?? TransactionStatusEnum.UNKNOWN
-      }
+      return (await getTxStatus(this._grpcUrl, tx.hash)) ?? tx.status ?? TransactionStatusEnum.UNKNOWN
     } catch (e) {
       return TransactionStatusEnum.UNKNOWN
     }

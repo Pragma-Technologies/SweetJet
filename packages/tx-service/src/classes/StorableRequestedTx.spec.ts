@@ -10,7 +10,9 @@ const dto: RequestedTransaction = {
   payload: { action: 'test' },
   base: ConnectorBaseEnum.EVM,
 }
+
 jest.spyOn(Date, 'now').mockImplementation(() => 0)
+
 describe('StorableRequestedTx', () => {
   it('check id', () => {
     const storable = new StorableRequestedTx(dto)
