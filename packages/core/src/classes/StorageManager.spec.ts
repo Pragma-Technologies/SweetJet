@@ -5,7 +5,7 @@ import { StorageManager } from './StorageManager'
 const getStorable = (
   id: string,
   value: string,
-  onAdd: (storageManager: StorageManager<string>) => void,
+  onAdd: (storageManager: StorageManager<IStorable<string>>) => void,
   onRemove: () => void,
 ): IStorable<string> => {
   return {
@@ -15,7 +15,7 @@ const getStorable = (
     getValue(): string {
       return value
     },
-    addToStorage(storageManager: StorageManager<string>) {
+    addToStorage(storageManager: StorageManager<IStorable<string>>) {
       onAdd(storageManager)
     },
     removeFromStorage() {
@@ -44,7 +44,7 @@ describe('StorageManager', () => {
     const storable2_1 = getStorable(id2, value1, onAddToStorage, onRemoveFromStorage)
     const storable3 = getStorable(id3, value3, onAddToStorage, onRemoveFromStorage)
     const initValues = [storable1, storable2]
-    const storageManager = new StorageManager<string>(initValues)
+    const storageManager = new StorageManager<IStorable<string>>(initValues)
 
     storageManager.addListener(StorageListenerTypeEnum.ON_ADD, onAdd)
     storageManager.addListener(StorageListenerTypeEnum.ON_LIST_CHANGES, onListChanges)
@@ -117,7 +117,7 @@ describe('StorageManager', () => {
     const storable1 = getStorable(id1, value1, onAddToStorage, onRemoveFromStorage)
     const storable2 = getStorable(id2, value2, onAddToStorage, onRemoveFromStorage)
     const initValues = [storable1, storable2]
-    const storageManager = new StorageManager<string>(initValues)
+    const storageManager = new StorageManager<IStorable<string>>(initValues)
 
     storageManager.addListener(StorageListenerTypeEnum.ON_REMOVE, onRemove)
     storageManager.addListener(StorageListenerTypeEnum.ON_LIST_CHANGES, onListChanges)
@@ -189,7 +189,7 @@ describe('StorageManager', () => {
     const storable2 = getStorable(id2, value2, onAddToStorage, onRemoveFromStorage)
     const storable2_1 = getStorable(id2, value1, onAddToStorage, onRemoveFromStorage)
     const initValues = [storable1, storable2]
-    const storageManager = new StorageManager<string>(initValues)
+    const storageManager = new StorageManager<IStorable<string>>(initValues)
 
     storageManager.addListener(StorageListenerTypeEnum.ON_UPDATE, onUpdate)
     storageManager.addListener(StorageListenerTypeEnum.ON_LIST_CHANGES, onListChanges)

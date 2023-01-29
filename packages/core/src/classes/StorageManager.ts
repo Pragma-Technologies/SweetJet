@@ -41,15 +41,16 @@ export class StorageManager<D extends IStorable> {
   updateItem(id: string, newItem: D): boolean {
     const oldItem = this.getItem(id)
 
-    if (!oldItem) {
+    // if item by id not exist or this is same item reference, don't update
+    if (!oldItem || newItem === oldItem) {
       return false
     }
 
     this._store.set(id, newItem)
-    if (newItem !== oldItem) {
-      oldItem.removeFromStorage()
-      newItem.addToStorage(this)
-    }
+
+    oldItem.removeFromStorage()
+    newItem.addToStorage(this)
+
     this._onUpdateItem(newItem, oldItem)
     return true
   }

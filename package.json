@@ -6,7 +6,7 @@
     "build": "lerna run build",
     "start": "yarn build && lerna run start",
     "versions": "lerna version",
-    "publish": "lerna publish",
+    "publish": "yarn build && lerna run test && lerna publish",
     "test": "lerna run test",
     "lint": "eslint ./ --fix"
   },
