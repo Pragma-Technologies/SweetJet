@@ -6,7 +6,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.12",
+  "version": "0.0.13",
   "files": [
     "dist/*"
   ],
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@pragma-web-utils/contract-utils": "^0.0.6",
-    "@pragma-web-utils/core": "^0.0.12"
+    "@pragma-web-utils/core": "^0.0.13"
   },
   "peerDependencies": {
     "ethereum-checksum-address": "^0.0.8",
@@ -40,10 +40,10 @@
     "ethereum-checksum-address": "^0.0.8",
     "ethers": "^5.4.1",
     "moment": "^2.29.1",
-    "whatwg-fetch": "^3.6.2",
     "styled-breakpoints": "^11.1.0",
     "tron-format-address": "^0.1.8",
-    "ts-jest": "26.5.6"
+    "ts-jest": "26.5.6",
+    "whatwg-fetch": "^3.6.2"
   },
   "description": "core utils",
   "repository": {
