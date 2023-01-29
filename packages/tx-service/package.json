@@ -40,6 +40,7 @@
     "ethereum-checksum-address": "^0.0.8",
     "ethers": "^5.4.1",
     "moment": "^2.29.1",
+    "whatwg-fetch": "^3.6.2",
     "styled-breakpoints": "^11.1.0",
     "tron-format-address": "^0.1.8",
     "ts-jest": "26.5.6"

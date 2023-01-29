@@ -9,4 +9,5 @@ module.exports = {
     '^@pragma-web-utils/(.*)$': '<rootDir>/../$1/src',
   },
   testTimeout: 100000,
+  setupFilesAfterEnv: ['./jest.setup.js'],
 }
