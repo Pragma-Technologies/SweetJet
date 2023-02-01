@@ -29,7 +29,7 @@ function getCurrencyBalanceId(currency: CurrencyBalanceSetup, account: string): 
 }
 
 export class CurrencyService {
-  protected _scInterface = new ethers.utils.Interface(abiERC20)
+  protected _scInterface = new ethers.utils.Interface(abiERC20.abi)
   protected _storage: CurrencyStorage = {
     currencyInfoMap: new Map<CurrencyId, Readonly<CurrencyInfo>>(),
     balanceInfoMap: new Map<CurrencyBalanceId, BigNumber>(),
