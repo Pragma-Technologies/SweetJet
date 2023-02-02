@@ -14,7 +14,7 @@
     "prebuild": "rm -rf dist",
     "build": "tsc",
     "start": "tsc --watch",
-    "test": "jest --passWithNoTests"
+    "test": "jest"
   },
   "type": "commonjs",
   "types": "./dist/index.d.ts",
@@ -29,6 +29,7 @@
     "web3-core-helpers": "^1.8.1"
   },
   "devDependencies": {
+    "@pragma-web-utils/core": "0.0.14",
     "@coinbase/wallet-sdk": "^3.3.0",
     "@metamask/detect-provider": "^2.0.0",
     "@types/ethereum-checksum-address": "0.0.0",
