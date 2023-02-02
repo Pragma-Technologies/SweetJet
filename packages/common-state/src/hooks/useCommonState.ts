@@ -26,9 +26,10 @@ export function useCommonState<Value, Error = unknown>(initial: Value): CommonSt
     const makeRequest = () => {
       const request = refreshRef.current?.refreshFn ?? getInitial
       const key = refreshRef.current?.requestKey ?? ''
+      const error = refreshRef.current?.onError
       const { makeCancellable, cancel } = createCancelableFactory()
       // wrap to memorization and cancelable (think about providing uniq key of related request to refreshRef)
-      const cancellableRequest = { cancel, cancellablePromise: makeCancellable(memoizedRequest(key, request)) }
+      const cancellableRequest = { cancel, cancellablePromise: makeCancellable(memoizedRequest(key, request)), error }
       addToCancelablePool(key, cancellableRequest)
       return cancellableRequest
     }
@@ -44,13 +45,12 @@ export function useCommonState<Value, Error = unknown>(initial: Value): CommonSt
         }
       } catch (error) {
         if (error !== CANCEL_PROMISE && isMounted()) {
-          setState((prevState) => ({
-            ...prevState,
-            value: initial,
-            isActual: true,
-            isLoading: false,
-            error: error as Error,
-          }))
+          const _error = await cancellable.error
+          setState((prevState) => {
+            const newState = { ...prevState, value: initial, isActual: true, isLoading: false, error: error as Error }
+            _error && _error(error as Error, newState)
+            return newState
+          })
         }
       }
     }
