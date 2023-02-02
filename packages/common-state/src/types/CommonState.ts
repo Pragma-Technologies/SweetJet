@@ -21,13 +21,14 @@ export interface CacheableState<T = unknown, E = unknown> extends State<T, E>, C
 
 export interface HookCommonState<T = unknown, E = unknown> extends State<T, E>, Refreshable, Cacheable<T> {}
 
-export interface StateRefreshOption<T> {
+export interface StateRefreshOption<T, E> {
   refreshFn: () => Promise<T>
+  onError?: (error: E, state: CacheableState<T, E>) => void
   requestKey?: string
 }
 
 export interface CommonState<T = unknown, E = unknown> {
   state: HookCommonState<T, E>
   setState: Dispatch<SetStateAction<State<T, E>>>
-  setRefresh: (params: StateRefreshOption<T>) => void
+  setRefresh: (params: StateRefreshOption<T, E>) => void
 }

@@ -12,7 +12,7 @@ export function useCommonState<Value, Error = unknown>(initial: Value): CommonSt
   const { addToCancelablePool, clearCancelablePool } = useCancelablePool()
   const { memoizedRequest } = useRequestMemo()
   const isMounted = useIsMounted()
-  const refreshRef = useRef<StateRefreshOption<Value>>()
+  const refreshRef = useRef<StateRefreshOption<Value, Error>>()
   const [state, setState] = useState<CacheableState<Value, Error>>({
     value: initial,
     isLoading: false,
