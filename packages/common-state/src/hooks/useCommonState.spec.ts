@@ -4,12 +4,14 @@ import { useCommonState } from './useCommonState'
 
 describe('useCommonState hook', () => {
   let value = 0
+  const error = 'Cath error'
   const incrementCounter = () => value++
   const resetCounter = () => (value = 0)
   const refreshFn = async () => {
     await wait(100)
     return incrementCounter()
   }
+  const onError = () => console.error('Error', error)
 
   // reset counter value before each test case
   beforeEach(resetCounter)
@@ -263,6 +265,58 @@ describe('useCommonState hook', () => {
       refreshFn: async () => {
         throw 'error'
       },
+    })
+    act(() => {
+      result.current.state.softRefresh()
+    })
+
+    expect(result.current.state.value).toBe(0)
+    expect(result.current.state.cached).toBe(0)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(true)
+    expect(result.current.state.error).toBe(undefined)
+
+    await waitForNextUpdate()
+
+    expect(result.current.state.value).toBe(undefined)
+    expect(result.current.state.cached).toBe(0)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(false)
+    expect(result.current.state.error).toBe('error')
+  })
+
+  it('check onError', async () => {
+    const { result, waitForNextUpdate } = renderHook(() => useCommonState<number>())
+
+    expect(result.current.state.value).toBe(undefined)
+    expect(result.current.state.isActual).toBe(false)
+    expect(result.current.state.isLoading).toBe(false)
+    expect(result.current.state.error).toBe(undefined)
+
+    result.current.setRefresh({ refreshFn })
+    act(() => {
+      result.current.state.softRefresh()
+    })
+
+    expect(result.current.state.value).toBe(undefined)
+    expect(result.current.state.cached).toBe(undefined)
+    expect(result.current.state.isActual).toBe(false)
+    expect(result.current.state.isLoading).toBe(true)
+    expect(result.current.state.error).toBe(undefined)
+
+    await waitForNextUpdate()
+
+    expect(result.current.state.value).toBe(0)
+    expect(result.current.state.cached).toBe(0)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(false)
+    expect(result.current.state.error).toBe(undefined)
+
+    result.current.setRefresh({
+      refreshFn: async () => {
+        throw 'error'
+      },
+      onError,
     })
     act(() => {
       result.current.state.softRefresh()
