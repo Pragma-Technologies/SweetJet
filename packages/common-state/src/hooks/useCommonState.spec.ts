@@ -232,7 +232,8 @@ describe('useCommonState hook', () => {
     expect(result.current.state.error).toBe(undefined)
   })
 
-  it('check error', async () => {
+  it('check onError callback', async () => {
+    const mockErrorRequest = jest.fn((error, value) => console.log(error, value))
     const { result, waitForNextUpdate } = renderHook(() => useCommonState<number>())
 
     expect(result.current.state.value).toBe(undefined)
@@ -263,6 +264,7 @@ describe('useCommonState hook', () => {
       refreshFn: async () => {
         throw 'error'
       },
+      onError: mockErrorRequest,
     })
     act(() => {
       result.current.state.softRefresh()
@@ -273,6 +275,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isActual).toBe(true)
     expect(result.current.state.isLoading).toBe(true)
     expect(result.current.state.error).toBe(undefined)
+    expect(mockErrorRequest).toBeCalledTimes(0)
 
     await waitForNextUpdate()
 
@@ -281,5 +284,13 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isActual).toBe(true)
     expect(result.current.state.isLoading).toBe(false)
     expect(result.current.state.error).toBe('error')
+    expect(mockErrorRequest).toBeCalledTimes(1)
+    expect(mockErrorRequest).toHaveBeenCalledWith('error', {
+      isActual: true,
+      isLoading: false,
+      cached: 0,
+      value: undefined,
+      error: 'error',
+    })
   })
 })
