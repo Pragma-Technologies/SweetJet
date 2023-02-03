@@ -11,9 +11,14 @@ describe('useIntervalRefresh hook', () => {
     const { result } = renderHook(() => useIntervalRefresh(SLOW_INTERVAL))
 
     expect(result.current).toBe(0)
-    jest.advanceTimersByTime(SLOW_INTERVAL)
+    jest.advanceTimersByTime(SLOW_INTERVAL - 10)
+    expect(result.current).toBe(0)
+    jest.advanceTimersByTime(10)
+
     expect(result.current).toBe(1)
-    jest.advanceTimersByTime(SLOW_INTERVAL)
+    jest.advanceTimersByTime(SLOW_INTERVAL - 10)
+    expect(result.current).toBe(1)
+    jest.advanceTimersByTime(10)
     expect(result.current).toBe(2)
   })
 
@@ -21,9 +26,14 @@ describe('useIntervalRefresh hook', () => {
     const { result } = renderHook(() => useIntervalRefresh(FAST_INTERVAL))
 
     expect(result.current).toBe(0)
-    jest.advanceTimersByTime(FAST_INTERVAL)
+    jest.advanceTimersByTime(FAST_INTERVAL - 10)
+    expect(result.current).toBe(0)
+    jest.advanceTimersByTime(10)
+
     expect(result.current).toBe(1)
-    jest.advanceTimersByTime(FAST_INTERVAL)
+    jest.advanceTimersByTime(FAST_INTERVAL - 10)
+    expect(result.current).toBe(1)
+    jest.advanceTimersByTime(10)
     expect(result.current).toBe(2)
   })
 
@@ -31,9 +41,14 @@ describe('useIntervalRefresh hook', () => {
     const { result } = renderHook(() => useIntervalRefresh(TIME_REFRESH_INTERVAL))
 
     expect(result.current).toBe(0)
-    jest.advanceTimersByTime(TIME_REFRESH_INTERVAL)
+    jest.advanceTimersByTime(TIME_REFRESH_INTERVAL - 10)
+    expect(result.current).toBe(0)
+    jest.advanceTimersByTime(10)
+
     expect(result.current).toBe(1)
-    jest.advanceTimersByTime(TIME_REFRESH_INTERVAL)
+    jest.advanceTimersByTime(TIME_REFRESH_INTERVAL - 10)
+    expect(result.current).toBe(1)
+    jest.advanceTimersByTime(10)
     expect(result.current).toBe(2)
   })
 })
