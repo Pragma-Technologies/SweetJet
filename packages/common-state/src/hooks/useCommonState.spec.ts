@@ -336,4 +336,58 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isLoading).toBe(false)
     expect(result.current.state.error).toBe('error')
   })
+
+  it('check onError callback', async () => {
+    const mockErrorRequest = jest.fn()
+    const { result, waitForNextUpdate } = renderHook(() => useCommonState<number>())
+
+    expect(result.current.state.value).toBe(undefined)
+    expect(result.current.state.isActual).toBe(false)
+    expect(result.current.state.isLoading).toBe(false)
+    expect(result.current.state.error).toBe(undefined)
+
+    result.current.setRefresh({ refreshFn })
+    act(() => {
+      result.current.state.softRefresh()
+    })
+
+    expect(result.current.state.value).toBe(undefined)
+    expect(result.current.state.cached).toBe(undefined)
+    expect(result.current.state.isActual).toBe(false)
+    expect(result.current.state.isLoading).toBe(true)
+    expect(result.current.state.error).toBe(undefined)
+
+    await waitForNextUpdate()
+
+    expect(result.current.state.value).toBe(0)
+    expect(result.current.state.cached).toBe(0)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(false)
+    expect(result.current.state.error).toBe(undefined)
+
+    result.current.setRefresh({
+      refreshFn: async () => {
+        throw 'error'
+      },
+      onError: mockErrorRequest(),
+    })
+    act(() => {
+      result.current.state.softRefresh()
+    })
+
+    expect(result.current.state.value).toBe(0)
+    expect(result.current.state.cached).toBe(0)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(true)
+    expect(result.current.state.error).toBe(undefined)
+
+    await waitForNextUpdate()
+
+    expect(result.current.state.value).toBe(undefined)
+    expect(result.current.state.cached).toBe(0)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(false)
+    expect(result.current.state.error).toBe('error')
+    expect(mockErrorRequest).toBeCalledTimes(1)
+  })
 })
