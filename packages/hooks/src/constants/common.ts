@@ -1,1 +1,4 @@
 export const CANCEL_PROMISE = 'CANCEL_PROMISE'
+export const TIME_REFRESH_INTERVAL = 1000
+export const FAST_INTERVAL = 30 * 1000
+export const SLOW_INTERVAL = 60 * 1000
