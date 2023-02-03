@@ -13,15 +13,19 @@ const provider: EthereumProvider = {
     // @ts-ignore
     if (!listeners[eventName]) {
       // @ts-ignore
-      listeners[eventName] = (listeners[eventName] ?? []).push(listener)
+      listeners[eventName] = []
     }
+    // @ts-ignore
+    listeners[eventName].push(listener)
   },
   on(eventName, listener) {
     // @ts-ignore
     if (!listeners[eventName]) {
       // @ts-ignore
-      listeners[eventName] = (listeners[eventName] ?? []).push(listener)
+      listeners[eventName] = []
     }
+    // @ts-ignore
+    listeners[eventName].push(listener)
   },
   removeListener(eventName, listener) {
     // @ts-ignore
@@ -41,7 +45,7 @@ const provider: EthereumProvider = {
         const newChainId = params[0].chainId
         if (newChainId !== chainId) {
           chainId = newChainId
-          listeners['chainChanged']?.forEach(() => chainId)
+          listeners['chainChanged']?.forEach((listener) => listener(newChainId))
         }
         return undefined as unknown as T
       default:
@@ -61,8 +65,11 @@ class TestEthereumConnector extends EthereumConnector {
 }
 
 describe('EthereumConnector', () => {
+  beforeEach(() => {
+    chainId = '0x1'
+  })
   it('connect/disconnect', async () => {
-    const connector = new TestEthereumConnector([], 1)
+    const connector = new TestEthereumConnector([], 1, [1, 2])
 
     expect(connector.defaultChainId).toBe(1)
     expect(connector.chainId).toBe(undefined)
@@ -91,9 +98,10 @@ describe('EthereumConnector', () => {
     expect(connector.isActive).toBe(false)
   })
   it('connect provided chain', async () => {
-    const connector = new TestEthereumConnector([], 1)
+    const connector = new TestEthereumConnector([], 1, [1, 2])
 
     const status = await connector.connect(2)
+    await Promise.resolve()
 
     expect(status).toBe(ConnectResultEnum.SUCCESS)
     expect(connector.defaultChainId).toBe(1)
@@ -104,7 +112,7 @@ describe('EthereumConnector', () => {
     expect(connector.isActive).toBe(true)
   })
   it('switch network', async () => {
-    const connector = new TestEthereumConnector([], 1)
+    const connector = new TestEthereumConnector([], 1, [1, 2])
 
     await connector.connect()
 
@@ -115,7 +123,7 @@ describe('EthereumConnector', () => {
     expect(connector.chainId).toBe(2)
   })
   it('setup network', async () => {
-    const connector = new TestEthereumConnector([], 1)
+    const connector = new TestEthereumConnector([], 1, [1, 2])
 
     await connector.connect()
 
