@@ -1,10 +1,36 @@
 import { EMPTY_ADDRESS } from '@pragma-web-utils/core'
 import { TestBaseConnector, TestEthereumConnector } from '../testSuits'
 import { BaseConnector, ConnectResultEnum } from './BaseConnector'
+import { FortmaticConnector } from './FortmaticConnect'
+
+jest.mock('fortmatic')
 
 describe.each<{ name: string; getConnector: () => BaseConnector }>([
   { name: 'TestBaseConnector', getConnector: () => new TestBaseConnector([], 1, [1, 2]) },
   { name: 'TestEthereumConnector', getConnector: () => new TestEthereumConnector([], 1, [1, 2]) },
+  {
+    name: 'FortmaticConnector',
+    getConnector: () =>
+      new FortmaticConnector(
+        [
+          {
+            chainId: 1,
+            rpc: 'rpc',
+            chainName: 'test',
+            nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH' },
+          },
+          {
+            chainId: 2,
+            rpc: 'rpc',
+            chainName: 'test',
+            nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH' },
+          },
+        ],
+        1,
+        [1, 2],
+        '',
+      ),
+  },
 ])(`BaseConnector implementations`, ({ getConnector, name }) => {
   it(`${name}: connect/disconnect`, async () => {
     const connector = getConnector()
