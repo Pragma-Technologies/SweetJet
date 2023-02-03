@@ -23,8 +23,8 @@ export interface HookCommonState<T = unknown, E = unknown> extends State<T, E>, 
 
 export interface StateRefreshOption<T, E> {
   refreshFn: () => Promise<T>
-  onError?: (error: E, state: CacheableState<T, E>) => void
   requestKey?: string
+  onError?: (error: E, state: CacheableState<T, E>) => void
 }
 
 export interface CommonState<T = unknown, E = unknown> {
