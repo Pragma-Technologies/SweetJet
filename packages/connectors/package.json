@@ -24,6 +24,7 @@
     "@coinbase/wallet-sdk": "^3.3.0",
     "@metamask/detect-provider": "^2.0.0",
     "@walletconnect/ethereum-provider": "^1.7.8",
+    "ethereum-checksum-address": "^0.0.8",
     "fortmatic": "^2.4.0",
     "web3-core": "^1.8.1",
     "web3-core-helpers": "^1.8.1"
