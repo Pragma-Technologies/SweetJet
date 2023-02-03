@@ -264,7 +264,7 @@ describe('useCommonState hook', () => {
       refreshFn: async () => {
         throw 'error'
       },
-      onError: () => mockErrorRequest('error', undefined),
+      onError: mockErrorRequest,
     })
     act(() => {
       result.current.state.softRefresh()
@@ -285,6 +285,12 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isLoading).toBe(false)
     expect(result.current.state.error).toBe('error')
     expect(mockErrorRequest).toBeCalledTimes(1)
-    expect(mockErrorRequest).toHaveBeenCalledWith('error', undefined)
+    expect(mockErrorRequest).toHaveBeenCalledWith('error', {
+      isActual: true,
+      isLoading: false,
+      cached: 0,
+      value: undefined,
+      error: 'error',
+    })
   })
 })
