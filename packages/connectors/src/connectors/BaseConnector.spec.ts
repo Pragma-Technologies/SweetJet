@@ -21,6 +21,7 @@ const additionalNetwork: NetworkDetails = {
 const supportedNetworks: NetworkDetails[] = [defaultNetwork, additionalNetwork]
 const activeChainId = supportedNetworks.map(({ chainId }) => chainId)
 
+// TODO: check failed connection try
 describe.each<{ name: string; getConnector: () => BaseConnector }>([
   {
     name: 'TestBaseConnector',
