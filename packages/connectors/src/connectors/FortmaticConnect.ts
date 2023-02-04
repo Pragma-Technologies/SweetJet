@@ -53,9 +53,9 @@ export class FortmaticConnector extends BaseConnector<AbstractProvider | null> {
   async disconnect(): Promise<void> {
     this._chainId = undefined
     this._account = undefined
+    this._provider = null
     this.emitEvent()
     this.completeListeners()
-    this._provider = null
   }
 
   getProvider(): AbstractProvider | null {
@@ -63,8 +63,8 @@ export class FortmaticConnector extends BaseConnector<AbstractProvider | null> {
   }
 
   async setupNetwork(networkDetails: NetworkDetails): Promise<void> {
-    if (!this.supportedNetworks.some((item) => item.chainId === networkDetails.chainId)) {
-      this.supportedNetworks.push(networkDetails)
+    if (!this._supportedNetworks.some((item) => item.chainId === networkDetails.chainId)) {
+      this._supportedNetworks = [...this._supportedNetworks, networkDetails]
     }
     await this.switchNetwork(networkDetails.chainId)
   }
