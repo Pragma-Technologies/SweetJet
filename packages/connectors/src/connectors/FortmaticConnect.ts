@@ -73,6 +73,7 @@ export class FortmaticConnector extends BaseConnector<AbstractProvider | null> {
   async switchNetwork(chainId: number = this.defaultChainId): Promise<void> {
     const otherChainProvider = this._providersMap.get(chainId)
     if (!!otherChainProvider) {
+      this._chainId = chainId
       this._provider = otherChainProvider
       return
     }

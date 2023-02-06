@@ -4,7 +4,14 @@ import { NetworkDetails } from '../types'
 import { BaseConnector, ConnectResultEnum } from './BaseConnector'
 import { FortmaticConnector } from './FortmaticConnect'
 
-jest.mock('fortmatic')
+jest.mock('fortmatic', () => {
+  class FakeFortmatic {
+    getProvider() {
+      return { request: async () => [EMPTY_ADDRESS] }
+    }
+  }
+  return FakeFortmatic
+})
 
 const defaultNetwork: NetworkDetails = {
   chainId: 1,
@@ -21,6 +28,7 @@ const additionalNetwork: NetworkDetails = {
 const supportedNetworks: NetworkDetails[] = [defaultNetwork, additionalNetwork]
 const activeChainId = supportedNetworks.map(({ chainId }) => chainId)
 
+// TODO: check failed connection try
 describe.each<{ name: string; getConnector: () => BaseConnector }>([
   {
     name: 'TestBaseConnector',

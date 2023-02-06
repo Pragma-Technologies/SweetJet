@@ -4,9 +4,10 @@ import { EthereumConnector } from '../connectors'
 import { EthereumListener, EthereumProvider, NetworkDetails } from '../types'
 
 export class TestEthereumConnector extends EthereumConnector {
-  private _testProviderListeners: Record<string | symbol, EthereumListener[]> = {}
-  private _testProviderChainId = '0x1'
-  private _testProvider: EthereumProvider = {
+  public _testProviderListeners: Record<string | symbol, EthereumListener[]> = {}
+  public _testProviderChainId = '0x1'
+  public _testAccount = EMPTY_ADDRESS
+  public _testProvider: EthereumProvider = {
     connected: true,
     once: (eventName: string, listener) => {
       if (!this._testProviderListeners[eventName]) {
@@ -32,7 +33,7 @@ export class TestEthereumConnector extends EthereumConnector {
         case 'eth_chainId':
           return this._testProviderChainId as unknown as T
         case 'eth_requestAccounts':
-          return [EMPTY_ADDRESS] as unknown as T
+          return [this._testAccount] as unknown as T
         case 'wallet_addEthereumChain':
         case 'wallet_switchEthereumChain':
           const newChainId = params[0].chainId
