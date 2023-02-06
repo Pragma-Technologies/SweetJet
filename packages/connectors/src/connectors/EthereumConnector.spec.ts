@@ -1,8 +1,25 @@
 import { EMPTY_ADDRESS } from '@pragma-web-utils/core'
-import { TestEthereumConnector } from '../testSuits'
+import { TestEthereumConnector, TestEthereumProvider } from '../testSuits'
 import { NetworkDetails } from '../types'
 import { ConnectResultEnum } from './BaseConnector'
+import { CoinbaseConnector } from './CoinbaseConnector'
 import { EthereumConnector } from './EthereumConnector'
+import { InjectedConnector } from './InjectedConnector'
+import { MetamaskConnector } from './MetamaskConnector'
+
+let testProvider = new TestEthereumProvider()
+
+jest.mock('@coinbase/wallet-sdk', () => {
+  class FakeCoinbaseWalletSDK {
+    makeWeb3Provider() {
+      return testProvider
+    }
+  }
+
+  return FakeCoinbaseWalletSDK
+})
+
+jest.mock('@metamask/detect-provider', () => async () => testProvider)
 
 const defaultNetwork: NetworkDetails = {
   chainId: 1,
@@ -19,9 +36,104 @@ const additionalNetwork: NetworkDetails = {
 const supportedNetworks: NetworkDetails[] = [defaultNetwork, additionalNetwork]
 const activeChainId = supportedNetworks.map(({ chainId }) => chainId)
 
-describe('EthereumConnector', () => {
-  it('check provider change account', async () => {
-    const connector = new TestEthereumConnector(supportedNetworks, defaultNetwork.chainId, activeChainId)
+interface EthereumConnectorSuit {
+  name: string
+  getConnector: () => EthereumConnector
+  changeAccount: (account: string) => void
+  changeChainId: (chainId: number) => void
+  disconnect: (error?: unknown) => void
+  resetProvider: () => void
+}
+
+describe.each<EthereumConnectorSuit>([
+  {
+    name: 'TestEthereumConnector',
+    getConnector: () =>
+      new TestEthereumConnector(testProvider, supportedNetworks, defaultNetwork.chainId, activeChainId),
+    changeAccount: (account) => {
+      testProvider._testAccount = account
+      testProvider._testProviderListeners['accountsChanged'].forEach((listener) =>
+        listener([testProvider._testAccount]),
+      )
+    },
+    changeChainId: (chainId) => {
+      const newChainId = `0x${chainId.toString(16)}`
+      testProvider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: newChainId }] })
+    },
+    disconnect: (error) => {
+      testProvider._testProviderListeners['disconnect'].forEach((listener) => listener(error))
+    },
+    resetProvider: () => {
+      testProvider = new TestEthereumProvider()
+    },
+  },
+  {
+    name: 'CoinbaseConnector',
+    getConnector: () => new CoinbaseConnector(supportedNetworks, defaultNetwork.chainId, activeChainId, 'testApp'),
+    changeAccount: (account) => {
+      testProvider._testAccount = account
+      testProvider._testProviderListeners['accountsChanged'].forEach((listener) =>
+        listener([testProvider._testAccount]),
+      )
+    },
+    changeChainId: (chainId) => {
+      const newChainId = `0x${chainId.toString(16)}`
+      testProvider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: newChainId }] })
+    },
+    disconnect: (error) => {
+      testProvider._testProviderListeners['disconnect'].forEach((listener) => listener(error))
+    },
+    resetProvider: () => {
+      testProvider = new TestEthereumProvider()
+    },
+  },
+  {
+    name: 'InjectedConnector',
+    getConnector: () => new InjectedConnector(supportedNetworks, defaultNetwork.chainId, activeChainId),
+    changeAccount: (account) => {
+      testProvider._testAccount = account
+      testProvider._testProviderListeners['accountsChanged'].forEach((listener) =>
+        listener([testProvider._testAccount]),
+      )
+    },
+    changeChainId: (chainId) => {
+      const newChainId = `0x${chainId.toString(16)}`
+      testProvider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: newChainId }] })
+    },
+    disconnect: (error) => {
+      testProvider._testProviderListeners['disconnect'].forEach((listener) => listener(error))
+    },
+    resetProvider: () => {
+      testProvider = new TestEthereumProvider()
+    },
+  },
+  {
+    name: 'MetamaskConnector',
+    getConnector: () => new MetamaskConnector(supportedNetworks, defaultNetwork.chainId, activeChainId),
+    changeAccount: (account) => {
+      testProvider._testAccount = account
+      testProvider._testProviderListeners['accountsChanged'].forEach((listener) =>
+        listener([testProvider._testAccount]),
+      )
+    },
+    changeChainId: (chainId) => {
+      const newChainId = `0x${chainId.toString(16)}`
+      testProvider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: newChainId }] })
+    },
+    disconnect: (error) => {
+      testProvider._testProviderListeners['disconnect'].forEach((listener) => listener(error))
+    },
+    resetProvider: () => {
+      testProvider = new TestEthereumProvider()
+    },
+  },
+])('EthereumConnector', ({ name, resetProvider, getConnector, changeChainId, changeAccount, disconnect }) => {
+  beforeEach(() => {
+    resetProvider()
+  })
+
+  it(`${name}: check provider change account`, async () => {
+    const connector = getConnector()
 
     const onNext = jest.fn()
     const onError = jest.fn()
@@ -42,12 +154,12 @@ describe('EthereumConnector', () => {
     expect(onError).toBeCalledTimes(0)
     expect(onComplete).toBeCalledTimes(0)
 
-    connector._testAccount = '0x0000000000000000000000000000000000000001'
-    connector._testProviderListeners['accountsChanged'].forEach((listener) => listener([connector._testAccount]))
+    const newAccount = '0x0000000000000000000000000000000000000001'
+    changeAccount(newAccount)
 
     expect(connector.chainId).toBe(defaultNetwork.chainId)
     expect(onNext).toHaveBeenLastCalledWith({
-      account: '0x0000000000000000000000000000000000000001',
+      account: newAccount,
       chainId: defaultNetwork.chainId,
       isActive: true,
       isActivating: false,
@@ -58,8 +170,8 @@ describe('EthereumConnector', () => {
     expect(onComplete).toBeCalledTimes(0)
     destructor()
   })
-  it('check provider change chainId', async () => {
-    const connector = new TestEthereumConnector(supportedNetworks, defaultNetwork.chainId, activeChainId)
+  it(`${name}: check provider change chainId`, async () => {
+    const connector = getConnector()
 
     const onNext = jest.fn()
     const onError = jest.fn()
@@ -80,9 +192,8 @@ describe('EthereumConnector', () => {
     expect(onError).toBeCalledTimes(0)
     expect(onComplete).toBeCalledTimes(0)
 
-    const provider = connector.getProvider()
-    const newChainId = `0x${additionalNetwork.chainId.toString(16)}`
-    await provider?.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: newChainId }] })
+    const newChainId = additionalNetwork.chainId
+    changeChainId(newChainId)
 
     expect(connector.chainId).toBe(additionalNetwork.chainId)
     expect(onNext).toHaveBeenLastCalledWith({
@@ -97,8 +208,8 @@ describe('EthereumConnector', () => {
     expect(onComplete).toBeCalledTimes(0)
     destructor()
   })
-  it('check provider disconnect by itself', async () => {
-    const connector = new TestEthereumConnector(supportedNetworks, defaultNetwork.chainId, activeChainId)
+  it(`${name}: check provider disconnect by itself`, async () => {
+    const connector = getConnector()
 
     expect(connector.defaultChainId).toBe(defaultNetwork.chainId)
     expect(connector.chainId).toBe(undefined)
@@ -132,11 +243,11 @@ describe('EthereumConnector', () => {
     expect(onError).toBeCalledTimes(0)
     expect(onComplete).toBeCalledTimes(0)
 
-    connector._testProviderListeners['disconnect'].forEach((listener) => listener({ code: 1013 }))
+    disconnect({ code: 1013 })
 
     expect(connector.isConnected).toBe(true)
 
-    connector._testProviderListeners['disconnect'].forEach((listener) => listener())
+    disconnect()
 
     expect(connector.defaultChainId).toBe(defaultNetwork.chainId)
     expect(connector.chainId).toBe(undefined)
