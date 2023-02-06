@@ -4,7 +4,14 @@ import { NetworkDetails } from '../types'
 import { BaseConnector, ConnectResultEnum } from './BaseConnector'
 import { FortmaticConnector } from './FortmaticConnect'
 
-jest.mock('fortmatic')
+jest.mock('fortmatic', () => {
+  class FakeFortmatic {
+    getProvider() {
+      return { request: async () => [EMPTY_ADDRESS] }
+    }
+  }
+  return FakeFortmatic
+})
 
 const defaultNetwork: NetworkDetails = {
   chainId: 1,
