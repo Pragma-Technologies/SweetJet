@@ -1,8 +1,25 @@
 import { EMPTY_ADDRESS } from '@pragma-web-utils/core'
-import { TestBaseConnector, TestEthereumConnector } from '../testSuits'
+import { TestBaseConnector, TestEthereumConnector, TestEthereumProvider } from '../testSuits'
 import { NetworkDetails } from '../types'
 import { BaseConnector, ConnectResultEnum } from './BaseConnector'
+import { CoinbaseConnector } from './CoinbaseConnector'
 import { FortmaticConnector } from './FortmaticConnect'
+import { InjectedConnector } from './InjectedConnector'
+import { MetamaskConnector } from './MetamaskConnector'
+
+let testProvider = new TestEthereumProvider()
+
+jest.mock('@coinbase/wallet-sdk', () => {
+  class FakeCoinbaseWalletSDK {
+    makeWeb3Provider() {
+      return testProvider
+    }
+  }
+
+  return FakeCoinbaseWalletSDK
+})
+
+jest.mock('@metamask/detect-provider', () => async () => testProvider)
 
 jest.mock('fortmatic', () => {
   class FakeFortmatic {
@@ -10,6 +27,7 @@ jest.mock('fortmatic', () => {
       return { request: async () => [EMPTY_ADDRESS] }
     }
   }
+
   return FakeFortmatic
 })
 
@@ -36,7 +54,22 @@ describe.each<{ name: string; getConnector: () => BaseConnector }>([
   },
   {
     name: 'TestEthereumConnector',
-    getConnector: () => new TestEthereumConnector(supportedNetworks, defaultNetwork.chainId, activeChainId),
+    getConnector: () => {
+      const testProvider = new TestEthereumProvider()
+      return new TestEthereumConnector(testProvider, supportedNetworks, defaultNetwork.chainId, activeChainId)
+    },
+  },
+  {
+    name: 'CoinbaseConnector',
+    getConnector: () => new CoinbaseConnector(supportedNetworks, defaultNetwork.chainId, activeChainId, 'testApp'),
+  },
+  {
+    name: 'InjectedConnector',
+    getConnector: () => new InjectedConnector(supportedNetworks, defaultNetwork.chainId, activeChainId),
+  },
+  {
+    name: 'MetamaskConnector',
+    getConnector: () => new MetamaskConnector(supportedNetworks, defaultNetwork.chainId, activeChainId),
   },
   {
     name: 'FortmaticConnector',
@@ -44,6 +77,7 @@ describe.each<{ name: string; getConnector: () => BaseConnector }>([
   },
 ])(`BaseConnector implementations`, ({ getConnector, name }) => {
   beforeEach(() => {
+    testProvider = new TestEthereumProvider()
     jest.resetAllMocks()
   })
   it(`${name}: connect/disconnect`, async () => {
