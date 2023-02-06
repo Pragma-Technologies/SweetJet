@@ -1,7 +1,7 @@
-import { BaseConnector, ConnectResultEnum } from './BaseConnector'
-import { AbstractProvider, NetworkDetails } from '../types'
 import { toChecksumAddress } from 'ethereum-checksum-address'
 import Fortmatic from 'fortmatic'
+import { AbstractProvider, NetworkDetails } from '../types'
+import { BaseConnector, ConnectResultEnum } from './BaseConnector'
 
 export class FortmaticConnector extends BaseConnector<AbstractProvider | null> {
   private _providersMap: Map<number, AbstractProvider> = new Map<number, AbstractProvider>()
@@ -53,17 +53,20 @@ export class FortmaticConnector extends BaseConnector<AbstractProvider | null> {
   async disconnect(): Promise<void> {
     this._chainId = undefined
     this._account = undefined
+    this._provider = null
     this.emitEvent()
     this.completeListeners()
-    this._provider = null
   }
 
   getProvider(): AbstractProvider | null {
     return this._provider
   }
 
-  async setupNetwork(): Promise<void> {
-    // not available
+  async setupNetwork(networkDetails: NetworkDetails): Promise<void> {
+    if (!this._supportedNetworks.some((item) => item.chainId === networkDetails.chainId)) {
+      this._supportedNetworks = [...this._supportedNetworks, networkDetails]
+    }
+    await this.switchNetwork(networkDetails.chainId)
   }
 
   // imitate switching network just initiating new provider

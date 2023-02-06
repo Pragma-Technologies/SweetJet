@@ -1,5 +1,7 @@
 import { EthereumConnector } from './EthereumConnector'
 
 describe('EthereumConnector', () => {
-  // TODO: write test here
+  it('empty', () => {
+    // TODO: write test here
+  })
 })
