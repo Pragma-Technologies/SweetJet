@@ -1,4 +1,5 @@
 import { EMPTY_ADDRESS } from '@pragma-web-utils/core'
+import EthereumProvider from '@walletconnect/ethereum-provider'
 import { TestBaseConnector, TestEthereumConnector, TestEthereumProvider } from '../testSuits'
 import { NetworkDetails } from '../types'
 import { BaseConnector, ConnectResultEnum } from './BaseConnector'
@@ -6,6 +7,7 @@ import { CoinbaseConnector } from './CoinbaseConnector'
 import { FortmaticConnector } from './FortmaticConnect'
 import { InjectedConnector } from './InjectedConnector'
 import { MetamaskConnector } from './MetamaskConnector'
+import { WalletConnectConnector } from './WalletConnectConnector'
 
 let testProvider = new TestEthereumProvider()
 
@@ -29,6 +31,17 @@ jest.mock('fortmatic', () => {
   }
 
   return FakeFortmatic
+})
+
+const originInit = EthereumProvider.init
+jest.spyOn(EthereumProvider, 'init').mockImplementation(async (opts) => {
+  const _testProvider = originInit(opts)
+  return new Proxy(testProvider, {
+    get(target: TestEthereumProvider, prop: string | symbol, receiver: any): any {
+      // @ts-ignore
+      return prop in target ? target[prop] : _testProvider[prop]
+    },
+  }) as unknown as EthereumProvider
 })
 
 const defaultNetwork: NetworkDetails = {
@@ -70,6 +83,14 @@ describe.each<{ name: string; getConnector: () => BaseConnector }>([
   {
     name: 'MetamaskConnector',
     getConnector: () => new MetamaskConnector(supportedNetworks, defaultNetwork.chainId, activeChainId),
+  },
+  {
+    name: 'WalletConnectConnector',
+    getConnector: () =>
+      new WalletConnectConnector(supportedNetworks, defaultNetwork.chainId, {
+        projectId: 'testProjectId',
+        chains: activeChainId,
+      }),
   },
   {
     name: 'FortmaticConnector',

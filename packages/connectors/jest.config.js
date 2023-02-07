@@ -8,5 +8,6 @@ module.exports = {
   moduleNameMapper: {
     '^@pragma-web-utils/(.*)$': '<rootDir>/../$1/src',
   },
+  transformIgnorePatterns: ['/node_modules/@walletconnect'],
   testTimeout: 100000,
 }
