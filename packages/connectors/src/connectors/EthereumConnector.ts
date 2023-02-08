@@ -73,6 +73,9 @@ export abstract class EthereumConnector<T extends EthereumProvider = EthereumPro
   }
 
   async setupNetwork({ chainId, rpc, ...networkDetails }: NetworkDetails): Promise<void> {
+    if (!this._supportedNetworks.some((item) => item.chainId === chainId)) {
+      this._supportedNetworks = [...this._supportedNetworks, { ...networkDetails, chainId, rpc }]
+    }
     const formattedChainId = `0x${chainId.toString(16)}`
     const params = { ...networkDetails, chainId: formattedChainId, rpcUrls: [rpc] }
     await this._provider?.request({ method: 'wallet_addEthereumChain', params: [params] })
