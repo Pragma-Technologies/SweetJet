@@ -1,4 +1,4 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
+/** @type {import("ts-jest/dist/types").InitialOptionsTsJest} */
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
@@ -8,6 +8,9 @@ module.exports = {
   moduleNameMapper: {
     '^@pragma-web-utils/(.*)$': '<rootDir>/../$1/src',
   },
-  transformIgnorePatterns: ['/node_modules/@walletconnect'],
+  transform: {
+    '^.+\\.(j|t)sx?$': 'ts-jest',
+  },
+  transformIgnorePatterns: ['node_modules/(?!' + ['@web3modal'].join('|') + ')'],
   testTimeout: 100000,
 }

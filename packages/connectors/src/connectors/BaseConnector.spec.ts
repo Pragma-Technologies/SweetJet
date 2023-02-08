@@ -1,6 +1,5 @@
 import { EMPTY_ADDRESS } from '@pragma-web-utils/core'
-import EthereumProvider from '@walletconnect/ethereum-provider'
-import { TestBaseConnector, TestEthereumConnector, TestEthereumProvider } from '../testSuits'
+import { TestBaseConnector, TestEthereumConnector, TestEthereumProvider, TestWalletConnectProvider } from '../testSuits'
 import { NetworkDetails } from '../types'
 import { BaseConnector, ConnectResultEnum } from './BaseConnector'
 import { CoinbaseConnector } from './CoinbaseConnector'
@@ -10,6 +9,7 @@ import { MetamaskConnector } from './MetamaskConnector'
 import { WalletConnectConnector } from './WalletConnectConnector'
 
 let testProvider = new TestEthereumProvider()
+let testWalletConnectProvider = new TestWalletConnectProvider()
 
 jest.mock('@coinbase/wallet-sdk', () => {
   class FakeCoinbaseWalletSDK {
@@ -33,15 +33,14 @@ jest.mock('fortmatic', () => {
   return FakeFortmatic
 })
 
-const originInit = EthereumProvider.init
-jest.spyOn(EthereumProvider, 'init').mockImplementation(async (opts) => {
-  const _testProvider = originInit(opts)
-  return new Proxy(testProvider, {
-    get(target: TestEthereumProvider, prop: string | symbol, receiver: any): any {
-      // @ts-ignore
-      return prop in target ? target[prop] : _testProvider[prop]
-    },
-  }) as unknown as EthereumProvider
+jest.mock('@walletconnect/ethereum-provider', () => {
+  class FakeWalletConnect {
+    static init() {
+      return testWalletConnectProvider
+    }
+  }
+
+  return FakeWalletConnect
 })
 
 const defaultNetwork: NetworkDetails = {
@@ -60,10 +59,11 @@ const supportedNetworks: NetworkDetails[] = [defaultNetwork, additionalNetwork]
 const activeChainId = supportedNetworks.map(({ chainId }) => chainId)
 
 // TODO: check failed connection try
-describe.each<{ name: string; getConnector: () => BaseConnector }>([
+describe.each<{ name: string; getConnector: () => BaseConnector; reset: () => void }>([
   {
     name: 'TestBaseConnector',
     getConnector: () => new TestBaseConnector(supportedNetworks, defaultNetwork.chainId, activeChainId),
+    reset: () => (testProvider = new TestEthereumProvider()),
   },
   {
     name: 'TestEthereumConnector',
@@ -71,18 +71,22 @@ describe.each<{ name: string; getConnector: () => BaseConnector }>([
       const testProvider = new TestEthereumProvider()
       return new TestEthereumConnector(testProvider, supportedNetworks, defaultNetwork.chainId, activeChainId)
     },
+    reset: () => (testProvider = new TestEthereumProvider()),
   },
   {
     name: 'CoinbaseConnector',
     getConnector: () => new CoinbaseConnector(supportedNetworks, defaultNetwork.chainId, activeChainId, 'testApp'),
+    reset: () => (testProvider = new TestEthereumProvider()),
   },
   {
     name: 'InjectedConnector',
     getConnector: () => new InjectedConnector(supportedNetworks, defaultNetwork.chainId, activeChainId),
+    reset: () => (testProvider = new TestEthereumProvider()),
   },
   {
     name: 'MetamaskConnector',
     getConnector: () => new MetamaskConnector(supportedNetworks, defaultNetwork.chainId, activeChainId),
+    reset: () => (testProvider = new TestEthereumProvider()),
   },
   {
     name: 'WalletConnectConnector',
@@ -91,14 +95,16 @@ describe.each<{ name: string; getConnector: () => BaseConnector }>([
         projectId: 'testProjectId',
         chains: activeChainId,
       }),
+    reset: () => (testWalletConnectProvider = new TestWalletConnectProvider()),
   },
   {
     name: 'FortmaticConnector',
     getConnector: () => new FortmaticConnector(supportedNetworks, defaultNetwork.chainId, activeChainId, 'fakeApiKey'),
+    reset: () => (testProvider = new TestEthereumProvider()),
   },
-])(`BaseConnector implementations`, ({ getConnector, name }) => {
+])(`BaseConnector implementations`, ({ getConnector, name, reset }) => {
   beforeEach(() => {
-    testProvider = new TestEthereumProvider()
+    reset()
     jest.resetAllMocks()
   })
   it(`${name}: connect/disconnect`, async () => {
