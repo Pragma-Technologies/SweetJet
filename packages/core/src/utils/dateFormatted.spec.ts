@@ -1,5 +1,10 @@
 import { DAY_IN_SECOND, MONTHS_IN_SECOND, YEAR_IN_SECOND } from '../constants'
-import { secondsToMillis, getBaseDate, getDateWithPlurals, getBaseDatePeriod } from './dateFormatted'
+import {
+  secondsToMillis,
+  getDateDetailsInfo,
+  getDateDetailsInfoWithPlurals,
+  getDateDetailsInfoWithPeriod,
+} from './dateFormatted'
 
 const negativeTimePeriodInSec = -10
 const negativeTimePeriodInMillisec = 0
@@ -36,8 +41,8 @@ describe('encodeParams function', () => {
     expect(secondsToMillis(YEAR_IN_SECOND)).toBe(yearInMillisec)
   })
 
-  it('check getBaseDate utils', () => {
-    const date1 = getBaseDate(firstPeriodInSec)
+  it('check getDateDetailsInfo utils', () => {
+    const date1 = getDateDetailsInfo(firstPeriodInSec)
     expect(date1.years).toBe(2)
     expect(date1.months).toBe(6)
     expect(date1.days).toBe(0)
@@ -45,7 +50,7 @@ describe('encodeParams function', () => {
     expect(date1.minutes).toBe(8)
     expect(date1.seconds).toBe(14)
 
-    const date2 = getBaseDate(secondPeriodInSec)
+    const date2 = getDateDetailsInfo(secondPeriodInSec)
     expect(date2.years).toBe(0)
     expect(date2.months).toBe(0)
     expect(date2.days).toBe(20)
@@ -53,7 +58,7 @@ describe('encodeParams function', () => {
     expect(date2.minutes).toBe(1)
     expect(date2.seconds).toBe(34)
 
-    const date3 = getBaseDate(thirdPeriodInSec)
+    const date3 = getDateDetailsInfo(thirdPeriodInSec)
     expect(date3.years).toBe(0)
     expect(date3.months).toBe(0)
     expect(date3.days).toBe(0)
@@ -61,7 +66,7 @@ describe('encodeParams function', () => {
     expect(date3.minutes).toBe(57)
     expect(date3.seconds).toBe(41)
 
-    const date4 = getBaseDate(forthPeriodInSec)
+    const date4 = getDateDetailsInfo(forthPeriodInSec)
     expect(date4.years).toBe(0)
     expect(date4.months).toBe(0)
     expect(date4.days).toBe(0)
@@ -69,7 +74,7 @@ describe('encodeParams function', () => {
     expect(date4.minutes).toBe(9)
     expect(date4.seconds).toBe(0)
 
-    const date5 = getBaseDate(fifthPeriodInSec)
+    const date5 = getDateDetailsInfo(fifthPeriodInSec)
     expect(date5.years).toBe(0)
     expect(date5.months).toBe(0)
     expect(date5.days).toBe(0)
@@ -77,7 +82,7 @@ describe('encodeParams function', () => {
     expect(date5.minutes).toBe(0)
     expect(date5.seconds).toBe(40)
 
-    const negativeDate = getBaseDate(negativePeriodInSec)
+    const negativeDate = getDateDetailsInfo(negativePeriodInSec)
     expect(negativeDate.years).toBe(0)
     expect(negativeDate.months).toBe(0)
     expect(negativeDate.days).toBe(0)
@@ -86,8 +91,8 @@ describe('encodeParams function', () => {
     expect(negativeDate.seconds).toBe(0)
   })
 
-  it('check getBaseDatePeriod utils', () => {
-    const period1 = getBaseDatePeriod(startDate, endDate1)
+  it('check getDateDetailsInfoWithPeriod utils', () => {
+    const period1 = getDateDetailsInfoWithPeriod(startDate, endDate1)
     expect(period1.years).toBe(2)
     expect(period1.months).toBe(6)
     expect(period1.days).toBe(0)
@@ -95,7 +100,7 @@ describe('encodeParams function', () => {
     expect(period1.minutes).toBe(8)
     expect(period1.seconds).toBe(14)
 
-    const period2 = getBaseDatePeriod(startDate, endDate2)
+    const period2 = getDateDetailsInfoWithPeriod(startDate, endDate2)
     expect(period2.years).toBe(0)
     expect(period2.months).toBe(0)
     expect(period2.days).toBe(20)
@@ -103,7 +108,7 @@ describe('encodeParams function', () => {
     expect(period2.minutes).toBe(1)
     expect(period2.seconds).toBe(34)
 
-    const period3 = getBaseDatePeriod(startDate, endDate3)
+    const period3 = getDateDetailsInfoWithPeriod(startDate, endDate3)
     expect(period3.years).toBe(0)
     expect(period3.months).toBe(0)
     expect(period3.days).toBe(0)
@@ -111,7 +116,7 @@ describe('encodeParams function', () => {
     expect(period3.minutes).toBe(57)
     expect(period3.seconds).toBe(41)
 
-    const period4 = getBaseDatePeriod(startDate, endDate4)
+    const period4 = getDateDetailsInfoWithPeriod(startDate, endDate4)
     expect(period4.years).toBe(0)
     expect(period4.months).toBe(0)
     expect(period4.days).toBe(0)
@@ -119,7 +124,7 @@ describe('encodeParams function', () => {
     expect(period4.minutes).toBe(9)
     expect(period4.seconds).toBe(0)
 
-    const period5 = getBaseDatePeriod(startDate, endDate5)
+    const period5 = getDateDetailsInfoWithPeriod(startDate, endDate5)
     expect(period5.years).toBe(0)
     expect(period5.months).toBe(0)
     expect(period5.days).toBe(0)
@@ -127,7 +132,7 @@ describe('encodeParams function', () => {
     expect(period5.minutes).toBe(0)
     expect(period5.seconds).toBe(40)
 
-    const period6 = getBaseDatePeriod(endDate5, startDate)
+    const period6 = getDateDetailsInfoWithPeriod(endDate5, startDate)
     expect(period6.years).toBe(0)
     expect(period6.months).toBe(0)
     expect(period6.days).toBe(0)
@@ -135,7 +140,7 @@ describe('encodeParams function', () => {
     expect(period6.minutes).toBe(0)
     expect(period6.seconds).toBe(0)
 
-    const period7 = getBaseDatePeriod(endDate5, negativeStartDate)
+    const period7 = getDateDetailsInfoWithPeriod(endDate5, negativeStartDate)
     expect(period7.years).toBe(0)
     expect(period7.months).toBe(0)
     expect(period7.days).toBe(0)
@@ -143,7 +148,7 @@ describe('encodeParams function', () => {
     expect(period7.minutes).toBe(0)
     expect(period7.seconds).toBe(0)
 
-    const period8 = getBaseDatePeriod(negativeStartDate, negativeEndDate)
+    const period8 = getDateDetailsInfoWithPeriod(negativeStartDate, negativeEndDate)
     expect(period8.years).toBe(0)
     expect(period8.months).toBe(0)
     expect(period8.days).toBe(0)
@@ -152,9 +157,9 @@ describe('encodeParams function', () => {
     expect(period8.seconds).toBe(0)
   })
 
-  it('check getDateWithPlurals utils', () => {
-    const period1 = getBaseDate(firstPeriodInSec)
-    const dateInfo1 = getDateWithPlurals(period1, plurals)
+  it('check getDateDetailsInfoWithPlurals utils', () => {
+    const period1 = getDateDetailsInfo(firstPeriodInSec)
+    const dateInfo1 = getDateDetailsInfoWithPlurals(period1, plurals)
     expect(dateInfo1.years.count).toBe(2)
     expect(dateInfo1.years.key).toBe('year')
     expect(dateInfo1.months.count).toBe(6)
@@ -168,8 +173,8 @@ describe('encodeParams function', () => {
     expect(dateInfo1.seconds.count).toBe(14)
     expect(dateInfo1.seconds.key).toBe('second')
 
-    const period2 = getBaseDate(secondPeriodInSec)
-    const dateInfo2 = getDateWithPlurals(period2, plurals)
+    const period2 = getDateDetailsInfo(secondPeriodInSec)
+    const dateInfo2 = getDateDetailsInfoWithPlurals(period2, plurals)
     expect(dateInfo2.years.count).toBe(0)
     expect(dateInfo2.years.key).toBe('year')
     expect(dateInfo2.months.count).toBe(0)
@@ -183,8 +188,8 @@ describe('encodeParams function', () => {
     expect(dateInfo2.seconds.count).toBe(34)
     expect(dateInfo2.seconds.key).toBe('second')
 
-    const period3 = getBaseDate(negativePeriodInSec)
-    const dateInfo3 = getDateWithPlurals(period3, plurals)
+    const period3 = getDateDetailsInfo(negativePeriodInSec)
+    const dateInfo3 = getDateDetailsInfoWithPlurals(period3, plurals)
     expect(dateInfo3.years.count).toBe(0)
     expect(dateInfo3.years.key).toBe('year')
     expect(dateInfo3.months.count).toBe(0)

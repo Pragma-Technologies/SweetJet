@@ -5,7 +5,7 @@ export function secondsToMillis(date: number): number {
   return date < 0 ? 0 : date * 1000.0
 }
 
-export function getBaseDate(periodInSec: number): DateWithOutPlurals {
+export function getDateDetailsInfo(periodInSec: number): DateWithOutPlurals {
   if (periodInSec < 0) {
     return { years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 }
   }
@@ -29,15 +29,15 @@ export function getBaseDate(periodInSec: number): DateWithOutPlurals {
   return { years, months, days, hours, minutes, seconds: periodInSec }
 }
 
-export function getBaseDatePeriod(startInSec: number, endInSec: number): DateWithOutPlurals {
+export function getDateDetailsInfoWithPeriod(startInSec: number, endInSec: number): DateWithOutPlurals {
   if (endInSec < 0 || startInSec < 0 || endInSec < startInSec) {
-    return getBaseDate(0)
+    return getDateDetailsInfo(0)
   }
 
-  return getBaseDate(endInSec - startInSec)
+  return getDateDetailsInfo(endInSec - startInSec)
 }
 
-export function getDateWithPlurals(data: DateWithOutPlurals, pluralsKeys: Plurals): DateWithPlurals {
+export function getDateDetailsInfoWithPlurals(data: DateWithOutPlurals, pluralsKeys: Plurals): DateWithPlurals {
   return {
     years: { count: data.years, key: pluralsKeys.year },
     months: { count: data.months, key: pluralsKeys.month },
