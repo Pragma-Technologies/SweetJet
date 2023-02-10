@@ -13,6 +13,10 @@ const zeroInMillisec = 0
 const dayInMillisec = 60 * 60 * 24 * 1000
 const monthsInMillisec = dayInMillisec * 30
 const yearInMillisec = monthsInMillisec * 12
+const fractionalDateInSec1 = 456.987
+const fractionalDateInMillisec1 = 457000
+const fractionalDateInSec2 = 456.34
+const fractionalDateInMillisec2 = 456000
 
 const firstPeriodInSec = 77803694 // 2 years, 6 months, 0 days, 12 hours, 8 minutes and 14 seconds.
 const secondPeriodInSec = 1803694 // 20 days, 21 hours, 1 minutes and 34 seconds.
@@ -46,6 +50,8 @@ describe('encodeParams function', () => {
       { input: DAY_IN_SECOND, output: dayInMillisec },
       { input: MONTHS_IN_SECOND, output: monthsInMillisec },
       { input: YEAR_IN_SECOND, output: yearInMillisec },
+      { input: fractionalDateInSec1, output: fractionalDateInMillisec1 },
+      { input: fractionalDateInSec2, output: fractionalDateInMillisec2 },
     ]
 
     for (let index = 0; index < forTest.length; index++) {
