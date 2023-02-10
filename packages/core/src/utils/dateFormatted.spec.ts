@@ -32,175 +32,228 @@ const endDate5 = 1675949864
 
 const plurals = { year: 'year', month: 'month', day: 'day', hour: 'hour', minute: 'minute', second: 'second' }
 
+const checkFunc = (forTest: { output: string | number; input: number | string }[]) => {
+  for (let index = 0; index < forTest.length; index++) {
+    expect(forTest[index].input).toBe(forTest[index].output)
+  }
+}
+
 describe('encodeParams function', () => {
   it('check secondsToMillis utils', () => {
-    expect(secondsToMillis(negativeTimePeriodInSec)).toBe(negativeTimePeriodInMillisec)
-    expect(secondsToMillis(zeroInSec)).toBe(zeroInMillisec)
-    expect(secondsToMillis(DAY_IN_SECOND)).toBe(dayInMillisec)
-    expect(secondsToMillis(MONTHS_IN_SECOND)).toBe(monthsInMillisec)
-    expect(secondsToMillis(YEAR_IN_SECOND)).toBe(yearInMillisec)
+    const forTest = [
+      { input: negativeTimePeriodInSec, output: negativeTimePeriodInMillisec },
+      { input: zeroInSec, output: zeroInMillisec },
+      { input: DAY_IN_SECOND, output: dayInMillisec },
+      { input: MONTHS_IN_SECOND, output: monthsInMillisec },
+      { input: YEAR_IN_SECOND, output: yearInMillisec },
+    ]
+
+    for (let index = 0; index < forTest.length; index++) {
+      expect(secondsToMillis(forTest[index].input)).toBe(forTest[index].output)
+    }
   })
 
   it('check getDateDetailsInfo utils', () => {
     const date1 = getDateDetailsInfo(firstPeriodInSec)
-    expect(date1.years).toBe(2)
-    expect(date1.months).toBe(6)
-    expect(date1.days).toBe(0)
-    expect(date1.hours).toBe(12)
-    expect(date1.minutes).toBe(8)
-    expect(date1.seconds).toBe(14)
-
     const date2 = getDateDetailsInfo(secondPeriodInSec)
-    expect(date2.years).toBe(0)
-    expect(date2.months).toBe(0)
-    expect(date2.days).toBe(20)
-    expect(date2.hours).toBe(21)
-    expect(date2.minutes).toBe(1)
-    expect(date2.seconds).toBe(34)
+
+    const forTest1 = [
+      { input: date1.years, output: 2 },
+      { input: date1.months, output: 6 },
+      { input: date1.days, output: 0 },
+      { input: date1.hours, output: 12 },
+      { input: date1.minutes, output: 8 },
+      { input: date1.seconds, output: 14 },
+
+      { input: date2.years, output: 0 },
+      { input: date2.months, output: 0 },
+      { input: date2.days, output: 20 },
+      { input: date2.hours, output: 21 },
+      { input: date2.minutes, output: 1 },
+      { input: date2.seconds, output: 34 },
+    ]
+
+    checkFunc(forTest1)
 
     const date3 = getDateDetailsInfo(thirdPeriodInSec)
-    expect(date3.years).toBe(0)
-    expect(date3.months).toBe(0)
-    expect(date3.days).toBe(0)
-    expect(date3.hours).toBe(1)
-    expect(date3.minutes).toBe(57)
-    expect(date3.seconds).toBe(41)
-
     const date4 = getDateDetailsInfo(forthPeriodInSec)
-    expect(date4.years).toBe(0)
-    expect(date4.months).toBe(0)
-    expect(date4.days).toBe(0)
-    expect(date4.hours).toBe(0)
-    expect(date4.minutes).toBe(9)
-    expect(date4.seconds).toBe(0)
+
+    const forTest2 = [
+      { input: date3.years, output: 0 },
+      { input: date3.months, output: 0 },
+      { input: date3.days, output: 0 },
+      { input: date3.hours, output: 1 },
+      { input: date3.minutes, output: 57 },
+      { input: date3.seconds, output: 41 },
+
+      { input: date4.years, output: 0 },
+      { input: date4.months, output: 0 },
+      { input: date4.days, output: 0 },
+      { input: date4.hours, output: 0 },
+      { input: date4.minutes, output: 9 },
+      { input: date4.seconds, output: 0 },
+    ]
+
+    checkFunc(forTest2)
 
     const date5 = getDateDetailsInfo(fifthPeriodInSec)
-    expect(date5.years).toBe(0)
-    expect(date5.months).toBe(0)
-    expect(date5.days).toBe(0)
-    expect(date5.hours).toBe(0)
-    expect(date5.minutes).toBe(0)
-    expect(date5.seconds).toBe(40)
-
     const negativeDate = getDateDetailsInfo(negativePeriodInSec)
-    expect(negativeDate.years).toBe(0)
-    expect(negativeDate.months).toBe(0)
-    expect(negativeDate.days).toBe(0)
-    expect(negativeDate.hours).toBe(0)
-    expect(negativeDate.minutes).toBe(0)
-    expect(negativeDate.seconds).toBe(0)
+
+    const forTest3 = [
+      { input: date5.years, output: 0 },
+      { input: date5.months, output: 0 },
+      { input: date5.days, output: 0 },
+      { input: date5.hours, output: 0 },
+      { input: date5.minutes, output: 0 },
+      { input: date5.seconds, output: 40 },
+
+      { input: negativeDate.years, output: 0 },
+      { input: negativeDate.months, output: 0 },
+      { input: negativeDate.days, output: 0 },
+      { input: negativeDate.hours, output: 0 },
+      { input: negativeDate.minutes, output: 0 },
+      { input: negativeDate.seconds, output: 0 },
+    ]
+
+    checkFunc(forTest3)
   })
 
   it('check getDateDetailsInfoWithPeriod utils', () => {
     const period1 = getDateDetailsInfoWithPeriod(startDate, endDate1)
-    expect(period1.years).toBe(2)
-    expect(period1.months).toBe(6)
-    expect(period1.days).toBe(0)
-    expect(period1.hours).toBe(12)
-    expect(period1.minutes).toBe(8)
-    expect(period1.seconds).toBe(14)
-
     const period2 = getDateDetailsInfoWithPeriod(startDate, endDate2)
-    expect(period2.years).toBe(0)
-    expect(period2.months).toBe(0)
-    expect(period2.days).toBe(20)
-    expect(period2.hours).toBe(21)
-    expect(period2.minutes).toBe(1)
-    expect(period2.seconds).toBe(34)
+
+    const forTest1 = [
+      { input: period1.years, output: 2 },
+      { input: period1.months, output: 6 },
+      { input: period1.days, output: 0 },
+      { input: period1.hours, output: 12 },
+      { input: period1.minutes, output: 8 },
+      { input: period1.seconds, output: 14 },
+
+      { input: period2.years, output: 0 },
+      { input: period2.months, output: 0 },
+      { input: period2.days, output: 20 },
+      { input: period2.hours, output: 21 },
+      { input: period2.minutes, output: 1 },
+      { input: period2.seconds, output: 34 },
+    ]
+    checkFunc(forTest1)
 
     const period3 = getDateDetailsInfoWithPeriod(startDate, endDate3)
-    expect(period3.years).toBe(0)
-    expect(period3.months).toBe(0)
-    expect(period3.days).toBe(0)
-    expect(period3.hours).toBe(1)
-    expect(period3.minutes).toBe(57)
-    expect(period3.seconds).toBe(41)
-
     const period4 = getDateDetailsInfoWithPeriod(startDate, endDate4)
-    expect(period4.years).toBe(0)
-    expect(period4.months).toBe(0)
-    expect(period4.days).toBe(0)
-    expect(period4.hours).toBe(0)
-    expect(period4.minutes).toBe(9)
-    expect(period4.seconds).toBe(0)
+
+    const forTest2 = [
+      { input: period3.years, output: 0 },
+      { input: period3.months, output: 0 },
+      { input: period3.days, output: 0 },
+      { input: period3.hours, output: 1 },
+      { input: period3.minutes, output: 57 },
+      { input: period3.seconds, output: 41 },
+
+      { input: period4.years, output: 0 },
+      { input: period4.months, output: 0 },
+      { input: period4.days, output: 0 },
+      { input: period4.hours, output: 0 },
+      { input: period4.minutes, output: 9 },
+      { input: period4.seconds, output: 0 },
+    ]
+    checkFunc(forTest2)
 
     const period5 = getDateDetailsInfoWithPeriod(startDate, endDate5)
-    expect(period5.years).toBe(0)
-    expect(period5.months).toBe(0)
-    expect(period5.days).toBe(0)
-    expect(period5.hours).toBe(0)
-    expect(period5.minutes).toBe(0)
-    expect(period5.seconds).toBe(40)
-
     const period6 = getDateDetailsInfoWithPeriod(endDate5, startDate)
-    expect(period6.years).toBe(0)
-    expect(period6.months).toBe(0)
-    expect(period6.days).toBe(0)
-    expect(period6.hours).toBe(0)
-    expect(period6.minutes).toBe(0)
-    expect(period6.seconds).toBe(0)
+
+    const forTest3 = [
+      { input: period5.years, output: 0 },
+      { input: period5.months, output: 0 },
+      { input: period5.days, output: 0 },
+      { input: period5.hours, output: 0 },
+      { input: period5.minutes, output: 0 },
+      { input: period5.seconds, output: 40 },
+
+      { input: period6.years, output: 0 },
+      { input: period6.months, output: 0 },
+      { input: period6.days, output: 0 },
+      { input: period6.hours, output: 0 },
+      { input: period6.minutes, output: 0 },
+      { input: period6.seconds, output: 0 },
+    ]
+    checkFunc(forTest3)
 
     const period7 = getDateDetailsInfoWithPeriod(endDate5, negativeStartDate)
-    expect(period7.years).toBe(0)
-    expect(period7.months).toBe(0)
-    expect(period7.days).toBe(0)
-    expect(period7.hours).toBe(0)
-    expect(period7.minutes).toBe(0)
-    expect(period7.seconds).toBe(0)
-
     const period8 = getDateDetailsInfoWithPeriod(negativeStartDate, negativeEndDate)
-    expect(period8.years).toBe(0)
-    expect(period8.months).toBe(0)
-    expect(period8.days).toBe(0)
-    expect(period8.hours).toBe(0)
-    expect(period8.minutes).toBe(0)
-    expect(period8.seconds).toBe(0)
+
+    const forTest4 = [
+      { input: period7.years, output: 0 },
+      { input: period7.months, output: 0 },
+      { input: period7.days, output: 0 },
+      { input: period7.hours, output: 0 },
+      { input: period7.minutes, output: 0 },
+      { input: period7.seconds, output: 0 },
+
+      { input: period8.years, output: 0 },
+      { input: period8.months, output: 0 },
+      { input: period8.days, output: 0 },
+      { input: period8.hours, output: 0 },
+      { input: period8.minutes, output: 0 },
+      { input: period8.seconds, output: 0 },
+    ]
+    checkFunc(forTest4)
   })
 
   it('check getDateDetailsInfoWithPlurals utils', () => {
     const period1 = getDateDetailsInfo(firstPeriodInSec)
     const dateInfo1 = getDateDetailsInfoWithPlurals(period1, plurals)
-    expect(dateInfo1.years.count).toBe(2)
-    expect(dateInfo1.years.key).toBe('year')
-    expect(dateInfo1.months.count).toBe(6)
-    expect(dateInfo1.months.key).toBe('month')
-    expect(dateInfo1.days.count).toBe(0)
-    expect(dateInfo1.days.key).toBe('day')
-    expect(dateInfo1.hours.count).toBe(12)
-    expect(dateInfo1.hours.key).toBe('hour')
-    expect(dateInfo1.minutes.count).toBe(8)
-    expect(dateInfo1.minutes.key).toBe('minute')
-    expect(dateInfo1.seconds.count).toBe(14)
-    expect(dateInfo1.seconds.key).toBe('second')
+
+    const forTest = [
+      { input: dateInfo1.years.count, output: 2 },
+      { input: dateInfo1.years.key, output: 'year' },
+      { input: dateInfo1.months.count, output: 6 },
+      { input: dateInfo1.months.key, output: 'month' },
+      { input: dateInfo1.days.count, output: 0 },
+      { input: dateInfo1.days.key, output: 'day' },
+      { input: dateInfo1.hours.count, output: 12 },
+      { input: dateInfo1.hours.key, output: 'hour' },
+      { input: dateInfo1.minutes.count, output: 8 },
+      { input: dateInfo1.minutes.key, output: 'minute' },
+      { input: dateInfo1.seconds.count, output: 14 },
+      { input: dateInfo1.seconds.key, output: 'second' },
+    ]
+    checkFunc(forTest)
 
     const period2 = getDateDetailsInfo(secondPeriodInSec)
     const dateInfo2 = getDateDetailsInfoWithPlurals(period2, plurals)
-    expect(dateInfo2.years.count).toBe(0)
-    expect(dateInfo2.years.key).toBe('year')
-    expect(dateInfo2.months.count).toBe(0)
-    expect(dateInfo2.months.key).toBe('month')
-    expect(dateInfo2.days.count).toBe(20)
-    expect(dateInfo2.days.key).toBe('day')
-    expect(dateInfo2.hours.count).toBe(21)
-    expect(dateInfo2.hours.key).toBe('hour')
-    expect(dateInfo2.minutes.count).toBe(1)
-    expect(dateInfo2.minutes.key).toBe('minute')
-    expect(dateInfo2.seconds.count).toBe(34)
-    expect(dateInfo2.seconds.key).toBe('second')
+    const forTest1 = [
+      { input: dateInfo2.years.count, output: 0 },
+      { input: dateInfo2.years.key, output: 'year' },
+      { input: dateInfo2.months.count, output: 0 },
+      { input: dateInfo2.months.key, output: 'month' },
+      { input: dateInfo2.days.count, output: 20 },
+      { input: dateInfo2.days.key, output: 'day' },
+      { input: dateInfo2.hours.count, output: 21 },
+      { input: dateInfo2.hours.key, output: 'hour' },
+      { input: dateInfo2.minutes.count, output: 1 },
+      { input: dateInfo2.minutes.key, output: 'minute' },
+      { input: dateInfo2.seconds.count, output: 34 },
+      { input: dateInfo2.seconds.key, output: 'second' },
+    ]
+    checkFunc(forTest1)
 
     const period3 = getDateDetailsInfo(negativePeriodInSec)
     const dateInfo3 = getDateDetailsInfoWithPlurals(period3, plurals)
-    expect(dateInfo3.years.count).toBe(0)
-    expect(dateInfo3.years.key).toBe('year')
-    expect(dateInfo3.months.count).toBe(0)
-    expect(dateInfo3.months.key).toBe('month')
-    expect(dateInfo3.days.count).toBe(0)
-    expect(dateInfo3.days.key).toBe('day')
-    expect(dateInfo3.hours.count).toBe(0)
-    expect(dateInfo3.hours.key).toBe('hour')
-    expect(dateInfo3.minutes.count).toBe(0)
-    expect(dateInfo3.minutes.key).toBe('minute')
-    expect(dateInfo3.seconds.count).toBe(0)
-    expect(dateInfo3.seconds.key).toBe('second')
+    const forTest2 = [
+      { input: dateInfo3.years.count, output: 0 },
+      { input: dateInfo3.years.key, output: 'year' },
+      { input: dateInfo3.months.count, output: 0 },
+      { input: dateInfo3.months.key, output: 'month' },
+      { input: dateInfo3.days.count, output: 0 },
+      { input: dateInfo3.days.key, output: 'day' },
+      { input: dateInfo3.hours.count, output: 0 },
+      { input: dateInfo3.hours.key, output: 'hour' },
+      { input: dateInfo3.minutes.count, output: 0 },
+      { input: dateInfo3.minutes.key, output: 'minute' },
+      { input: dateInfo3.seconds.count, output: 0 },
+      { input: dateInfo3.seconds.key, output: 'second' },
+    ]
+    checkFunc(forTest2)
   })
 })
