@@ -2,7 +2,7 @@ import { DAY_IN_SECOND, MONTHS_IN_SECOND, YEAR_IN_SECOND } from '../constants'
 import { DateWithOutPlurals, DateWithPlurals, Plurals } from '../types'
 
 export function secondsToMillis(date: number): number {
-  return date < 0 ? 0 : Math.round(date) * 1000.0
+  return date < 0 ? 0 : Math.floor(date) * 1000.0
 }
 
 export function getDateDetailsInfo(periodInSec: number): DateWithOutPlurals {
