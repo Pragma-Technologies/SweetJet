@@ -10,7 +10,7 @@ export const useMapCommonState = <T, K, E>(
     () => ({
       ...state,
       value: mapper(state.value),
-      cached: state.cached && mapper(state.cached),
+      cached: mapper(state.cached),
     }),
     [state, additionalDepsKey],
   )
