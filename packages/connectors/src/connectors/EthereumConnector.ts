@@ -1,6 +1,6 @@
-import { BaseConnector, ConnectResultEnum } from './BaseConnector'
-import { EthereumListener, EthereumProvider, NetworkDetails } from '../types'
 import { toChecksumAddress } from 'ethereum-checksum-address'
+import { EthereumListener, EthereumProvider, NetworkDetails } from '../types'
+import { BaseConnector, ConnectResultEnum } from './BaseConnector'
 
 // for connectors that extends ethereum as provider
 export abstract class EthereumConnector<T extends EthereumProvider = EthereumProvider> extends BaseConnector<T | null> {
@@ -14,7 +14,12 @@ export abstract class EthereumConnector<T extends EthereumProvider = EthereumPro
       return ConnectResultEnum.ALREADY_CONNECTED
     }
 
-    this._provider = await this.getEthereumProvider()
+    try {
+      this._provider = await this.getEthereumProvider()
+    } catch (e) {
+      console.warn('Not found ethereum provider', e)
+      return ConnectResultEnum.FAIL
+    }
     if (!this._provider) {
       return ConnectResultEnum.FAIL
     }
