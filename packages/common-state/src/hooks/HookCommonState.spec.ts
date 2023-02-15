@@ -1,4 +1,4 @@
-import { wait } from '@pragma-web-utils/core'
+import { Destructor } from '@pragma-web-utils/hooks'
 import { act, renderHook } from '@testing-library/react-hooks'
 import { useEffect } from 'react'
 import { TestIncrementor } from '../testUtils'
@@ -75,7 +75,9 @@ describe.each<CommonStateTestUtil>([
     reset: async () => {
       testIncrementor.refresh()
       testIncrementor2.refresh()
-      await testIncrementor2.increment()
+      testIncrementor2.increment()
+      jest.runAllTimers()
+      await Promise.resolve()
     },
     expectedInitValue: [undefined, undefined],
     expectedValues: [
@@ -103,7 +105,9 @@ describe.each<CommonStateTestUtil>([
     reset: async () => {
       testIncrementor.refresh()
       testIncrementor2.refresh()
-      await testIncrementor2.increment()
+      testIncrementor2.increment()
+      jest.runAllTimers()
+      await Promise.resolve()
     },
     expectedInitValue: undefined,
     expectedValues: [1, 3],
@@ -143,6 +147,9 @@ describe.each<CommonStateTestUtil>([
     expectedValueOnError,
     expectedCacheOnError,
   }) => {
+    beforeEach(() => {
+      jest.useFakeTimers()
+    })
     // reset counter value before each test case
     beforeEach(async () => await reset())
 
@@ -165,6 +172,7 @@ describe.each<CommonStateTestUtil>([
       expect(result.current.isLoading).toBe(true)
       expect(result.current.error).toBe(undefined)
 
+      jest.runAllTimers()
       await waitForNextUpdate()
 
       expect(result.current.value).toEqual(expectedValues[0])
@@ -183,13 +191,13 @@ describe.each<CommonStateTestUtil>([
       expect(result.current.isLoading).toBe(true)
       expect(result.current.error).toBe(undefined)
 
-      await wait(10)
+      jest.advanceTimersByTime(10)
 
       act(() => {
         result.current.softRefresh()
       })
 
-      await wait(10)
+      jest.advanceTimersByTime(10)
 
       act(() => {
         result.current.softRefresh()
@@ -201,6 +209,7 @@ describe.each<CommonStateTestUtil>([
       expect(result.current.isLoading).toBe(true)
       expect(result.current.error).toBe(undefined)
 
+      jest.runAllTimers()
       await waitForNextUpdate()
 
       expect(result.current.value).toEqual(expectedValues[1])
@@ -229,6 +238,7 @@ describe.each<CommonStateTestUtil>([
       expect(result.current.isLoading).toBe(true)
       expect(result.current.error).toBe(undefined)
 
+      jest.runAllTimers()
       await waitForNextUpdate()
 
       expect(result.current.value).toEqual(expectedValues[0])
@@ -247,13 +257,13 @@ describe.each<CommonStateTestUtil>([
       expect(result.current.isLoading).toBe(true)
       expect(result.current.error).toBe(undefined)
 
-      await wait(10)
+      jest.advanceTimersByTime(10)
 
       act(() => {
         result.current.hardRefresh()
       })
 
-      await wait(10)
+      jest.advanceTimersByTime(10)
 
       act(() => {
         result.current.hardRefresh()
@@ -265,6 +275,7 @@ describe.each<CommonStateTestUtil>([
       expect(result.current.isLoading).toBe(true)
       expect(result.current.error).toBe(undefined)
 
+      jest.runAllTimers()
       await waitForNextUpdate()
 
       expect(result.current.value).toEqual(expectedValues[1])
@@ -274,6 +285,43 @@ describe.each<CommonStateTestUtil>([
       expect(result.current.error).toBe(undefined)
     })
 
+    it(`${utilName}: check cancel refresh`, async () => {
+      const { result, waitForNextUpdate } = renderHook(() => initHook())
+
+      act(() => {
+        result.current.softRefresh()
+      })
+
+      jest.runAllTimers()
+      await waitForNextUpdate()
+
+      expect(result.current.value).toEqual(expectedValues[0])
+      expect(result.current.cached).toEqual(expectedValues[0])
+      expect(result.current.isActual).toBe(true)
+      expect(result.current.isLoading).toBe(false)
+      expect(result.current.error).toBe(undefined)
+
+      let cancel: Destructor | void
+      act(() => {
+        cancel = result.current.softRefresh()
+      })
+
+      expect(result.current.value).toEqual(expectedValues[0])
+      expect(result.current.cached).toEqual(expectedValues[0])
+      expect(result.current.isActual).toBe(true)
+      expect(result.current.isLoading).toBe(true)
+      expect(result.current.error).toBe(undefined)
+
+      act(() => cancel?.())
+      jest.runAllTimers()
+      await waitForNextUpdate()
+
+      expect(result.current.value).toEqual(expectedValues[0])
+      expect(result.current.cached).toEqual(expectedValues[0])
+      expect(result.current.isActual).toBe(true)
+      expect(result.current.isLoading).toBe(false)
+      expect(result.current.error).toEqual(undefined)
+    })
     it(`${utilName}: check onError callback`, async () => {
       const { result, waitForNextUpdate } = renderHook(() => initHook())
 
@@ -281,6 +329,7 @@ describe.each<CommonStateTestUtil>([
         result.current.softRefresh()
       })
 
+      jest.runAllTimers()
       await waitForNextUpdate()
 
       expect(result.current.value).toEqual(expectedValues[0])
@@ -300,6 +349,7 @@ describe.each<CommonStateTestUtil>([
       expect(result.current.isLoading).toBe(true)
       expect(result.current.error).toBe(undefined)
 
+      jest.runAllTimers()
       await waitForNextUpdate()
 
       expect(result.current.value).toEqual(expectedValueOnError)
