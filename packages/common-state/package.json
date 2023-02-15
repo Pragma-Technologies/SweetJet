@@ -37,12 +37,12 @@
   "description": "types",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Pragma-Technologies/pragma-web-utils.git"
+    "url": "https://github.com/Pragma-Technologies/pragma-web-utils/tree/main/packages/common-state"
   },
   "author": "JumboJet",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Pragma-Technologies/pragma-web-utils/issues"
   },
-  "homepage": "https://github.com/Pragma-Technologies/pragma-web-utils#readme"
+  "homepage": "https://github.com/Pragma-Technologies/pragma-web-utils/tree/main/packages/common-state#readme"
 }

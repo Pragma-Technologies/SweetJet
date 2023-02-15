@@ -1,6 +1,5 @@
 import { abiERC20 } from '@pragma-web-utils/contract-utils'
 import { BigNumber, ethers } from 'ethers'
-import { toHex } from 'tron-format-address'
 import { ConnectorBaseEnum } from '../enums'
 import {
   CallOption,
@@ -75,7 +74,7 @@ export class CurrencyService {
       base: network.base,
       rpcUrl: network.base === ConnectorBaseEnum.EVM ? network.rpcUrl : network.grpcUrl,
     }
-    const target = new Address(setup.address)
+    const target = setup.address
 
     const _name = this._multicallCollector.request({
       ...requestSetup,
@@ -126,7 +125,7 @@ export class CurrencyService {
     }
 
     const { multicall, network } = networkInfo
-    const target = setup.base === ConnectorBaseEnum.TVM ? toHex(setup.address) : setup.address
+    const target = setup.address
 
     const [_balance] = await this._multicallCollector.request({
       contractAddress: new Address(multicall),
@@ -137,7 +136,7 @@ export class CurrencyService {
         method: 'balanceOf',
         values: [account],
         output: [{ type: 'uint256', name: '', internalType: 'uint256' }],
-        target: new Address(target),
+        target,
       },
     })
 

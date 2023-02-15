@@ -1,4 +1,5 @@
 import { BigNumber } from 'ethers'
+import { Address } from '../classes'
 import { ConnectorBaseEnum } from '../enums'
 
 export type NetworkId = `${ConnectorBaseEnum}_${string | number}`
@@ -8,15 +9,15 @@ export type CurrencyBalanceId = `${ConnectorBaseEnum}_${string}_${string | numbe
 type UsualCurrencySetup = {
   base: ConnectorBaseEnum
   chainId: string | number
-  address: string
+  address: Address
   isNative: false
   icon: string
 }
 type NativeCurrencySetup = {
   base: ConnectorBaseEnum
   chainId: string | number
-  address: string // for get native balance
-  address0x: string // for get price from 0x
+  address: Address // for get native balance
+  address0x: Address // for get price from 0x
   isNative: true
   name: string
   symbol: string
@@ -27,7 +28,7 @@ type NativeCurrencySetup = {
 export interface CurrencyBalanceSetup {
   base: ConnectorBaseEnum
   chainId: string | number
-  address: string
+  address: Address
 }
 
 export type CurrencySetup = NativeCurrencySetup | UsualCurrencySetup
@@ -36,7 +37,7 @@ export type CurrencySetup = NativeCurrencySetup | UsualCurrencySetup
 export interface CurrencyInfo {
   base: ConnectorBaseEnum
   chainId: string | number
-  address: string // TODO: change to Address class
+  address: Address
   isNative: boolean
   name: string
   symbol: string

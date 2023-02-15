@@ -2,12 +2,12 @@
 import { useCancelableFactory, useCancelablePool, useIsMounted, useRequestMemo } from '@pragma-web-utils/hooks'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { CANCEL_PROMISE } from '../constants'
-import { CacheableState, CommonState, StateRefreshOption } from '../types'
+import { CacheableState, StateManager, StateRefreshOption } from '../types'
 
-export function useCommonState<Value, Error = unknown>(initial?: undefined): CommonState<Value | undefined, Error>
-export function useCommonState<Value, Error = unknown>(initial: Value | (() => Value)): CommonState<Value, Error>
+export function useCommonState<Value, Error = unknown>(initial?: undefined): StateManager<Value | undefined, Error>
+export function useCommonState<Value, Error = unknown>(initial: Value | (() => Value)): StateManager<Value, Error>
 
-export function useCommonState<Value, Error = unknown>(initial: Value): CommonState<Value, Error> {
+export function useCommonState<Value, Error = unknown>(initial: Value): StateManager<Value, Error> {
   const createCancelableFactory = useCancelableFactory()
   const { addToCancelablePool, clearCancelablePool } = useCancelablePool()
   const { memoizedRequest } = useRequestMemo()
@@ -23,13 +23,14 @@ export function useCommonState<Value, Error = unknown>(initial: Value): CommonSt
 
   const refreshCallback = useCallback(() => {
     const getInitial = async () => initial
+    const request = refreshRef.current?.refreshFn ?? getInitial
+    const key = refreshRef.current?.requestKey ?? ''
+    // important save onError callback on init request, for handle changing callback during waiting request
+    const onError = refreshRef.current?.onError
     const makeRequest = () => {
-      const request = refreshRef.current?.refreshFn ?? getInitial
-      const key = refreshRef.current?.requestKey ?? ''
-      const error = refreshRef.current?.onError
       const { makeCancellable, cancel } = createCancelableFactory()
       // wrap to memorization and cancelable (think about providing uniq key of related request to refreshRef)
-      const cancellableRequest = { cancel, cancellablePromise: makeCancellable(memoizedRequest(key, request)), error }
+      const cancellableRequest = { cancel, cancellablePromise: makeCancellable(memoizedRequest(key, request)) }
       addToCancelablePool(key, cancellableRequest)
       return cancellableRequest
     }
@@ -40,15 +41,22 @@ export function useCommonState<Value, Error = unknown>(initial: Value): CommonSt
       try {
         setState((prevState) => ({ ...prevState, isLoading: true, error: undefined }))
         const _value = await cancellable.cancellablePromise
+        // if not mounted doesn't update state
         if (isMounted()) {
           setState((prevState) => ({ ...prevState, value: _value, isActual: true, isLoading: false, cached: _value }))
         }
       } catch (error) {
-        if (error !== CANCEL_PROMISE && isMounted()) {
-          const _error = await cancellable.error
+        // if not mounted doesn't update state
+        if (!isMounted()) {
+          return
+        }
+        // if canceled finish loading
+        if (error === CANCEL_PROMISE) {
+          setState((prevState) => ({ ...prevState, isLoading: false }))
+        } else {
           setState((prevState) => {
             const newState = { ...prevState, value: initial, isActual: true, isLoading: false, error: error as Error }
-            _error && _error(error as Error, newState)
+            onError && onError(error as Error, newState)
             return newState
           })
         }
@@ -58,7 +66,7 @@ export function useCommonState<Value, Error = unknown>(initial: Value): CommonSt
     return cancellable.cancel
   }, [])
 
-  return useMemo<CommonState<Value, Error>>(
+  return useMemo<StateManager<Value, Error>>(
     () => ({
       state: {
         ...state,
