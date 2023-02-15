@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "@pragma-web-utils/contract-utils": "^0.0.14",
-    "@pragma-web-utils/core": "^0.0.14"
+    "@pragma-web-utils/core": "^0.0.14",
+    "@pragma-web-utils/hooks": "^0.0.16"
   },
   "peerDependencies": {
     "ethereum-checksum-address": "^0.0.8",
