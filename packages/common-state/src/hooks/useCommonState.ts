@@ -41,11 +41,19 @@ export function useCommonState<Value, Error = unknown>(initial: Value): StateMan
       try {
         setState((prevState) => ({ ...prevState, isLoading: true, error: undefined }))
         const _value = await cancellable.cancellablePromise
+        // if not mounted doesn't update state
         if (isMounted()) {
           setState((prevState) => ({ ...prevState, value: _value, isActual: true, isLoading: false, cached: _value }))
         }
       } catch (error) {
-        if (error !== CANCEL_PROMISE && isMounted()) {
+        // if not mounted doesn't update state
+        if (!isMounted()) {
+          return
+        }
+        // if canceled finish loading
+        if (error === CANCEL_PROMISE) {
+          setState((prevState) => ({ ...prevState, isLoading: false }))
+        } else {
           setState((prevState) => {
             const newState = { ...prevState, value: initial, isActual: true, isLoading: false, error: error as Error }
             onError && onError(error as Error, newState)

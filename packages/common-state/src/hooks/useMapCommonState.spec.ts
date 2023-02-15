@@ -8,6 +8,10 @@ import { useMapCommonState } from './useMapCommonState'
 const testIncrementor = new TestIncrementor()
 
 describe('useMapCommonState', () => {
+  beforeEach(() => {
+    jest.useFakeTimers()
+  })
+
   beforeEach(() => testIncrementor.refresh())
 
   it(' check deps usage', async () => {
@@ -42,6 +46,7 @@ describe('useMapCommonState', () => {
     expect(result.current.value).toBe(undefined)
     expect(result.current.cached).toBe(undefined)
 
+    jest.runAllTimers()
     await waitForNextUpdate()
 
     // loading finished

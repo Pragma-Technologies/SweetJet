@@ -5,6 +5,10 @@ import { useCommonState } from './useCommonState'
 const testIncrementor = new TestIncrementor()
 
 describe('useCommonState hook', () => {
+  beforeEach(() => {
+    jest.useFakeTimers()
+  })
+
   beforeEach(() => testIncrementor.refresh())
 
   it('check setRefresh', async () => {
@@ -26,6 +30,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isLoading).toBe(true)
     expect(result.current.state.error).toBe(undefined)
 
+    jest.runAllTimers()
     await waitForNextUpdate()
 
     expect(result.current.state.value).toBe(undefined)
@@ -45,6 +50,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isLoading).toBe(true)
     expect(result.current.state.error).toBe(undefined)
 
+    jest.runAllTimers()
     await waitForNextUpdate()
 
     expect(result.current.state.value).toBe(0)
@@ -63,6 +69,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isLoading).toBe(true)
     expect(result.current.state.error).toBe(undefined)
 
+    jest.runAllTimers()
     await waitForNextUpdate()
 
     expect(result.current.state.value).toBe(1)
@@ -128,6 +135,7 @@ describe('useCommonState hook', () => {
       result.current.state.softRefresh()
     })
 
+    jest.runAllTimers()
     await waitForNextUpdate()
 
     expect(result.current.state.value).toBe(0)
@@ -148,6 +156,7 @@ describe('useCommonState hook', () => {
 
     expect(mockErrorRequest).toBeCalledTimes(0)
 
+    jest.runAllTimers()
     await waitForNextUpdate()
 
     expect(mockErrorRequest).toBeCalledTimes(1)
