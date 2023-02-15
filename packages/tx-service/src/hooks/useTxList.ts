@@ -1,10 +1,9 @@
 import { IStorable, StorableValue, StorageListenerTypeEnum } from '@pragma-web-utils/core'
+import { Deps } from '@pragma-web-utils/hooks'
 import { useEffect, useState } from 'react'
 import { useTxService } from '../core'
 import { MultichainTransaction, Transaction, TransactionLike } from '../types'
 import { isMultichainTx, isTransaction } from '../utils'
-
-type Deps = [] | [unknown, ...unknown[]]
 
 export const useTxList = <T extends IStorable<TransactionLike>>(
   filter?: (item: StorableValue<T>) => boolean,
