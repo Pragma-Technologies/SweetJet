@@ -9,7 +9,7 @@ export interface State<T = unknown, E = unknown> {
 }
 
 export interface Cacheable<T = unknown> {
-  cached?: T
+  cached: T
 }
 
 export interface Refreshable {
@@ -30,7 +30,7 @@ export interface StateRefreshOption<T, E> {
 
 export interface StateManager<T = unknown, E = unknown> {
   state: HookCommonState<T, E>
-  setState: Dispatch<SetStateAction<State<T, E>>>
+  setState: Dispatch<SetStateAction<CacheableState<T, E>>>
   setRefresh: (params: StateRefreshOption<T, E>) => void
 }
 export type CommonState<T = unknown, E = unknown> = StateManager<T, E>
