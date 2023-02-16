@@ -59,11 +59,12 @@ export class MulticallRequestCollector {
         data.forEach(({ key }) => this._requestListener.sendError(key, err))
       }
     })
+    this._requestQueue.clear()
     this._needCollection = false
   }
 
   protected async _tvmMulticall({ callInfos, contractAddress, rpcUrl }: MulticallOptions): Promise<unknown[]> {
-    const targets = callInfos.map(({ target }) => target.toBase58())
+    const targets = callInfos.map(({ target }) => target.toHex())
     const values = callInfos.map(({ values, scInterface, method }) => scInterface.encodeFunctionData(method, values))
     const outputsList = callInfos.map(({ output }) => output)
 
