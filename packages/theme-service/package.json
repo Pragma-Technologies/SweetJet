@@ -1,0 +1,50 @@
+{
+  "name": "@pragma-web-utils/theme-service",
+  "keywords": [
+    "pragma-web-utils"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.0.19",
+  "files": [
+    "dist/*"
+  ],
+  "type": "commonjs",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "tsc --build tsconfig.build.json",
+    "start": "tsc --watch",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@pragma-web-utils/core": "^0.0.19"
+  },
+  "peerDependencies": {
+    "react": "~17.0.2",
+    "react-dom": "~17.0.2",
+    "react-scripts": "4.0.3",
+    "styled-breakpoints": "^11.1.0"
+  },
+  "devDependencies": {
+    "@testing-library/react-hooks": "^8.0.1",
+    "@types/ethereum-checksum-address": "0.0.0",
+    "styled-breakpoints": "^11.1.0",
+    "ts-jest": "26.5.6",
+    "whatwg-fetch": "^3.6.2"
+  },
+  "description": "core utils",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pragma-Technologies/pragma-web-utils.git"
+  },
+  "author": "JumboJet",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Pragma-Technologies/pragma-web-utils/issues"
+  },
+  "homepage": "https://github.com/Pragma-Technologies/pragma-web-utils#readme"
+}
