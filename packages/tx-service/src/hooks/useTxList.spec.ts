@@ -38,6 +38,7 @@ const multichainTx1 = new StorableMultichainTx(
     },
   },
   testChecker,
+  testChecker,
   async () => '',
 )
 
