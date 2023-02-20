@@ -32,7 +32,8 @@ export class StorableMultichainTx<
 > extends StorableTransactionLike<OriginChain, P, MultichainTransaction<OriginChain, DestinationChain, P>> {
   constructor(
     _txInfo: MultichainTxInfo<OriginChain, DestinationChain, P>,
-    protected _checker: TxStatusChecker,
+    protected _originChecker: TxStatusChecker,
+    protected _destinationChecker: TxStatusChecker,
     protected _getDestinationHash: (
       tx: MultichainTxInfo<OriginChain, DestinationChain, P>,
     ) => Promise<string | undefined>,
@@ -56,10 +57,16 @@ export class StorableMultichainTx<
   }
 
   protected async _checkOriginStatus(): Promise<void> {
-    const status = await this._checker.waitStatus(this._dto, { waitTimeout: this._waitTimeout })
+    const status = await this._originChecker.waitStatus(this._dto, { waitTimeout: this._waitTimeout })
     if (!!status && status !== this._dto.status) {
       this._updateStoreValue(
-        new StorableMultichainTx({ ...this._dto, status }, this._checker, this._getDestinationHash, this._waitTimeout),
+        new StorableMultichainTx(
+          { ...this._dto, status },
+          this._originChecker,
+          this._destinationChecker,
+          this._getDestinationHash,
+          this._waitTimeout,
+        ),
       )
     }
   }
@@ -79,7 +86,8 @@ export class StorableMultichainTx<
             ...this._dto,
             destination: { ...this._dto.destination, hash },
           },
-          this._checker,
+          this._originChecker,
+          this._destinationChecker,
           this._getDestinationHash,
           this._waitTimeout,
         ),
@@ -90,7 +98,7 @@ export class StorableMultichainTx<
     if (!isTxCheckInfo(destination)) {
       return
     }
-    const status = await this._checker.waitStatus(destination, { waitTimeout: this._waitTimeout })
+    const status = await this._destinationChecker.waitStatus(destination, { waitTimeout: this._waitTimeout })
     if (!!status && status !== this._dto.destination.status) {
       this._updateStoreValue(
         new StorableMultichainTx(
@@ -98,7 +106,8 @@ export class StorableMultichainTx<
             ...this._dto,
             destination: { ...this._dto.destination, status },
           },
-          this._checker,
+          this._originChecker,
+          this._destinationChecker,
           this._getDestinationHash,
           this._waitTimeout,
         ),

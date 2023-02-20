@@ -24,18 +24,19 @@ const dto: MultichainTxInfo = {
 }
 const id = `${dto.base}_${dto.chainId}_${dto.hash}`
 
-const testChecker = new TestTxChecker()
+const testChecker1 = new TestTxChecker()
+const testChecker2 = new TestTxChecker()
 
 describe('StorableMultichainTx', () => {
   beforeAll(() => jest.spyOn(Date, 'now').mockImplementation(() => 0))
 
   it('check id', () => {
-    const storable = new StorableMultichainTx(dto, testChecker, async () => '0x0...')
+    const storable = new StorableMultichainTx(dto, testChecker1, testChecker2, async () => '0x0...')
     expect(storable.getId()).toBe(id)
   })
 
   it('check value', () => {
-    const storable = new StorableMultichainTx(dto, testChecker, async () => '0x0...')
+    const storable = new StorableMultichainTx(dto, testChecker1, testChecker2, async () => '0x0...')
     expect(storable.getValue()).toEqual({
       ...dto,
       id,
@@ -50,12 +51,13 @@ describe('StorableMultichainTx', () => {
 
   it('check connection with StorageManager', async () => {
     const waitTimeout = 300
-    const storable = new StorableMultichainTx(dto, testChecker, async () => '0x0...', waitTimeout)
+    const storable = new StorableMultichainTx(dto, testChecker1, testChecker2, async () => '0x0...', waitTimeout)
     const storageManager = new StorageManager<IStorable<TransactionLike>>()
     const updateItem = jest.spyOn(storageManager, 'updateItem')
     const addToStorage = jest.spyOn(storable, 'addToStorage')
     const removeFromStorage = jest.spyOn(storable, 'removeFromStorage')
-    const waitStatus = jest.spyOn(testChecker, 'waitStatus')
+    const waitStatus1 = jest.spyOn(testChecker1, 'waitStatus')
+    const waitStatus2 = jest.spyOn(testChecker2, 'waitStatus')
     const onOldValue = jest.fn()
     const onNewValue = jest.fn()
 
@@ -72,8 +74,9 @@ describe('StorableMultichainTx', () => {
 
     expect(addToStorage).toBeCalledTimes(1)
     expect(removeFromStorage).toBeCalledTimes(0)
-    expect(waitStatus).toBeCalledTimes(1)
-    expect(waitStatus).toHaveBeenCalledWith(storable.getValue(), { waitTimeout })
+    expect(waitStatus1).toBeCalledTimes(1)
+    expect(waitStatus1).toHaveBeenCalledWith(storable.getValue(), { waitTimeout })
+    expect(waitStatus2).toBeCalledTimes(0)
     expect(updateItem).toBeCalledTimes(0)
     expect(onOldValue).toBeCalledTimes(0)
     expect(onNewValue).toBeCalledTimes(0)
@@ -93,6 +96,12 @@ describe('StorableMultichainTx', () => {
     await Promise.resolve()
     await Promise.resolve()
 
+    expect(waitStatus1).toBeCalledTimes(1)
+    expect(waitStatus2).toBeCalledTimes(1)
+    expect(waitStatus2).toHaveBeenCalledWith(
+      { ...storable.getValue().destination, hash: '0x0...', status: TransactionStatusEnum.UNKNOWN },
+      { waitTimeout },
+    )
     expect(updateItem).toBeCalledTimes(2)
     expect(onNewValue).toBeCalledTimes(2)
     expect(onOldValue).toBeCalledTimes(2)

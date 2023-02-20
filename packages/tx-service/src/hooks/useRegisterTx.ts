@@ -15,7 +15,8 @@ type RegisterMultiChainTx<
   P extends Payload = Payload,
 > = (
   txInfo: Omit<MultichainTxInfo<OriginChain, DestinationChain, P>, 'hash'>,
-  checker: TxStatusChecker,
+  originChecker: TxStatusChecker,
+  destinationChecker: TxStatusChecker,
   initTx: () => Promise<string>,
   getDestinationHash: (tx: MultichainTxInfo<OriginChain, DestinationChain, P>) => Promise<string | undefined>,
   waitTimeout?: number,
@@ -51,12 +52,18 @@ export function useRegisterMultichainTx<
   const txService = useTxService()
 
   return useCallback(
-    async (txInfo, checker, initTx, getDestinationHash, waitTimeout = 5 * 60 * 1000) => {
+    async (txInfo, originChecker, destinationChecker, initTx, getDestinationHash, waitTimeout = 5 * 60 * 1000) => {
       const requested = new StorableRequestedTx(txInfo)
       txService.add(requested)
       try {
         const hash = await initTx()
-        const tx = new StorableMultichainTx({ ...txInfo, hash }, checker, getDestinationHash, waitTimeout)
+        const tx = new StorableMultichainTx(
+          { ...txInfo, hash },
+          originChecker,
+          destinationChecker,
+          getDestinationHash,
+          waitTimeout,
+        )
         txService.remove(requested.getId())
         txService.add(tx)
         return tx.getValue()
