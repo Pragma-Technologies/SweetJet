@@ -383,10 +383,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@pragma-web-utils/hooks@^0.0.14":
-  version "0.0.14"
-  resolved "https://registry.yarnpkg.com/@pragma-web-utils/hooks/-/hooks-0.0.14.tgz#79ceac4eac87d46e22fbdf9f373486e3483f8038"
-  integrity sha512-tOA/++8e5RdWjTClTnTVRp+CpY9kFkPnF1lcKqxntHLSxcoop1bz3Mzn79k5e4tbbpu9yiP/DpbQH9RhcaCDyg==
+"@pragma-web-utils/hooks@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/hooks/-/hooks-0.0.16.tgz#d2c0b013447dcbfb675e39aa78ccd331eeddccb0"
+  integrity sha512-2qqYAyBQ/NXfX0/v8Y/CVv6xeTwE9a+qU5H8IRZxGhlyRIeLKsJNGRlnNvUtICUrcuXh27Obn+gHAgMX1aYDgQ==
   dependencies:
     my-package "^0.0.0"
 
