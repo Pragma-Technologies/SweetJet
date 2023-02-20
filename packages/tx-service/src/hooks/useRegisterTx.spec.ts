@@ -54,6 +54,7 @@ describe('register Tx by hook', () => {
         },
       },
       testChecker,
+      testChecker,
       async () => 'testHash',
       async () => 'testDestinationHash',
     )

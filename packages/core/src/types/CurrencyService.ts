@@ -17,7 +17,6 @@ type NativeCurrencySetup = {
   base: ConnectorBaseEnum
   chainId: string | number
   address: Address // for get native balance
-  address0x: Address // for get price from 0x
   isNative: true
   name: string
   symbol: string
