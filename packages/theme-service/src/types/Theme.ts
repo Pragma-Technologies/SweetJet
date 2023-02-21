@@ -12,7 +12,7 @@ export type Themed<T> = { [key in ThemeName]: T }
 
 export interface ThemeContextProps {
   children: React.ReactNode
-  defaultTheme: ThemeName
+  defaultTheme?: ThemeName
 }
 
 export type svgType = FunctionComponent<SVGProps<SVGSVGElement> & { title?: string | undefined }>
