@@ -3,10 +3,10 @@ import {
   CombineHookCommonState,
   CombineHookCommonStateStates,
   CombineHookCommonStateTupleErrors,
-  HookCommonState,
+  CommonState,
 } from '../types'
 
-export function useCombineCommonStates<T extends HookCommonState[]>(...states: T): CombineHookCommonState<T> {
+export function useCombineCommonStates<T extends CommonState[]>(...states: T): CombineHookCommonState<T> {
   return useMemo((): CombineHookCommonState<T> => {
     const errors = states.map(({ error }) => error) as CombineHookCommonStateTupleErrors<T>
     const error = errors.some((error) => !!error) ? { error: errors } : undefined
@@ -28,6 +28,6 @@ export function useCombineCommonStates<T extends HookCommonState[]>(...states: T
           cancels.forEach((cancel) => cancel?.())
         }
       },
-    }
+    } as CombineHookCommonState<T>
   }, [states])
 }

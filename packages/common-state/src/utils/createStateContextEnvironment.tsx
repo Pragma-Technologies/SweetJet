@@ -2,14 +2,14 @@ import { Defined } from '@pragma-web-utils/core'
 import React, { Context, createContext, FC, PropsWithChildren, useContext } from 'react'
 import { useStrictStateValueContext } from '../hooks'
 import {
+  CommonState,
   CreateStateContextEnvironmentOption,
   CreateStateContextEnvironmentOutput,
-  HookCommonState,
   StateWrapperProps,
   StrictWrapperProps,
 } from '../types'
 
-const emptyState: HookCommonState = {
+const emptyState: CommonState = {
   value: undefined,
   error: undefined,
   isActual: false,
@@ -24,10 +24,10 @@ export function createStateContextEnvironment<T>(
   option?: CreateStateContextEnvironmentOption<T>,
 ): CreateStateContextEnvironmentOutput<T> {
   const { userContext, isValueValid = (value: T) => value !== undefined && value !== null } = { ...option }
-  const context = !!userContext ? (userContext as Context<HookCommonState>) : createContext<HookCommonState>(emptyState)
+  const context = !!userContext ? (userContext as Context<CommonState>) : createContext<CommonState>(emptyState)
 
   const strictValueHook = (): Defined<T> => useStrictStateValueContext<T>(context, contextName, isValueValid)
-  const stateHook = (): HookCommonState<T> => useContext(context) as HookCommonState<T>
+  const stateHook = (): CommonState<T> => useContext(context) as CommonState<T>
 
   const stateWrapper: FC<PropsWithChildren<StateWrapperProps<T>>> = ({ stateValue, children }) => {
     return <context.Provider value={stateValue}>{children}</context.Provider>

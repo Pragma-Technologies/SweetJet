@@ -1,10 +1,10 @@
 import { Defined } from '@pragma-web-utils/core'
 import { Context, useContext } from 'react'
 import { NOT_PROVIDED_STATE_STRICT_CONTEXT } from '../constants'
-import { HookCommonState } from '../types'
+import { CommonState } from '../types'
 
 export function useStrictStateValueContext<T = unknown>(
-  context: Context<HookCommonState>,
+  context: Context<CommonState>,
   name?: string,
   isValueValid: (value: T) => boolean = (value) => value !== undefined && value !== null,
 ): Defined<T> {

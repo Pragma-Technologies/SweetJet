@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import React from 'react'
-import { CreateStateContextEnvironmentOutput, HookCommonState } from '../types'
+import { CreateStateContextEnvironmentOutput, CommonState } from '../types'
 import { createStateContextEnvironment } from './createStateContextEnvironment'
 
 type StateEnvironmentTestUtil = {
@@ -14,7 +14,7 @@ const Skeleton = () => <>Skeleton</>
 const ErrorState = () => <>Error</>
 const ChildComponent = () => <div>Child component</div>
 
-const emptyState: HookCommonState<string | undefined> = {
+const emptyState: CommonState<string | undefined, string> = {
   value: undefined,
   error: undefined,
   isActual: true,
@@ -50,21 +50,21 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
     } = getStateEnvironment()
 
     let value: string | undefined
-    let state: HookCommonState<string | undefined> | undefined
+    let state: CommonState<string | undefined, string> | undefined
 
     const Component = () => {
       value = useStrictValue()
-      state = useStateValue()
+      state = useStateValue() as CommonState<string | undefined, string>
       return <ChildComponent />
     }
 
-    const strictContent = (stateValue: HookCommonState<string | undefined>) => (
+    const strictContent = (stateValue: CommonState<string | undefined, string>) => (
       <StrictWrapper skeleton={Skeleton} error={ErrorState} stateValue={stateValue}>
         <Component />
       </StrictWrapper>
     )
 
-    const strictByStateContent = (stateValue: HookCommonState<string | undefined>) => (
+    const strictByStateContent = (stateValue: CommonState<string | undefined, string>) => (
       <StateWrapper stateValue={stateValue}>
         <StrictWrapper skeleton={Skeleton} error={ErrorState}>
           <Component />
@@ -86,7 +86,7 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
     })
 
     it(`${name} should render children component`, () => {
-      const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test' }
+      const stateValue = { ...emptyState, value: 'test' } as CommonState<string | undefined, string>
 
       const { container, rerender } = render(strictContent(stateValue))
 
@@ -102,7 +102,7 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
     })
 
     it(`${name} should render the Skeleton component when isActual is false`, () => {
-      const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test', isActual: false }
+      const stateValue = { ...emptyState, value: 'test', isActual: false } as CommonState<string | undefined, string>
 
       const { container, rerender } = render(strictContent(stateValue))
 
@@ -118,12 +118,12 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
     })
 
     it(`${name} should render the Skeleton component when isLoading is true and isActual is false`, () => {
-      const stateValue: HookCommonState<string | undefined> = {
+      const stateValue = {
         ...emptyState,
         value: 'test',
         isActual: false,
         isLoading: true,
-      }
+      } as CommonState<string | undefined, string>
 
       const { container, rerender } = render(strictContent(stateValue))
 
@@ -139,7 +139,10 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
     })
 
     it(`${name} should render the ErrorState component when there is an error`, () => {
-      const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test', error: 'error' }
+      const stateValue = { ...emptyState, value: 'test' as string | undefined, error: 'error' } as CommonState<
+        string | undefined,
+        string
+      >
 
       const { container, rerender } = render(strictContent(stateValue))
 
@@ -214,7 +217,7 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
         strictWrapper: StrictWrapper,
         stateWrapper: StateWrapper,
       } = getStateEnvironment((value) => value === 'test')
-      const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test' }
+      const stateValue: CommonState<string | undefined> = { ...emptyState, value: 'test' }
       let value
       let state
 
@@ -254,7 +257,7 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
         strictWrapper: StrictWrapper,
         stateWrapper: StateWrapper,
       } = getStateEnvironment((value) => value === 'test')
-      const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'not valid test' }
+      const stateValue: CommonState<string | undefined> = { ...emptyState, value: 'not valid test' }
       let value
       let state
 
@@ -294,7 +297,10 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
         strictWrapper: StrictWrapper,
         stateWrapper: StateWrapper,
       } = getStateEnvironment((value) => value === 'test')
-      const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test', error: 'error' }
+      const stateValue = { ...emptyState, value: 'test' as string | undefined, error: 'error' } as CommonState<
+        string | undefined,
+        string
+      >
       let value
       let state
 
