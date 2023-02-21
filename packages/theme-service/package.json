@@ -18,7 +18,8 @@
     "prebuild": "rm -rf dist",
     "build": "tsc --build tsconfig.build.json",
     "start": "tsc --watch",
-    "test": "jest"
+    "test": "jest --passWithNoTests"
+
   },
   "peerDependencies": {
     "react": "~17.0.2",
