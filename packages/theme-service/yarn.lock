@@ -20,10 +20,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@pragma-web-utils/hooks@^0.0.21":
-  version "0.0.21"
-  resolved "https://registry.yarnpkg.com/@pragma-web-utils/hooks/-/hooks-0.0.21.tgz#ccac36b51ebcfafe4edfec00cbeb3a4642c192b9"
-  integrity sha512-pJUaxHN3aJEG/ABKF/e1T8a0UDbsIeFQYsz88u0YBvOVWwX5HpQcD+TJq1dsi27x4wcvRJ9RKe554hLiOaeNgA==
+"@pragma-web-utils/hooks@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/hooks/-/hooks-0.0.16.tgz#d2c0b013447dcbfb675e39aa78ccd331eeddccb0"
+  integrity sha512-2qqYAyBQ/NXfX0/v8Y/CVv6xeTwE9a+qU5H8IRZxGhlyRIeLKsJNGRlnNvUtICUrcuXh27Obn+gHAgMX1aYDgQ==
   dependencies:
     my-package "^0.0.0"
 
