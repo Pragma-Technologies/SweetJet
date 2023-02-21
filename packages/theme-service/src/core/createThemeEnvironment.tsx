@@ -4,7 +4,6 @@ import { useListenMediaQueryMatches, useThemeLayoutEffect } from '../hooks'
 import { ColorConstant, CreateStrictEnvironmentOutput, ThemeContextProps, Themed, ThemeName } from '../types'
 
 export function createThemeEnvironment<T, Colors extends string, ThemedIcons, ThemedImages>(
-  context: React.Context<unknown | T>,
   contextName: string,
   mediaQueryList: MediaQueryList | undefined,
   lightColors: ColorConstant<Colors>,
@@ -12,6 +11,8 @@ export function createThemeEnvironment<T, Colors extends string, ThemedIcons, Th
   iconsSets: Themed<ThemedIcons>,
   imagesSets: Themed<ThemedImages>,
 ): CreateStrictEnvironmentOutput<T> {
+  const context = React.createContext<unknown>(undefined)
+
   const hook = (): T => {
     return useStrictContext(context, contextName) as T
   }
