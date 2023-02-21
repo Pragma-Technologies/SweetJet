@@ -20,6 +20,13 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
+"@pragma-web-utils/hooks@^0.0.21":
+  version "0.0.21"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/hooks/-/hooks-0.0.21.tgz#ccac36b51ebcfafe4edfec00cbeb3a4642c192b9"
+  integrity sha512-pJUaxHN3aJEG/ABKF/e1T8a0UDbsIeFQYsz88u0YBvOVWwX5HpQcD+TJq1dsi27x4wcvRJ9RKe554hLiOaeNgA==
+  dependencies:
+    my-package "^0.0.0"
+
 "@testing-library/react-hooks@^8.0.1":
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/@testing-library/react-hooks/-/react-hooks-8.0.1.tgz#0924bbd5b55e0c0c0502d1754657ada66947ca12"
@@ -195,6 +202,11 @@ mkdirp@1.x:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
+
+my-package@^0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/my-package/-/my-package-0.0.0.tgz#029020f27fcf2aed4754c5059ab1b09e5107a9de"
+  integrity sha512-2Au2tYIZqiX83bizWvvlzDAjAICfqDA/KmFA5+cR1xnKHr5D576q7SktqvEtSAIeZ0GL0uU17LUQkKiWrJK2kQ==
 
 picomatch@^2.3.1:
   version "2.3.1"
