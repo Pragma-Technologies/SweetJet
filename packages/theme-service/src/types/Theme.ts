@@ -1,5 +1,4 @@
-export type ThemeName = 'light' | 'dark'
-export type Themed<T> = { [key in ThemeName]: T }
+import { FunctionComponent, SVGProps } from 'react'
 
 export type CssColorVarKeys<T extends string> = `--${T}`
 export type CssColorVarValues<T extends string> = `var(--${T})`
@@ -8,20 +7,26 @@ export type ColorConstant<T extends string> = { [key in T]: string }
 export type CssColorVars<T extends string> = { [key in CssColorVarKeys<T>]: string }
 export type CssColorConstant<T extends string> = { [key in T]: CssColorVarValues<key> }
 
-export interface IThemeContext<
-  A extends Record<string, string>,
-  B extends unknown | undefined,
-  C extends unknown | undefined,
-> {
+export type ThemeName = 'light' | 'dark'
+export type Themed<T> = { [key in ThemeName]: T }
+
+export interface ThemeContextProps {
+  children: React.ReactNode
+  defaultTheme: ThemeName
+}
+
+export type svgType = FunctionComponent<SVGProps<SVGSVGElement> & { title?: string | undefined }>
+
+export interface ThemeContextType<Colors extends string, ThemedIcons, ThemedImages> {
   themeName: ThemeName
 
   setTheme(themeName: ThemeName): void
 
   toggleTheme(): void
 
-  colors: A
+  icons: ThemedIcons
 
-  images: B
+  images: ThemedImages
 
-  icons: C
+  colors: ColorConstant<Colors>
 }
