@@ -24,9 +24,9 @@ export interface ThemeContextType<Colors extends string, ThemedIcons, ThemedImag
 
   toggleTheme(): void
 
-  icons: ThemedIcons
+  icons?: ThemedIcons
 
-  images: ThemedImages
+  images?: ThemedImages
 
   colors: ColorConstant<Colors>
 }

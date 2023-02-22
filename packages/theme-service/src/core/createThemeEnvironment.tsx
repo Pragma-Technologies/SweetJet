@@ -8,8 +8,8 @@ export function createThemeEnvironment<T, Colors extends string, ThemedIcons, Th
   mediaQueryList: MediaQueryList | undefined,
   lightColors: ColorConstant<Colors>,
   darkColors: ColorConstant<Colors>,
-  iconsSets: Themed<ThemedIcons>,
-  imagesSets: Themed<ThemedImages>,
+  iconsSets?: Themed<ThemedIcons>,
+  imagesSets?: Themed<ThemedImages>,
 ): CreateStrictEnvironmentOutput<T> {
   const context = React.createContext<unknown>(undefined)
 
@@ -34,9 +34,9 @@ export function createThemeEnvironment<T, Colors extends string, ThemedIcons, Th
 
     const toggleTheme = useCallback(() => setThemeName(themeName === 'dark' ? 'light' : 'dark'), [themeName])
 
-    const icons = iconsSets[themeName]
+    const icons = iconsSets ? iconsSets[themeName] : undefined
 
-    const images = imagesSets[themeName]
+    const images = imagesSets ? imagesSets[themeName] : undefined
 
     return (
       <context.Provider
