@@ -1,3 +1,4 @@
 export * from './CancellablePromise'
-export * from './MemoizedRequests'
 export * from './common'
+export * from './CreateStrictEnvironments'
+export * from './MemoizedRequests'
