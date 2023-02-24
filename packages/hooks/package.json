@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@pragma-web-utils/core": "^0.0.20",
+    "@pragma-web-utils/common-state":"^0.0.22",
     "@testing-library/react-hooks": "^8.0.1",
     "ts-jest": "26.5.6"
   },

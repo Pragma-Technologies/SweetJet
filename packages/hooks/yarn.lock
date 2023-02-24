@@ -20,6 +20,21 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
+"@pragma-web-utils/common-state@^0.0.22":
+  version "0.0.22"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/common-state/-/common-state-0.0.22.tgz#c121b5f6d51a18ddba9077001be3251e84826d85"
+  integrity sha512-VlfjGnJ9yxlP7iO1r4bpJpnB5/g3V1HAyWwh0us6C0y+k55tT2jDCxcScjhennz52REX2RjWNfZL2Jecb3kCPA==
+  dependencies:
+    "@pragma-web-utils/hooks" "^0.0.22"
+    my-package "^0.0.0"
+
+"@pragma-web-utils/hooks@^0.0.22":
+  version "0.0.22"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/hooks/-/hooks-0.0.22.tgz#5ce0ea9ea90d0011be35525770fb6fbd7f20a234"
+  integrity sha512-VVuOv0rBZrtdQXkiXosypqa+LIULUlxlIonlM9DpkwGwhdoo932+1J7yRtCX+OdzvtYa6c2TZbH+c6+F+lnvZw==
+  dependencies:
+    my-package "^0.0.0"
+
 "@testing-library/react-hooks@^8.0.1":
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/@testing-library/react-hooks/-/react-hooks-8.0.1.tgz#0924bbd5b55e0c0c0502d1754657ada66947ca12"
