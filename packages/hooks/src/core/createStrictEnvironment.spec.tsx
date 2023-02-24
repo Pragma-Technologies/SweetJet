@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import React from 'react'
 
 import { State } from '@pragma-web-utils/common-state'
