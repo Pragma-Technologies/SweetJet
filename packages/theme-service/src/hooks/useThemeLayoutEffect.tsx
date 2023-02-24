@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react'
+import { useEffect, useLayoutEffect } from 'react'
 import { ColorConstant, ThemeName } from '../types'
 import { getThemeVarsStyle, toCssColorsVars } from '../utils'
 
@@ -10,6 +10,12 @@ export const useThemeLayoutEffect = (
   lightColors: ColorConstant<string>,
   darkColors: ColorConstant<string>,
 ): void => {
+  useEffect(() => {
+    const themes: ThemeName[] = ['dark', 'light']
+    document.body.classList.remove(...themes)
+    document.body.classList.add(themeName)
+  }, [themeName])
+
   return useLayoutEffect(() => {
     const themeStylesId = 'themeStyles'
     let styles = document.getElementById(themeStylesId)
