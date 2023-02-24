@@ -1,5 +1,4 @@
 import { fireEvent, render } from '@testing-library/react'
-import { renderHook } from '@testing-library/react-hooks'
 import { ColorConstant, ThemeContextType } from '../types'
 import { createThemeEnvironment } from './index'
 
@@ -21,15 +20,14 @@ describe('createThemeEnvironment', () => {
     ImageConfig
   >('TestContext', undefined, lightColors, darkColors, iconsSets, imagesSets)
 
-  it('should return the correct hook', () => {
+  it('should return the correct hook and wrapper', () => {
+    expect(hook).toBeDefined()
     expect(hook).toBeInstanceOf(Function)
-  })
-
-  it('should render the wrapper', () => {
     expect(ThemeWrapper).toBeDefined()
+    expect(ThemeWrapper).toBeInstanceOf(Function)
   })
 
-  it('should render the component with the correct props', () => {
+  it('should render the component with the correct defaultTheme', () => {
     const TestComponent = () => {
       const contextValue = hook()
       return <div>{contextValue.themeName}</div>
@@ -51,36 +49,78 @@ describe('createThemeEnvironment', () => {
     expect(renderComponentDark.container.textContent).toBe('dark')
   })
 
-  it('should toggle the themeName when toggleTheme is called', () => {
-    // const lightButtonSpan = 'ChooseLight'
+  it('should toggle the theme when toggleTheme is called', () => {
+    const buttonLabel = 'Toggle Theme'
+    let themeName
+    let icon
+    let image
 
-    // const DarkButton: React.FC = () => <button onClick={() => onClick('dark')}>ChooseDark</button>
-    // const LightButton: React.FC = () => <button onClick={() => onClick('light')}>{lightButtonSpan}</button>
-    // const onClick = jest.fn((themeName: ThemeName) => renderHook(() => hook().setTheme(themeName)))
+    const Component = () => {
+      themeName = hook().themeName
+      icon = hook().icons
+      image = hook().images
 
-    const renderComponent = render(
-      <ThemeWrapper>
-        {/* <DarkButton /> */}
-        <button data-testid="darkToggle" onClick={() => jest.fn(() => renderHook(() => hook().setTheme('dark')))}>
-          Choose Dark
-        </button>
-        {/* <LightButton /> */}
-        <button data-testid="lightToggle" onClick={() => jest.fn(() => renderHook(() => hook().setTheme('light')))}>
-          Choose Light
-        </button>
+      return <button onClick={hook().toggleTheme}>{buttonLabel}</button>
+    }
+
+    const { getByText } = render(
+      <ThemeWrapper defaultTheme="dark">
+        <Component />
       </ThemeWrapper>,
     )
 
-    const { themeName } = renderHook(() => hook()).result.current
+    expect(themeName).toBe('dark')
+    expect(icon).toStrictEqual(iconsSets.dark)
+    expect(image).toStrictEqual(imagesSets.dark)
 
-    expect(themeName).toContain('light')
+    fireEvent.click(getByText(buttonLabel)) // Call toggleTheme again dark->light
 
-    fireEvent.click(renderComponent.getByTestId('darkToggle'))
+    expect(themeName).toBe('light')
+    expect(icon).toStrictEqual(iconsSets.light)
+    expect(image).toStrictEqual(imagesSets.light)
 
-    expect(themeName).toContain('dark')
+    fireEvent.click(getByText(buttonLabel)) // Call toggleTheme again light->dark
 
-    fireEvent.click(renderComponent.getByTestId('darkToggle'))
+    expect(themeName).toBe('dark')
+    expect(icon).toStrictEqual(iconsSets.dark)
+    expect(image).toStrictEqual(imagesSets.dark)
+  })
 
-    expect(themeName).toContain('light')
+  it('should toggle the theme when toggleTheme is called with icon and image undefined', () => {
+    const { hook, wrapper: ThemeWrapper } = createThemeEnvironment<
+      TestThemeContext,
+      TestColorsConst,
+      undefined,
+      undefined
+    >('TestContext', undefined, lightColors, darkColors)
+
+    const buttonLabel = 'Toggle Theme'
+    let themeName
+    let icon
+    let image
+
+    const Component = () => {
+      themeName = hook().themeName
+      icon = hook().icons
+      image = hook().images
+
+      return <button onClick={hook().toggleTheme}>{buttonLabel}</button>
+    }
+
+    const { getByText } = render(
+      <ThemeWrapper defaultTheme="dark">
+        <Component />
+      </ThemeWrapper>,
+    )
+
+    expect(themeName).toBe('dark')
+    expect(icon).toStrictEqual(undefined)
+    expect(image).toStrictEqual(undefined)
+
+    fireEvent.click(getByText(buttonLabel))
+
+    expect(themeName).toBe('light')
+    expect(icon).toStrictEqual(undefined)
+    expect(image).toStrictEqual(undefined)
   })
 })
