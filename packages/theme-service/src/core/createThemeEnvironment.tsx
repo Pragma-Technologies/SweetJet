@@ -1,5 +1,5 @@
 import { useStrictContext } from '@pragma-web-utils/hooks'
-import React, { FC, useCallback, useEffect, useState } from 'react'
+import React, { FC, useCallback, useState } from 'react'
 import { useListenMediaQueryMatches, useThemeLayoutEffect } from '../hooks'
 import { ColorConstant, CreateStrictEnvironmentOutput, ThemeContextProps, Themed, ThemeName } from '../types'
 
@@ -8,8 +8,8 @@ export function createThemeEnvironment<T, Colors extends string, ThemedIcons, Th
   mediaQueryList: MediaQueryList | undefined,
   lightColors: ColorConstant<Colors>,
   darkColors: ColorConstant<Colors>,
-  iconsSets: Themed<ThemedIcons>,
-  imagesSets: Themed<ThemedImages>,
+  iconsSets?: Themed<ThemedIcons>,
+  imagesSets?: Themed<ThemedImages>,
 ): CreateStrictEnvironmentOutput<T> {
   const context = React.createContext<unknown>(undefined)
 
@@ -26,17 +26,11 @@ export function createThemeEnvironment<T, Colors extends string, ThemedIcons, Th
 
     useThemeLayoutEffect(themeName, lightColors, darkColors)
 
-    useEffect(() => {
-      const themes: ThemeName[] = ['dark', 'light']
-      document.body.classList.remove(...themes)
-      document.body.classList.add(themeName)
-    }, [themeName])
-
     const toggleTheme = useCallback(() => setThemeName(themeName === 'dark' ? 'light' : 'dark'), [themeName])
 
-    const icons = iconsSets[themeName]
+    const icons = iconsSets ? iconsSets[themeName] : undefined
 
-    const images = imagesSets[themeName]
+    const images = imagesSets ? imagesSets[themeName] : undefined
 
     return (
       <context.Provider

@@ -18,7 +18,7 @@
     "prebuild": "rm -rf dist",
     "build": "tsc --build tsconfig.build.json",
     "start": "tsc --watch",
-    "test": "jest --passWithNoTests"
+    "test": "jest"
   },
   "peerDependencies": {
     "react": "~17.0.2",
@@ -26,7 +26,8 @@
     "react-scripts": "4.0.3"
   },
   "devDependencies": {
-    "@pragma-web-utils/hooks": "^0.0.20",
+    "@pragma-web-utils/hooks": "^0.0.22",
+    "@testing-library/react": "12.1.5",
     "@testing-library/react-hooks": "^8.0.1",
     "ts-jest": "26.5.6",
     "whatwg-fetch": "^3.6.2"
