@@ -1,5 +1,5 @@
 import { useStrictContext } from '@pragma-web-utils/hooks'
-import React, { FC, useCallback, useEffect, useState } from 'react'
+import React, { FC, useCallback, useState } from 'react'
 import { useListenMediaQueryMatches, useThemeLayoutEffect } from '../hooks'
 import { ColorConstant, CreateStrictEnvironmentOutput, ThemeContextProps, Themed, ThemeName } from '../types'
 
@@ -25,12 +25,6 @@ export function createThemeEnvironment<T, Colors extends string, ThemedIcons, Th
     useListenMediaQueryMatches(mediaQueryList, setThemeName)
 
     useThemeLayoutEffect(themeName, lightColors, darkColors)
-
-    useEffect(() => {
-      const themes: ThemeName[] = ['dark', 'light']
-      document.body.classList.remove(...themes)
-      document.body.classList.add(themeName)
-    }, [themeName])
 
     const toggleTheme = useCallback(() => setThemeName(themeName === 'dark' ? 'light' : 'dark'), [themeName])
 
