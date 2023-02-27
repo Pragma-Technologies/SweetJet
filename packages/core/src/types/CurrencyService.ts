@@ -6,22 +6,22 @@ export type NetworkId = `${ConnectorBaseEnum}_${string | number}`
 export type CurrencyId = `${ConnectorBaseEnum}_${string}_${string | number}`
 export type CurrencyBalanceId = `${ConnectorBaseEnum}_${string}_${string | number}_${string}`
 
-type UsualCurrencySetup = {
+type UsualCurrencySetup<C extends string | number = string | number, I extends string = string> = {
   base: ConnectorBaseEnum
-  chainId: string | number
+  chainId: C
   address: Address
   isNative: false
-  icon: string
+  icon: I
 }
-type NativeCurrencySetup = {
+type NativeCurrencySetup<C extends string | number = string | number, I extends string = string> = {
   base: ConnectorBaseEnum
-  chainId: string | number
+  chainId: C
   address: Address // for get native balance
   isNative: true
   name: string
   symbol: string
   decimals: number
-  icon: string
+  icon: I
 }
 
 export interface CurrencyBalanceSetup {
@@ -30,22 +30,24 @@ export interface CurrencyBalanceSetup {
   address: Address
 }
 
-export type CurrencySetup = NativeCurrencySetup | UsualCurrencySetup
+export type CurrencySetup<C extends string | number = string | number, I extends string = string> =
+  | NativeCurrencySetup<C, I>
+  | UsualCurrencySetup<C, I>
 
 // TODO: merge TokenInfo and CurrencyInfo
-export interface CurrencyInfo {
+export interface CurrencyInfo<C extends string | number = string | number, I extends string = string> {
   base: ConnectorBaseEnum
-  chainId: string | number
+  chainId: C
   address: Address
   isNative: boolean
   name: string
   symbol: string
   decimals: number
-  icon: string
+  icon: I
 }
 
-export interface CurrencyStorage {
-  currencyInfoMap: Map<CurrencyId, Readonly<CurrencyInfo>>
+export interface CurrencyStorage<C extends string | number = string | number, I extends string = string> {
+  currencyInfoMap: Map<CurrencyId, Readonly<CurrencyInfo<C, I>>>
   balanceInfoMap: Map<CurrencyBalanceId, BigNumber>
 }
 
