@@ -27,19 +27,16 @@ function getCurrencyBalanceId(currency: CurrencyBalanceSetup, account: string): 
   return `${currency.base}_${currency.chainId}_${currency.address}_${account}`
 }
 
-export class CurrencyService {
+export class CurrencyService<C extends string | number = string | number, I extends string = string> {
   protected _scInterface = new ethers.utils.Interface(abiERC20.abi)
-  protected _storage: CurrencyStorage = {
-    currencyInfoMap: new Map<CurrencyId, Readonly<CurrencyInfo>>(),
-    balanceInfoMap: new Map<CurrencyBalanceId, BigNumber>(),
-  }
+  protected _storage: CurrencyStorage<C, I> = { currencyInfoMap: new Map(), balanceInfoMap: new Map() }
   protected _supportedNetworks = new Map<NetworkId, MulticallNetworkInfo>()
 
   constructor(protected _multicallCollector: MulticallRequestCollector, supportedNetworks: MulticallNetworkInfo[]) {
     supportedNetworks.forEach((network) => this._supportedNetworks.set(getNetworkId(network.network), network))
   }
 
-  async getCurrencyInfo(setup: CurrencySetup[]): Promise<Readonly<CurrencyInfo>[]> {
+  async getCurrencyInfo(setup: CurrencySetup<C, I>[]): Promise<Readonly<CurrencyInfo<C, I>>[]> {
     return Promise.all(setup.map((info) => this._getCurrencyInfo(info)))
   }
 
@@ -51,12 +48,12 @@ export class CurrencyService {
     return Promise.all(setup.map((info) => this._loadCurrencyBalance(info, account)))
   }
 
-  protected async _getCurrencyInfo(setup: CurrencySetup): Promise<Readonly<CurrencyInfo>> {
+  protected async _getCurrencyInfo(setup: CurrencySetup<C, I>): Promise<Readonly<CurrencyInfo<C, I>>> {
     const stored = this._storage.currencyInfoMap.get(getCurrencyId(setup))
     return stored || this._loadCurrencyInfo(setup)
   }
 
-  protected async _loadCurrencyInfo(setup: CurrencySetup): Promise<Readonly<CurrencyInfo>> {
+  protected async _loadCurrencyInfo(setup: CurrencySetup<C, I>): Promise<Readonly<CurrencyInfo<C, I>>> {
     if (setup.isNative) {
       this._storage.currencyInfoMap.set(getCurrencyId(setup), setup)
       return setup
