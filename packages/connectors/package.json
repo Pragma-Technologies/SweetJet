@@ -6,7 +6,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.23",
+  "version": "0.0.28",
   "files": [
     "dist/*"
   ],
@@ -32,7 +32,7 @@
   "devDependencies": {
     "@coinbase/wallet-sdk": "^3.3.0",
     "@metamask/detect-provider": "^2.0.0",
-    "@pragma-web-utils/core": "^0.0.23",
+    "@pragma-web-utils/core": "^0.0.28",
     "@types/ethereum-checksum-address": "0.0.0",
     "@walletconnect/ethereum-provider": "~2.3.3",
     "fortmatic": "^2.4.0",
