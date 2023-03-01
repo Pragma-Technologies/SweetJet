@@ -1,4 +1,7 @@
 import { FC } from 'react'
 import { ThemeContextProps } from './Theme'
 
-export type CreateStrictEnvironmentOutput<T> = { hook: () => T; wrapper: FC<ThemeContextProps> }
+export type CreateStrictEnvironmentOutput<T, ThemeNames extends string> = {
+  hook: () => T
+  wrapper: FC<ThemeContextProps<ThemeNames>>
+}
