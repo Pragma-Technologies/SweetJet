@@ -1,26 +1,20 @@
 import { useEffect } from 'react'
-import { ThemeContextType } from '../types'
 
-export const useQuery = <
-  ThemeNames extends string,
-  Colors extends string,
-  ThemedIcons extends Record<string, unknown> | undefined,
-  ThemedImages extends Record<string, unknown> | undefined,
->(
-  query: MediaQueryList | undefined,
+export const useQuery = <ThemeNames extends string>(
   lightName: ThemeNames,
   darkName: ThemeNames,
-  useTheme: () => ThemeContextType<ThemeNames, Colors, ThemedIcons, ThemedImages>,
+  setTheme: (themeName: ThemeNames) => void,
 ): void => {
-  const { setTheme } = useTheme()
+  const mediaQueryList: MediaQueryList | undefined =
+    window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)')
 
   return useEffect(() => {
-    if (!query) {
+    if (!mediaQueryList) {
       return
     }
 
     const themeListener = (media: MediaQueryListEvent) => setTheme(media.matches ? darkName : lightName)
-    query.addEventListener('change', themeListener)
-    return () => query.removeEventListener('change', themeListener)
+    mediaQueryList.addEventListener('change', themeListener)
+    return () => mediaQueryList.removeEventListener('change', themeListener)
   }, [lightName, darkName])
 }
