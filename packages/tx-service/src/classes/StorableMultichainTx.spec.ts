@@ -28,11 +28,24 @@ const testChecker1 = new TestTxChecker()
 const testChecker2 = new TestTxChecker()
 
 describe('StorableMultichainTx', () => {
-  beforeAll(() => jest.spyOn(Date, 'now').mockImplementation(() => 0))
+  beforeEach(() => jest.spyOn(Date, 'now').mockImplementation(() => 0))
 
   it('check id', () => {
     const storable = new StorableMultichainTx(dto, testChecker1, testChecker2, async () => '0x0...')
     expect(storable.getId()).toBe(id)
+  })
+
+  it('check init already created dto', () => {
+    const storable1 = new StorableMultichainTx(dto, testChecker1, testChecker2, async () => '0x0...')
+    expect(storable1.getValue().created).toBe(0)
+
+    const storable2 = new StorableMultichainTx(
+      { ...dto, created: -1 },
+      testChecker1,
+      testChecker2,
+      async () => '0x0...',
+    )
+    expect(storable2.getValue().created).toBe(-1)
   })
 
   it('check value', () => {
