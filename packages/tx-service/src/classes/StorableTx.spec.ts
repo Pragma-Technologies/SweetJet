@@ -30,6 +30,14 @@ describe('StorableTx', () => {
     expect(storable.getId()).toBe(id)
   })
 
+  it('check init already created dto', () => {
+    const storable1 = new StorableTx(dto, testChecker)
+    expect(storable1.getValue().created).toBe(0)
+
+    const storable2 = new StorableTx({ ...dto, created: -1 }, testChecker)
+    expect(storable2.getValue().created).toBe(-1)
+  })
+
   it('check value', () => {
     const storable = new StorableTx(dto, testChecker)
     expect(storable.getValue()).toEqual({ ...dto, id, created: storable.getValue().created })
