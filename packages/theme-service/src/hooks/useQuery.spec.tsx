@@ -2,18 +2,31 @@ import { renderHook } from '@testing-library/react-hooks'
 import { act } from 'react-dom/test-utils'
 import { useQuery } from './useQuery'
 
+const listeners: Set<(this: MediaQueryList, ev: { matches: boolean }) => any> = new Set()
+
+const mediaQueryList = {
+  matches: true,
+  media: '',
+  addEventListener(type: 'change' | string, listener: (this: MediaQueryList, ev: { matches: boolean }) => any) {
+    if (type === 'change') {
+      listeners.add(listener)
+    }
+  },
+  removeEventListener(type: 'change' | string, listener: (this: MediaQueryList, ev: { matches: boolean }) => any) {
+    listeners.delete(listener)
+  },
+  dispatchEvent(event: { matches: boolean }): boolean {
+    listeners.forEach((listener) => listener.call(mediaQueryList, event))
+    return true
+  },
+  onchange(ev: { matches: boolean }): void {
+    mediaQueryList.dispatchEvent(ev as MediaQueryListEvent)
+  },
+} as unknown as MediaQueryList
+
 describe('useQuery', () => {
   beforeAll(() => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation((query) => ({
-        matches: true,
-        media: query,
-        onchange: null,
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-      })),
-    })
+    window.matchMedia = () => mediaQueryList
   })
 
   it('should call setTheme with the correct theme name', () => {
@@ -29,10 +42,28 @@ describe('useQuery', () => {
     renderHook(() => useQuery('brown', 'pink', setThemeMock))
 
     act(() => {
-      window.matchMedia = jest.fn().mockReturnValue({ matches: false })
-      window.dispatchEvent(new Event('change'))
+      mediaQueryList.dispatchEvent({ matches: false } as MediaQueryListEvent)
     })
 
     expect(setThemeMock).toHaveBeenCalledWith('pink')
+  })
+
+  it('check memory management', () => {
+    const setThemeMock = jest.fn()
+
+    const { rerender, unmount } = renderHook(
+      ([lightName, darkName]: [string, string]) => useQuery(lightName, darkName, setThemeMock),
+      { initialProps: ['brown', 'pink'] },
+    )
+
+    expect(listeners.size).toBe(1)
+
+    rerender(['pink', 'brown'])
+
+    expect(listeners.size).toBe(1)
+
+    unmount()
+
+    expect(listeners.size).toBe(0)
   })
 })
