@@ -1,8 +1,7 @@
-import { fireEvent, screen, render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import { useEffect } from 'react'
 import { ColorConstant, ThemeContextType } from '../types'
 import { createThemeEnvironment } from './index'
-import { renderHook } from '@testing-library/react-hooks'
 
 describe('createThemeEnvironment', () => {
   type TestColorsConst = 'primary' | 'secondary'
@@ -33,6 +32,11 @@ describe('createThemeEnvironment', () => {
   >('TestContext', themeConfig)
 
   let updateTheme = jest.fn()
+
+  beforeEach(() => {
+    updateTheme()
+  })
+
   it('should return the correct hook and wrapper', () => {
     expect(hook).toBeDefined()
     expect(hook).toBeInstanceOf(Function)
@@ -115,11 +119,15 @@ describe('createThemeEnvironment', () => {
 
     const Component = () => {
       themeName = hook().themeName
+      const _updateTheme = hook().setTheme
       icon = hook().themeConfig[themeName].icons
       image = hook().themeConfig[themeName].images
 
-      const onClick = () => renderHook(() => hook().setTheme('light'))
-      return <button onClick={onClick}>{buttonLabel}</button>
+      useEffect(() => {
+        updateTheme = jest.fn(_updateTheme)
+      }, [])
+
+      return <button onClick={() => updateTheme('light')}>{buttonLabel}</button>
     }
 
     const { getByText } = render(
