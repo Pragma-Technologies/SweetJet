@@ -10,9 +10,9 @@ describe('useThemeLayoutEffect', () => {
   type ThemeName = 'pink' | 'light' | 'brown'
   type Config = ThemeConfig<ThemeName, string, undefined, undefined>
   const themeConfig: Config = {
-    pink: { colors: pinkColors },
-    light: { colors: lightColors },
-    brown: { colors: brownColors },
+    pink: { colors: pinkColors, icons: undefined, images: undefined },
+    light: { colors: lightColors, icons: undefined, images: undefined },
+    brown: { colors: brownColors, icons: undefined, images: undefined },
   }
 
   it('should add a style element to the head and add class to the body', () => {

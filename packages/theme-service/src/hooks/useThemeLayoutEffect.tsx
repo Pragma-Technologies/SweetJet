@@ -5,7 +5,12 @@ import { getThemeVarsStyle, toCssColorsVars } from '../utils'
 const bodyThemeSelector = (themeName: string, colors: ColorConstant<string>) =>
   `body.${themeName} {${getThemeVarsStyle(toCssColorsVars(colors))}\n}\n`
 
-export const useThemeLayoutEffect = <ThemeNames extends string, Colors extends string, ThemedIcons, ThemedImages>(
+export const useThemeLayoutEffect = <
+  ThemeNames extends string,
+  Colors extends string,
+  ThemedIcons extends Record<string, unknown> | undefined,
+  ThemedImages extends Record<string, unknown> | undefined,
+>(
   themeName: ThemeNames,
   themeConfig: ThemeConfig<ThemeNames, Colors, ThemedIcons, ThemedImages>,
 ): void => {
