@@ -1,11 +1,10 @@
 import { useStrictContext } from '@pragma-web-utils/hooks'
 import React, { FC, useState } from 'react'
-import { useListenMediaQueryMatches, useThemeLayoutEffect } from '../hooks'
+import { useThemeLayoutEffect } from '../hooks'
 import { CreateStrictEnvironmentOutput, ThemeConfig, ThemeContextProps } from '../types'
 
 export function createThemeEnvironment<T, ThemeNames extends string, Colors extends string, ThemedIcons, ThemedImages>(
   contextName: string,
-  mediaQueryList: MediaQueryList | undefined,
   themeConfig: ThemeConfig<ThemeNames, Colors, ThemedIcons, ThemedImages>,
 ): CreateStrictEnvironmentOutput<T, ThemeNames> {
   const context = React.createContext<unknown>(undefined)
@@ -18,8 +17,6 @@ export function createThemeEnvironment<T, ThemeNames extends string, Colors exte
     const themes = Object.keys(themeConfig) as ThemeNames[]
 
     const [themeName, setThemeName] = useState<ThemeNames>(() => defaultTheme ?? themes[0])
-
-    useListenMediaQueryMatches(mediaQueryList, themeName, setThemeName as (name: string) => void)
 
     useThemeLayoutEffect(themeName, themeConfig as ThemeConfig<string, string, string | undefined, string | undefined>)
 

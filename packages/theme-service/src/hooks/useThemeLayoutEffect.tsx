@@ -5,9 +5,9 @@ import { getThemeVarsStyle, toCssColorsVars } from '../utils'
 const bodyThemeSelector = (themeName: string, colors: ColorConstant<string>) =>
   `body.${themeName} {${getThemeVarsStyle(toCssColorsVars(colors))}\n}\n`
 
-export const useThemeLayoutEffect = (
-  themeName: string,
-  themeConfig: ThemeConfig<string, string, string | undefined, string | undefined>,
+export const useThemeLayoutEffect = <ThemeNames extends string, Colors extends string, ThemedIcons, ThemedImages>(
+  themeName: ThemeNames,
+  themeConfig: ThemeConfig<ThemeNames, Colors, ThemedIcons, ThemedImages>,
 ): void => {
   const themes = Object.keys(themeConfig)
 
@@ -25,7 +25,7 @@ export const useThemeLayoutEffect = (
       document.head.appendChild(styles)
     }
 
-    styles.innerHTML = `${themes.map((el) => bodyThemeSelector(el, themeConfig[el].colors))}\n`
+    styles.innerHTML = `${themes.map((el) => bodyThemeSelector(el, themeConfig[el as ThemeNames].colors))}\n`
 
     document.body.classList.add(themeName)
   }, [])
