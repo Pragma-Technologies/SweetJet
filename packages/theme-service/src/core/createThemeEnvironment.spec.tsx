@@ -1,4 +1,5 @@
 import { fireEvent, screen, render } from '@testing-library/react'
+import { useEffect } from 'react'
 import { ColorConstant, ThemeContextType } from '../types'
 import { createThemeEnvironment } from './index'
 import { renderHook } from '@testing-library/react-hooks'
@@ -31,7 +32,7 @@ describe('createThemeEnvironment', () => {
     ImageConfig
   >('TestContext', themeConfig)
 
-  const updateTheme = jest.fn()
+  let updateTheme = jest.fn()
   it('should return the correct hook and wrapper', () => {
     expect(hook).toBeDefined()
     expect(hook).toBeInstanceOf(Function)
@@ -69,8 +70,13 @@ describe('createThemeEnvironment', () => {
 
     const Component = () => {
       themeName = hook().themeName
+      const _updateTheme = hook().setTheme
       icon = hook().themeConfig[themeName].icons
       image = hook().themeConfig[themeName].images
+
+      useEffect(() => {
+        updateTheme = jest.fn(_updateTheme)
+      }, [])
 
       return <button onClick={() => updateTheme('brown')}>{buttonLabel}</button>
     }
