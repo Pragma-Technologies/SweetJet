@@ -34,7 +34,7 @@ describe('createThemeEnvironment', () => {
   let updateTheme = jest.fn()
 
   beforeEach(() => {
-    updateTheme()
+    updateTheme = jest.fn()
   })
 
   it('should return the correct hook and wrapper', () => {
@@ -103,7 +103,11 @@ describe('createThemeEnvironment', () => {
   })
 
   it('should toggle the theme when toggleTheme is called with icon and image undefined', () => {
-    const themeConfig = { pink: { colors: pinkColors }, light: { colors: lightColors }, brown: { colors: brownColors } }
+    const themeConfig = {
+      pink: { colors: pinkColors, icons: undefined, images: undefined },
+      light: { colors: lightColors, icons: undefined, images: undefined },
+      brown: { colors: brownColors, icons: undefined, images: undefined },
+    }
     const { hook, wrapper: ThemeWrapper } = createThemeEnvironment<
       TestThemeContext,
       ThemeName,

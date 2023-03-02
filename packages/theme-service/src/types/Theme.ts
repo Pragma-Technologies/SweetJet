@@ -9,11 +9,16 @@ export type CssColorConstant<T extends string> = { [key in T]: CssColorVarValues
 
 export type Themed<ThemeNames extends string, T> = { [key in ThemeNames]: T }
 
-export type ThemeConfig<ThemeNames extends string, ColorNames extends string, ThemedIcons, ThemedImages> = {
+export type ThemeConfig<
+  ThemeNames extends string,
+  ColorNames extends string,
+  ThemedIcons extends Record<string, unknown> | undefined,
+  ThemedImages extends Record<string, unknown> | undefined,
+> = {
   [key in ThemeNames]: {
     colors: ColorConstant<ColorNames>
-    icons?: ThemedIcons
-    images?: ThemedImages
+    icons: ThemedIcons
+    images: ThemedImages
   }
 }
 
@@ -24,7 +29,12 @@ export interface ThemeContextProps<ThemeNames extends string> {
 
 export type svgType = FunctionComponent<SVGProps<SVGSVGElement> & { title?: string | undefined }>
 
-export interface ThemeContextType<ThemeNames extends string, Colors extends string, ThemedIcons, ThemedImages> {
+export interface ThemeContextType<
+  ThemeNames extends string,
+  Colors extends string,
+  ThemedIcons extends Record<string, unknown> | undefined,
+  ThemedImages extends Record<string, unknown> | undefined,
+> {
   themeName: ThemeNames
 
   themeConfig: ThemeConfig<ThemeNames, Colors, ThemedIcons, ThemedImages>
