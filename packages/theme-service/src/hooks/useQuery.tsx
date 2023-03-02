@@ -13,6 +13,7 @@ export const useQuery = <ThemeNames extends string>(
       return
     }
 
+    setTheme(mediaQueryList.matches ? darkName : lightName)
     const themeListener = (media: MediaQueryListEvent) => setTheme(media.matches ? darkName : lightName)
     mediaQueryList.addEventListener('change', themeListener)
     return () => mediaQueryList.removeEventListener('change', themeListener)

@@ -3,26 +3,36 @@ import { act } from 'react-dom/test-utils'
 import { useQuery } from './useQuery'
 
 describe('useQuery', () => {
+  beforeAll(() => {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: jest.fn().mockImplementation((query) => ({
+        matches: true,
+        media: query,
+        onchange: null,
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+      })),
+    })
+  })
+
   it('should call setTheme with the correct theme name', () => {
-    let themeName
-    const setThemeMock = jest.fn((name) => (themeName = name))
+    const setThemeMock = jest.fn()
 
     renderHook(() => useQuery('pink', 'brown', setThemeMock))
-    expect(themeName).toBe('brown')
+    expect(setThemeMock).toHaveBeenCalledWith('brown')
   })
 
   it('should set theme based on media query', () => {
-    let themeName
-    const setThemeMock = jest.fn((name) => (themeName = name))
-    window.matchMedia = jest.fn().mockReturnValue({})
+    const setThemeMock = jest.fn()
 
-    renderHook(() => useQuery('pink', 'brown', setThemeMock))
+    renderHook(() => useQuery('brown', 'pink', setThemeMock))
 
     act(() => {
-      window.matchMedia = jest.fn().mockReturnValue({ matches: true })
+      window.matchMedia = jest.fn().mockReturnValue({ matches: false })
       window.dispatchEvent(new Event('change'))
     })
 
-    expect(themeName).toBe('brown')
+    expect(setThemeMock).toHaveBeenCalledWith('pink')
   })
 })
