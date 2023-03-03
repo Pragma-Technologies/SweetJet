@@ -26,7 +26,11 @@ export function createThemeEnvironment<
 
     useThemeLayoutEffect(themeName, themeConfig)
 
-    return <context.Provider value={{ themeName, setTheme: setThemeName, themeConfig }}>{children}</context.Provider>
+    return (
+      <context.Provider value={{ themeName, setTheme: setThemeName, themeConfig: themeConfig[themeName] }}>
+        {children}
+      </context.Provider>
+    )
   }
 
   return { hook, wrapper }

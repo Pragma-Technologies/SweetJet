@@ -37,7 +37,7 @@ export interface ThemeContextType<
 > {
   themeName: ThemeNames
 
-  themeConfig: ThemeConfig<ThemeNames, Colors, ThemedIcons, ThemedImages>
+  themeConfig: ThemeConfig<ThemeNames, Colors, ThemedIcons, ThemedImages>[ThemeNames]
 
   setTheme(themeName: ThemeNames): void
 }
