@@ -24,10 +24,10 @@ const mediaQueryList = {
   },
 } as unknown as MediaQueryList
 
+const _matchMedia = window.matchMedia
 describe('useQuery', () => {
-  beforeAll(() => {
-    window.matchMedia = () => mediaQueryList
-  })
+  beforeAll(() => (window.matchMedia = () => mediaQueryList))
+  afterAll(() => (window.matchMedia = _matchMedia))
 
   it('should call setTheme with the correct theme name', () => {
     const setThemeMock = jest.fn()

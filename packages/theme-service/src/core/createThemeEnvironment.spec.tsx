@@ -75,8 +75,8 @@ describe('createThemeEnvironment', () => {
     const Component = () => {
       themeName = hook().themeName
       const _updateTheme = hook().setTheme
-      icon = hook().themeConfig[themeName].icons
-      image = hook().themeConfig[themeName].images
+      icon = hook().themeConfig.icons
+      image = hook().themeConfig.images
 
       useEffect(() => {
         updateTheme = jest.fn(_updateTheme)
@@ -124,8 +124,8 @@ describe('createThemeEnvironment', () => {
     const Component = () => {
       themeName = hook().themeName
       const _updateTheme = hook().setTheme
-      icon = hook().themeConfig[themeName].icons
-      image = hook().themeConfig[themeName].images
+      icon = hook().themeConfig.icons
+      image = hook().themeConfig.images
 
       useEffect(() => {
         updateTheme = jest.fn(_updateTheme)
