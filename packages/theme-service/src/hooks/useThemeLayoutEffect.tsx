@@ -30,7 +30,8 @@ export const useThemeLayoutEffect = <
       document.head.appendChild(styles)
     }
 
-    styles.innerHTML = `${themes.map((el) => bodyThemeSelector(el, themeConfig[el as ThemeNames].colors))}\n`
+    const colorList = themes.map((el) => bodyThemeSelector(el, themeConfig[el as ThemeNames].colors))
+    styles.innerHTML = colorList.join('')
 
     document.body.classList.add(themeName)
   }, [])
