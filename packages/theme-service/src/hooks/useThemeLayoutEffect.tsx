@@ -1,17 +1,22 @@
 import { useEffect, useLayoutEffect } from 'react'
-import { ColorConstant, ThemeName } from '../types'
+import { ColorConstant, ThemeConfig } from '../types'
 import { getThemeVarsStyle, toCssColorsVars } from '../utils'
 
-const bodyThemeSelector = (themeName: ThemeName, colors: ColorConstant<string>) =>
+const bodyThemeSelector = (themeName: string, colors: ColorConstant<string>) =>
   `body.${themeName} {${getThemeVarsStyle(toCssColorsVars(colors))}\n}\n`
 
-export const useThemeLayoutEffect = (
-  themeName: ThemeName,
-  lightColors: ColorConstant<string>,
-  darkColors: ColorConstant<string>,
+export const useThemeLayoutEffect = <
+  ThemeNames extends string,
+  Colors extends string,
+  ThemedIcons extends Record<string, unknown> | undefined,
+  ThemedImages extends Record<string, unknown> | undefined,
+>(
+  themeName: ThemeNames,
+  themeConfig: ThemeConfig<ThemeNames, Colors, ThemedIcons, ThemedImages>,
 ): void => {
+  const themes = Object.keys(themeConfig)
+
   useEffect(() => {
-    const themes: ThemeName[] = ['dark', 'light']
     document.body.classList.remove(...themes)
     document.body.classList.add(themeName)
   }, [themeName])
@@ -24,9 +29,9 @@ export const useThemeLayoutEffect = (
       styles.id = themeStylesId
       document.head.appendChild(styles)
     }
-    styles.innerHTML = `
-    ${bodyThemeSelector('light', lightColors)}
-    ${bodyThemeSelector('dark', darkColors)}`
+
+    styles.innerHTML = `${themes.map((el) => bodyThemeSelector(el, themeConfig[el as ThemeNames].colors))}\n`
+
     document.body.classList.add(themeName)
   }, [])
 }

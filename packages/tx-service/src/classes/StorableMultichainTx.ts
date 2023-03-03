@@ -11,7 +11,7 @@ function getTxDTO<
   DestinationChain extends string | number = string | number,
   P extends Payload = Payload,
 >(info: MultichainTxInfo<OriginChain, DestinationChain, P>): MultichainTransaction<OriginChain, DestinationChain, P> {
-  const created = Date.now()
+  const created = info.created ?? Date.now()
   const id: MultichainTransaction<OriginChain, DestinationChain, P>['id'] = `${info.base}_${info.chainId}_${info.hash}`
   return {
     ...info,

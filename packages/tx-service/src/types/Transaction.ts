@@ -52,6 +52,7 @@ export type TxRequestedInfo<C extends Chain = Chain, P extends Payload = Payload
   chainId: C
   base: ConnectorBaseEnum
   payload: P
+  created?: number
 }
 
 export type TxInfo<C extends Chain = Chain, P extends Payload = Payload> = {
@@ -61,6 +62,7 @@ export type TxInfo<C extends Chain = Chain, P extends Payload = Payload> = {
   payload: P
   hash: string
   status?: TransactionStatusEnum
+  created?: number
 }
 
 export type MultichainTxInfo<
@@ -74,6 +76,7 @@ export type MultichainTxInfo<
   payload: P
   hash: string
   status?: TransactionStatusEnum
+  created?: number
   destination:
     | {
         chainId: DestinationChain

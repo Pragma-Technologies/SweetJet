@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@testing-library/react'
+import { useEffect } from 'react'
 import { ColorConstant, ThemeContextType } from '../types'
 import { createThemeEnvironment } from './index'
 
@@ -6,19 +7,35 @@ describe('createThemeEnvironment', () => {
   type TestColorsConst = 'primary' | 'secondary'
   type IconsConfig = { icon: string }
   type ImageConfig = { image: string }
-  type TestThemeContext = ThemeContextType<TestColorsConst, IconsConfig, ImageConfig>
+  const iconsSets = { light: { icon: 'lightIcon' }, pink: { icon: 'pinkIcon' }, brown: { icon: 'brownIcon' } }
+  const imagesSets = { light: { image: 'darkImage' }, pink: { image: 'pinkImage' }, brown: { image: 'brownImage' } }
 
   const lightColors: ColorConstant<TestColorsConst> = { primary: '#FFF', secondary: '#000' }
-  const darkColors: ColorConstant<TestColorsConst> = { primary: '#000', secondary: '#FFF' }
-  const iconsSets = { light: { icon: 'lightIcon' }, dark: { icon: 'darkIcon' } }
-  const imagesSets = { light: { image: 'darkIcon' }, dark: { image: 'darkIcon' } }
+  const brownColors: ColorConstant<TestColorsConst> = { primary: '#000', secondary: '#FFF' }
+  const pinkColors: ColorConstant<TestColorsConst> = { primary: '#F5F5F5', secondary: '#222222' }
 
+  type ThemeName = 'pink' | 'light' | 'brown'
+
+  const themeConfig = {
+    pink: { colors: pinkColors, icons: iconsSets.pink, images: imagesSets.pink },
+    light: { colors: lightColors, icons: iconsSets.light, images: imagesSets.light },
+    brown: { colors: brownColors, icons: iconsSets.brown, images: imagesSets.brown },
+  }
+
+  type TestThemeContext = ThemeContextType<ThemeName, TestColorsConst, IconsConfig, ImageConfig>
   const { hook, wrapper: ThemeWrapper } = createThemeEnvironment<
     TestThemeContext,
+    ThemeName,
     TestColorsConst,
     IconsConfig,
     ImageConfig
-  >('TestContext', undefined, lightColors, darkColors, iconsSets, imagesSets)
+  >('TestContext', themeConfig)
+
+  let updateTheme = jest.fn()
+
+  beforeEach(() => {
+    updateTheme = jest.fn()
+  })
 
   it('should return the correct hook and wrapper', () => {
     expect(hook).toBeDefined()
@@ -42,11 +59,11 @@ describe('createThemeEnvironment', () => {
     expect(renderedComponent.container.textContent).toBe('light')
 
     const renderComponentDark = render(
-      <ThemeWrapper defaultTheme="dark">
+      <ThemeWrapper defaultTheme="brown">
         <TestComponent />
       </ThemeWrapper>,
     )
-    expect(renderComponentDark.container.textContent).toBe('dark')
+    expect(renderComponentDark.container.textContent).toBe('brown')
   })
 
   it('should toggle the theme when toggleTheme is called', () => {
@@ -57,42 +74,47 @@ describe('createThemeEnvironment', () => {
 
     const Component = () => {
       themeName = hook().themeName
-      icon = hook().icons
-      image = hook().images
+      const _updateTheme = hook().setTheme
+      icon = hook().themeConfig[themeName].icons
+      image = hook().themeConfig[themeName].images
 
-      return <button onClick={hook().toggleTheme}>{buttonLabel}</button>
+      useEffect(() => {
+        updateTheme = jest.fn(_updateTheme)
+      }, [])
+
+      return <button onClick={() => updateTheme('brown')}>{buttonLabel}</button>
     }
 
     const { getByText } = render(
-      <ThemeWrapper defaultTheme="dark">
+      <ThemeWrapper defaultTheme="pink">
         <Component />
       </ThemeWrapper>,
     )
 
-    expect(themeName).toBe('dark')
-    expect(icon).toStrictEqual(iconsSets.dark)
-    expect(image).toStrictEqual(imagesSets.dark)
+    expect(themeName).toBe('pink')
+    expect(icon).toStrictEqual(iconsSets.pink)
+    expect(image).toStrictEqual(imagesSets.pink)
 
-    fireEvent.click(getByText(buttonLabel)) // Call toggleTheme again dark->light
+    fireEvent.click(getByText(buttonLabel))
 
-    expect(themeName).toBe('light')
-    expect(icon).toStrictEqual(iconsSets.light)
-    expect(image).toStrictEqual(imagesSets.light)
-
-    fireEvent.click(getByText(buttonLabel)) // Call toggleTheme again light->dark
-
-    expect(themeName).toBe('dark')
-    expect(icon).toStrictEqual(iconsSets.dark)
-    expect(image).toStrictEqual(imagesSets.dark)
+    expect(themeName).toBe('brown')
+    expect(icon).toStrictEqual(iconsSets.brown)
+    expect(image).toStrictEqual(imagesSets.brown)
   })
 
   it('should toggle the theme when toggleTheme is called with icon and image undefined', () => {
+    const themeConfig = {
+      pink: { colors: pinkColors, icons: undefined, images: undefined },
+      light: { colors: lightColors, icons: undefined, images: undefined },
+      brown: { colors: brownColors, icons: undefined, images: undefined },
+    }
     const { hook, wrapper: ThemeWrapper } = createThemeEnvironment<
       TestThemeContext,
+      ThemeName,
       TestColorsConst,
       undefined,
       undefined
-    >('TestContext', undefined, lightColors, darkColors)
+    >('TestContext', themeConfig)
 
     const buttonLabel = 'Toggle Theme'
     let themeName
@@ -101,19 +123,24 @@ describe('createThemeEnvironment', () => {
 
     const Component = () => {
       themeName = hook().themeName
-      icon = hook().icons
-      image = hook().images
+      const _updateTheme = hook().setTheme
+      icon = hook().themeConfig[themeName].icons
+      image = hook().themeConfig[themeName].images
 
-      return <button onClick={hook().toggleTheme}>{buttonLabel}</button>
+      useEffect(() => {
+        updateTheme = jest.fn(_updateTheme)
+      }, [])
+
+      return <button onClick={() => updateTheme('light')}>{buttonLabel}</button>
     }
 
     const { getByText } = render(
-      <ThemeWrapper defaultTheme="dark">
+      <ThemeWrapper defaultTheme="pink">
         <Component />
       </ThemeWrapper>,
     )
 
-    expect(themeName).toBe('dark')
+    expect(themeName).toBe('pink')
     expect(icon).toStrictEqual(undefined)
     expect(image).toStrictEqual(undefined)
 

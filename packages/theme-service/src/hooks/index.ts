@@ -1,2 +1,2 @@
 export * from './useThemeLayoutEffect'
-export * from './useListenMediaQueryMatches'
+export * from './useQuery'

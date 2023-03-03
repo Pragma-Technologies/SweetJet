@@ -1,51 +1,32 @@
 import { useStrictContext } from '@pragma-web-utils/hooks'
-import React, { FC, useCallback, useState } from 'react'
-import { useListenMediaQueryMatches, useThemeLayoutEffect } from '../hooks'
-import { ColorConstant, CreateStrictEnvironmentOutput, ThemeContextProps, Themed, ThemeName } from '../types'
+import React, { FC, useState } from 'react'
+import { useThemeLayoutEffect } from '../hooks'
+import { CreateStrictEnvironmentOutput, ThemeConfig, ThemeContextProps } from '../types'
 
-export function createThemeEnvironment<T, Colors extends string, ThemedIcons, ThemedImages>(
+export function createThemeEnvironment<
+  T,
+  ThemeNames extends string,
+  Colors extends string,
+  ThemedIcons extends Record<string, unknown> | undefined,
+  ThemedImages extends Record<string, unknown> | undefined,
+>(
   contextName: string,
-  mediaQueryList: MediaQueryList | undefined,
-  lightColors: ColorConstant<Colors>,
-  darkColors: ColorConstant<Colors>,
-  iconsSets?: Themed<ThemedIcons>,
-  imagesSets?: Themed<ThemedImages>,
-): CreateStrictEnvironmentOutput<T> {
+  themeConfig: ThemeConfig<ThemeNames, Colors, ThemedIcons, ThemedImages>,
+): CreateStrictEnvironmentOutput<T, ThemeNames> {
   const context = React.createContext<unknown>(undefined)
 
   const hook = (): T => {
     return useStrictContext(context, contextName) as T
   }
 
-  const wrapper: FC<ThemeContextProps> = ({ children, defaultTheme }) => {
-    const [themeName, setThemeName] = useState<ThemeName>(
-      () => defaultTheme ?? (mediaQueryList?.matches ? 'dark' : 'light') ?? 'light',
-    )
+  const wrapper: FC<ThemeContextProps<ThemeNames>> = ({ children, defaultTheme }) => {
+    const themes = Object.keys(themeConfig) as ThemeNames[]
 
-    useListenMediaQueryMatches(mediaQueryList, setThemeName)
+    const [themeName, setThemeName] = useState<ThemeNames>(() => defaultTheme ?? themes[0])
 
-    useThemeLayoutEffect(themeName, lightColors, darkColors)
+    useThemeLayoutEffect(themeName, themeConfig)
 
-    const toggleTheme = useCallback(() => setThemeName(themeName === 'dark' ? 'light' : 'dark'), [themeName])
-
-    const icons = iconsSets ? iconsSets[themeName] : undefined
-
-    const images = imagesSets ? imagesSets[themeName] : undefined
-
-    return (
-      <context.Provider
-        value={{
-          themeName,
-          setTheme: setThemeName,
-          toggleTheme,
-          icons,
-          images,
-          colors: themeName === 'dark' ? darkColors : lightColors,
-        }}
-      >
-        {children}
-      </context.Provider>
-    )
+    return <context.Provider value={{ themeName, setTheme: setThemeName, themeConfig }}>{children}</context.Provider>
   }
 
   return { hook, wrapper }

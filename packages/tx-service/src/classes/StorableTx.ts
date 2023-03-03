@@ -8,7 +8,7 @@ import { TxStatusChecker } from './TxStatusChecker'
 function getTxDTO<C extends string | number = string | number, P extends Payload = Payload>(
   info: TxInfo<C, P>,
 ): Transaction<C, P> {
-  const created = Date.now()
+  const created = info.created ?? Date.now()
   const id: Transaction<C, P>['id'] = `${info.base}_${info.chainId}_${info.hash}`
   return { ...info, created, id, status: info.status ?? TransactionStatusEnum.UNKNOWN }
 }

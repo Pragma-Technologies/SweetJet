@@ -4,7 +4,7 @@ import { StorableTransactionLike } from './StorableTransactionLike'
 function getTxDTO<C extends string | number = string | number, P extends Payload = Payload>(
   txInfo: TxRequestedInfo<C, P>,
 ): RequestedTransaction<C, P> {
-  const created = Date.now()
+  const created = txInfo.created ?? Date.now()
   const id: RequestedTransaction<C, P>['id'] = `${txInfo.base}_${txInfo.chainId}_${created}`
   return { ...txInfo, created, id }
 }
