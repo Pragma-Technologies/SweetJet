@@ -6,7 +6,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.29",
+  "version": "0.0.30",
   "files": [
     "dist/*"
   ],
@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "@pragma-web-utils/contract-utils": "^0.0.14",
-    "@pragma-web-utils/core": "^0.0.28",
-    "@pragma-web-utils/hooks": "^0.0.28"
+    "@pragma-web-utils/core": "^0.0.29",
+    "@pragma-web-utils/hooks": "^0.0.29"
   },
   "peerDependencies": {
     "ethereum-checksum-address": "^0.0.8",
