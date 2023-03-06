@@ -1,13 +1,12 @@
-import React from 'react'
-import { FC } from 'react'
+import React, { FC } from 'react'
+import { ThemeContextProvider, useTheme } from './services/ThemeService'
 import styled from 'styled-components'
 
 export const App: FC = () => {
   return (
-    // <ThemeContextProvider>
-    <div>text</div>
-    // <Content />
-    // </ThemeContextProvider>
+    <ThemeContextProvider>
+      <Content />
+    </ThemeContextProvider>
   )
 }
 
@@ -16,14 +15,14 @@ export const Root = styled.footer`
   background-color: var(--secondary);
 `
 
-// const Content: FC = () => {
-//   const { setTheme } = useTheme()
-//
-//   return (
-//     <>
-//       <div>text</div>
-//       <button onClick={() => setTheme('main')}>main</button>
-//       <button onClick={() => setTheme('additional')}>additional</button>
-//     </>
-//   )
-// }
+const Content: FC = () => {
+  const { setTheme } = useTheme()
+
+  return (
+    <>
+      <Root>text</Root>
+      <button onClick={() => setTheme('main')}>main</button>
+      <button onClick={() => setTheme('additional')}>additional</button>
+    </>
+  )
+}
