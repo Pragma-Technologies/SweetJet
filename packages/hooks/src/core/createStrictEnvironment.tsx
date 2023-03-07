@@ -4,9 +4,9 @@ import { CreateStrictEnvironmentOutput, WrapperProps } from '../types'
 
 export function createStrictEnvironment<T>(
   contextName: string,
-  userContext?: React.Context<unknown | T>,
+  userContext?: React.Context<T> | React.Context<unknown>,
 ): CreateStrictEnvironmentOutput<T> {
-  const context = !!userContext ? userContext : React.createContext<unknown>(undefined)
+  const context = !!userContext ? (userContext as React.Context<unknown>) : React.createContext<unknown>(undefined)
 
   const hook = (): T => {
     return useStrictContext(context, contextName) as T
