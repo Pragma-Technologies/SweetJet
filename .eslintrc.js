@@ -5,14 +5,16 @@ module.exports = {
     amd: true,
     node: true,
   },
-  extends: ['plugin:@typescript-eslint/recommended', 'prettier'],
+  extends: ['plugin:react/recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 12,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint', 'prettier'],
+  plugins: ['react', '@typescript-eslint', 'prettier'],
   rules: {
+    'react/jsx-uses-react': 'off',
+    'react/react-in-jsx-scope': 'off',
     '@typescript-eslint/no-unused-vars': ['warn'],
     '@typescript-eslint/explicit-module-boundary-types': ['error'],
     '@typescript-eslint/no-non-null-assertion': ['error'],
