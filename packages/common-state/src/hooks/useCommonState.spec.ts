@@ -79,6 +79,145 @@ describe('useCommonState hook', () => {
     expect(result.current.state.error).toBe(undefined)
   })
 
+  it('check initial value', async () => {
+    const { result, waitForNextUpdate } = renderHook(() => useCommonState<number>(-1))
+
+    expect(result.current.state.value).toBe(-1)
+    expect(result.current.state.cached).toBe(-1)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(false)
+    expect(result.current.state.error).toBe(undefined)
+
+    act(() => {
+      result.current.state.softRefresh()
+    })
+
+    expect(result.current.state.value).toBe(-1)
+    expect(result.current.state.cached).toBe(-1)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(true)
+    expect(result.current.state.error).toBe(undefined)
+
+    jest.runAllTimers()
+    await waitForNextUpdate()
+
+    expect(result.current.state.value).toBe(-1)
+    expect(result.current.state.cached).toBe(-1)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(false)
+    expect(result.current.state.error).toBe(undefined)
+
+    result.current.setRefresh({ refreshFn: () => testIncrementor.increment() })
+    act(() => {
+      result.current.state.softRefresh()
+    })
+
+    expect(result.current.state.value).toBe(-1)
+    expect(result.current.state.cached).toBe(-1)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(true)
+    expect(result.current.state.error).toBe(undefined)
+
+    jest.runAllTimers()
+    await waitForNextUpdate()
+
+    expect(result.current.state.value).toBe(0)
+    expect(result.current.state.cached).toBe(0)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(false)
+    expect(result.current.state.error).toBe(undefined)
+
+    act(() => {
+      result.current.state.softRefresh()
+    })
+
+    expect(result.current.state.value).toBe(0)
+    expect(result.current.state.cached).toBe(0)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(true)
+    expect(result.current.state.error).toBe(undefined)
+
+    jest.runAllTimers()
+    await waitForNextUpdate()
+
+    expect(result.current.state.value).toBe(1)
+    expect(result.current.state.cached).toBe(1)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(false)
+    expect(result.current.state.error).toBe(undefined)
+  })
+
+  it('check initial function', async () => {
+    const initialFn = jest.fn(() => -1)
+    const { result, waitForNextUpdate } = renderHook(() => useCommonState<number>(() => initialFn()))
+
+    expect(result.current.state.value).toBe(-1)
+    expect(result.current.state.cached).toBe(-1)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(false)
+    expect(result.current.state.error).toBe(undefined)
+
+    act(() => {
+      result.current.state.softRefresh()
+    })
+
+    expect(result.current.state.value).toBe(-1)
+    expect(result.current.state.cached).toBe(-1)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(true)
+    expect(result.current.state.error).toBe(undefined)
+
+    jest.runAllTimers()
+    await waitForNextUpdate()
+
+    expect(result.current.state.value).toBe(-1)
+    expect(result.current.state.cached).toBe(-1)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(false)
+    expect(result.current.state.error).toBe(undefined)
+
+    result.current.setRefresh({ refreshFn: () => testIncrementor.increment() })
+    act(() => {
+      result.current.state.softRefresh()
+    })
+
+    expect(result.current.state.value).toBe(-1)
+    expect(result.current.state.cached).toBe(-1)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(true)
+    expect(result.current.state.error).toBe(undefined)
+
+    jest.runAllTimers()
+    await waitForNextUpdate()
+
+    expect(result.current.state.value).toBe(0)
+    expect(result.current.state.cached).toBe(0)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(false)
+    expect(result.current.state.error).toBe(undefined)
+
+    act(() => {
+      result.current.state.softRefresh()
+    })
+
+    expect(result.current.state.value).toBe(0)
+    expect(result.current.state.cached).toBe(0)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(true)
+    expect(result.current.state.error).toBe(undefined)
+
+    jest.runAllTimers()
+    await waitForNextUpdate()
+
+    expect(result.current.state.value).toBe(1)
+    expect(result.current.state.cached).toBe(1)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(false)
+    expect(result.current.state.error).toBe(undefined)
+
+    expect(initialFn).toBeCalledTimes(1)
+  })
+
   it('check setState', async () => {
     const { result } = renderHook(() => useCommonState<number>())
 
