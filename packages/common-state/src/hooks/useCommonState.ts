@@ -7,22 +7,24 @@ import { CacheableState, StateManager, StateRefreshOption } from '../types'
 export function useCommonState<Value, Error = unknown>(initial?: undefined): StateManager<Value | undefined, Error>
 export function useCommonState<Value, Error = unknown>(initial: Value | (() => Value)): StateManager<Value, Error>
 
-export function useCommonState<Value, Error = unknown>(initial: Value): StateManager<Value, Error> {
+export function useCommonState<Value, Error = unknown>(initial: Value | (() => Value)): StateManager<Value, Error> {
   const createCancelableFactory = useCancelableFactory()
   const { addToCancelablePool, clearCancelablePool } = useCancelablePool()
   const { memoizedRequest } = useRequestMemo()
   const isMounted = useIsMounted()
   const refreshRef = useRef<StateRefreshOption<Value, Error>>()
+  // if initial is dispatch function call it ones for get value (imitate useState common logic)
+  const [_initial] = useState<Value>(initial)
   const [state, setState] = useState<CacheableState<Value, Error>>({
-    value: initial,
+    value: _initial,
     isLoading: false,
-    isActual: !!initial,
+    isActual: _initial !== undefined,
     error: undefined,
-    cached: initial,
+    cached: _initial,
   })
 
   const refreshCallback = useCallback(() => {
-    const getInitial = async () => initial
+    const getInitial = async () => _initial
     const request = refreshRef.current?.refreshFn ?? getInitial
     const key = refreshRef.current?.requestKey ?? ''
     // important save onError callback on init request, for handle changing callback during waiting request
@@ -55,7 +57,7 @@ export function useCommonState<Value, Error = unknown>(initial: Value): StateMan
           setState((prevState) => ({ ...prevState, isLoading: false }))
         } else {
           setState((prevState) => {
-            const newState = { ...prevState, value: initial, isActual: true, isLoading: false, error: error as Error }
+            const newState = { ...prevState, value: _initial, isActual: true, isLoading: false, error: error as Error }
             onError && onError(error as Error, newState)
             return newState
           })
