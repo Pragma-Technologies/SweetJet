@@ -1,0 +1,53 @@
+{
+  "name": "@pragma-web-utils/api",
+  "keywords": [
+    "pragma-web-utils"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.0.14",
+  "files": [
+    "dist/*"
+  ],
+  "type": "commonjs",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "tsc",
+    "start": "tsc --watch",
+    "test": "jest --passWithNoTests",
+    "clear-typing": "rm -rf src/abi/typings/",
+    "generate-typing": "typechain --target=ethers-v5 --out-dir src/abi/typings 'src/abi/web3/*.json'",
+    "update-typing": "yarn run clear-typing && yarn run generate-typing"
+  },
+  "devDependencies": {
+    "jest": "^29.3.1",
+    "ts-jest": "^29.0.3"
+  },
+  "dependencies": {
+    "@pragma-web-utils/core": "^0.0.29",
+    "@pragma-web-utils/contract-utils": "^0.0.14",
+    "@pragma-web-utils/common-state": "^0.0.35",
+    "@pragma-web-utils/tx-service": "^0.0.31",
+    "@typechain/ethers-v5": "^10.1.0",
+    "ethers": "^5.4.1",
+    "my-package": "^0.0.0",
+    "tronweb-typings": "^1.0.1",
+    "typechain": "^8.1.1",
+    "web3": "^1.6.0"
+  },
+  "description": "types",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pragma-Technologies/pragma-web-utils.git"
+  },
+  "author": "JumboJet",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Pragma-Technologies/pragma-web-utils/issues"
+  },
+  "homepage": "https://github.com/Pragma-Technologies/pragma-web-utils#readme"
+}

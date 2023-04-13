@@ -257,6 +257,11 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
+"@pragma-web-utils/theme-service@^0.0.31":
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/theme-service/-/theme-service-0.0.31.tgz#8f88b20abfb3dd76010f946a909aa90f18006728"
+  integrity sha512-Jvz8b7lT5oGIu72pvGyoFfG0Hwi+BK5M2FRm1Cw74rrY5vHFInf7y/Hsp1CSZbYEs65fggtAVnbOLw0B59joPw==
+
 "@sinclair/typebox@^0.25.16":
   version "0.25.24"
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.25.24.tgz#8c7688559979f7079aacaf31aa881c3aa410b718"

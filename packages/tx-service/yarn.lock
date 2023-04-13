@@ -383,6 +383,13 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
+"@pragma-web-utils/hooks@^0.0.34":
+  version "0.0.34"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/hooks/-/hooks-0.0.34.tgz#d24aea145bb4f448c2ef650cadd5ee84fc392ecc"
+  integrity sha512-XIc12XFSZ0R1s6xwhlcgS7QIWCNW3BpC6n6JoBuYEwVHPPc5AyW4vcgYKqRG48j9svb6CgbkhfIO1OJHxZ2Rcg==
+  dependencies:
+    my-package "^0.0.0"
+
 "@testing-library/react-hooks@^8.0.1":
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/@testing-library/react-hooks/-/react-hooks-8.0.1.tgz#0924bbd5b55e0c0c0502d1754657ada66947ca12"
@@ -912,6 +919,11 @@ moment@^2.29.1:
   version "2.29.4"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
   integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
+
+my-package@^0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/my-package/-/my-package-0.0.0.tgz#029020f27fcf2aed4754c5059ab1b09e5107a9de"
+  integrity sha512-2Au2tYIZqiX83bizWvvlzDAjAICfqDA/KmFA5+cR1xnKHr5D576q7SktqvEtSAIeZ0GL0uU17LUQkKiWrJK2kQ==
 
 node-addon-api@^2.0.0:
   version "2.0.2"
