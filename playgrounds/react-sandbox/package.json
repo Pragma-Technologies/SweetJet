@@ -10,6 +10,7 @@
   "dependencies": {
     "@craco/craco": "6.4.5",
     "@craco/types": "^7.0.0",
+    "@pragma-web-utils/api": "^0.0.1",
     "@pragma-web-utils/core": "^0.0.29",
     "@pragma-web-utils/common-state": "^0.0.30",
     "@pragma-web-utils/hooks": "^0.0.30",

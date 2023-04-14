@@ -607,18 +607,13 @@
     lodash "^4.17.16"
     uuid "^7.0.3"
 
-"@pragma-web-utils/common-state@^0.0.30":
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@pragma-web-utils/common-state/-/common-state-0.0.30.tgz#d16495e6eaa9709855bff443ac810998a4f29f78"
-  integrity sha512-7fqZ5L/M486ADsIRAjbZqhAUeHItJo/cdIP1CURn7tluFW8Djj8sLZMcNiGMx2mP59VASAOAN0vsT2V1Y+7KDA==
+"@pragma-web-utils/common-state@^0.0.14":
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/common-state/-/common-state-0.0.14.tgz#666fc83b09ed697f1b7e35b6d9361be70e080066"
+  integrity sha512-BTvITGxlyEb/USpwAM5i8aG9KrhFiHUDs+NOD09TfbO8fO6OhJcG6HnNGnW8p0CCodsQfV7+5ochtfPMiJgk3Q==
   dependencies:
-    "@pragma-web-utils/hooks" "^0.0.30"
+    "@pragma-web-utils/hooks" "^0.0.14"
     my-package "^0.0.0"
-
-"@pragma-web-utils/connectors@^0.0.29":
-  version "0.0.29"
-  resolved "https://registry.yarnpkg.com/@pragma-web-utils/connectors/-/connectors-0.0.29.tgz#1485fb4d8a685d539b90a735c2627c82963e6249"
-  integrity sha512-RJt18l/AKpUd34BN/6mk7YGvjcKaR79vSdg/LOg8ehBObApOcDRWzbw0txwPSf3b9wwyJ7SBD2bGKbaNvWs/Ew==
 
 "@pragma-web-utils/contract-utils@^0.0.14":
   version "0.0.14"
@@ -636,6 +631,13 @@
   integrity sha512-2KihJ7zx/rdjdOM7Bl5zrnXa2HRZjI8/blzp8DPwar8Xv6gO1iy5RWB6N/Ffeotu4Vd3FHoiSYZNUatmV5ndqQ==
   dependencies:
     "@pragma-web-utils/contract-utils" "^0.0.14"
+
+"@pragma-web-utils/hooks@^0.0.14":
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/hooks/-/hooks-0.0.14.tgz#79ceac4eac87d46e22fbdf9f373486e3483f8038"
+  integrity sha512-tOA/++8e5RdWjTClTnTVRp+CpY9kFkPnF1lcKqxntHLSxcoop1bz3Mzn79k5e4tbbpu9yiP/DpbQH9RhcaCDyg==
+  dependencies:
+    my-package "^0.0.0"
 
 "@pragma-web-utils/hooks@^0.0.30":
   version "0.0.30"
