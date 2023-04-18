@@ -607,12 +607,12 @@
     lodash "^4.17.16"
     uuid "^7.0.3"
 
-"@pragma-web-utils/common-state@^0.0.14":
-  version "0.0.14"
-  resolved "https://registry.yarnpkg.com/@pragma-web-utils/common-state/-/common-state-0.0.14.tgz#666fc83b09ed697f1b7e35b6d9361be70e080066"
-  integrity sha512-BTvITGxlyEb/USpwAM5i8aG9KrhFiHUDs+NOD09TfbO8fO6OhJcG6HnNGnW8p0CCodsQfV7+5ochtfPMiJgk3Q==
+"@pragma-web-utils/common-state@^0.0.30":
+  version "0.0.30"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/common-state/-/common-state-0.0.30.tgz#d16495e6eaa9709855bff443ac810998a4f29f78"
+  integrity sha512-7fqZ5L/M486ADsIRAjbZqhAUeHItJo/cdIP1CURn7tluFW8Djj8sLZMcNiGMx2mP59VASAOAN0vsT2V1Y+7KDA==
   dependencies:
-    "@pragma-web-utils/hooks" "^0.0.14"
+    "@pragma-web-utils/hooks" "^0.0.30"
     my-package "^0.0.0"
 
 "@pragma-web-utils/contract-utils@^0.0.14":
@@ -631,13 +631,6 @@
   integrity sha512-2KihJ7zx/rdjdOM7Bl5zrnXa2HRZjI8/blzp8DPwar8Xv6gO1iy5RWB6N/Ffeotu4Vd3FHoiSYZNUatmV5ndqQ==
   dependencies:
     "@pragma-web-utils/contract-utils" "^0.0.14"
-
-"@pragma-web-utils/hooks@^0.0.14":
-  version "0.0.14"
-  resolved "https://registry.yarnpkg.com/@pragma-web-utils/hooks/-/hooks-0.0.14.tgz#79ceac4eac87d46e22fbdf9f373486e3483f8038"
-  integrity sha512-tOA/++8e5RdWjTClTnTVRp+CpY9kFkPnF1lcKqxntHLSxcoop1bz3Mzn79k5e4tbbpu9yiP/DpbQH9RhcaCDyg==
-  dependencies:
-    my-package "^0.0.0"
 
 "@pragma-web-utils/hooks@^0.0.30":
   version "0.0.30"
@@ -2625,6 +2618,11 @@ to-regex-range@^5.0.1:
   integrity sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==
   dependencies:
     is-number "^7.0.0"
+
+tronweb-typings@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/tronweb-typings/-/tronweb-typings-1.0.1.tgz#e4ec6992fc0e58a5fb7c65a0fafb80b187abc9f4"
+  integrity sha512-Ajs6dsFo9gbOd96Q8UinyqapdqlKC8/bRQWQSQbFynnV40e1Uk5h/IRV+IuShoLhGZB33YCqIVNRUKjo/vU+5Q==
 
 ts-command-line-args@^2.2.0:
   version "2.5.0"
