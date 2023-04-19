@@ -1,28 +1,26 @@
-import React, { FC } from 'react'
-import { ThemeContextProvider, useTheme } from './services/ThemeService'
-import styled from 'styled-components'
+import { FC } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { API_TEST_PAGE } from './core/constants/routers'
+import { Layout } from './layout'
+import { ApiTestPage } from './pages/apiTest'
+import { ThemeServiceTest } from './pages/themeServiceTest'
+import { AccountContextProvider } from './services/accountService/AccountsService'
+import { ThemeContextProvider } from './services/ThemeService'
+import { getConnectorByName } from './utils/connectors/connectorUtils'
 
 export const App: FC = () => {
   return (
-    <ThemeContextProvider>
-      <Content />
-    </ThemeContextProvider>
-  )
-}
-
-export const Root = styled.footer`
-  color: var(--primary);
-  background-color: var(--secondary);
-`
-
-const Content: FC = () => {
-  const { setTheme } = useTheme()
-
-  return (
-    <>
-      <Root>text</Root>
-      <button onClick={() => setTheme('main')}>main</button>
-      <button onClick={() => setTheme('additional')}>additional</button>
-    </>
+    <AccountContextProvider getConnectorByName={getConnectorByName}>
+      <ThemeContextProvider>
+        <BrowserRouter>
+          <Layout>
+            <Routes>
+              <Route path="/*" element={<ThemeServiceTest />} />
+              <Route path={API_TEST_PAGE} element={<ApiTestPage />} />
+            </Routes>
+          </Layout>
+        </BrowserRouter>
+      </ThemeContextProvider>
+    </AccountContextProvider>
   )
 }
