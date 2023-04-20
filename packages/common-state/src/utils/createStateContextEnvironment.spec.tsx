@@ -31,10 +31,6 @@ const {
 } = createStateContextEnvironment<string>(contextName)
 
 describe('createStateContextEnvironment', () => {
-  beforeEach(() => {
-    jest.useFakeTimers()
-  })
-
   it('should return an object with a hook and a wrapper', () => {
     const withCustomContext = createStateContextEnvironment(contextName, mockContext)
 
