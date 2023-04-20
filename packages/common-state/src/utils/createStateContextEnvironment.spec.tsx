@@ -3,8 +3,9 @@ import React from 'react'
 import { HookCommonState } from '../types'
 import { createStateContextEnvironment } from './createStateContextEnvironment'
 
-const Skeleton = () => <></>
-const Error = () => <></>
+const Skeleton = () => <>Skeleton</>
+const ErrorState = () => <>Error</>
+const ChildComponent = () => <div>Child component</div>
 
 const emptyState: HookCommonState<string | undefined> = {
   value: undefined,
@@ -16,65 +17,270 @@ const emptyState: HookCommonState<string | undefined> = {
   hardRefresh: () => undefined,
 }
 
-describe('createStrictConstantEnvironment', () => {
-  const contextName = 'testContext'
-  const mockContext = React.createContext<unknown>(undefined)
-  const { strictValueHook, wrapper: Wrapper } = createStateContextEnvironment<string>(contextName, mockContext)
-  const { strictValueHook: hookWithoutCustomContext, wrapper: WrapperWithoutCustomContext } =
-    createStateContextEnvironment<string>(contextName)
+const contextName = 'testContext'
+const mockContext = React.createContext<unknown>(undefined)
+const {
+  strictValueHook: useStrictContextValue,
+  stateHook: useContextState,
+  wrapper: ContextWrapper,
+} = createStateContextEnvironment<string | undefined>(contextName, mockContext)
+const {
+  strictValueHook: useStrictValue,
+  stateHook: useUncontestedState,
+  wrapper: Wrapper,
+} = createStateContextEnvironment<string>(contextName)
 
-  const ChildComponent = () => {
-    return <div>Child component</div>
-  }
+describe('createStateContextEnvironment', () => {
+  beforeEach(() => {
+    jest.useFakeTimers()
+  })
 
   it('should return an object with a hook and a wrapper', () => {
     const withCustomContext = createStateContextEnvironment(contextName, mockContext)
 
     expect(withCustomContext).toHaveProperty('strictValueHook')
+    expect(withCustomContext).toHaveProperty('stateHook')
     expect(withCustomContext).toHaveProperty('wrapper')
 
     const withoutUserContext = createStateContextEnvironment(contextName)
     expect(withoutUserContext).toHaveProperty('strictValueHook')
+    expect(withoutUserContext).toHaveProperty('stateHook')
     expect(withoutUserContext).toHaveProperty('wrapper')
   })
 
   it('should render children component', () => {
-    const value = 'test'
+    const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test' }
 
+    let value
     let state
 
     const Component = () => {
-      state = strictValueHook()
+      value = useStrictContextValue()
+      state = useContextState()
       return <ChildComponent />
     }
 
     const { container } = render(
-      <Wrapper stateValue={{ ...emptyState, value }} Skeleton={Skeleton} ErrorState={Error}>
+      <ContextWrapper Skeleton={Skeleton} ErrorState={ErrorState} stateValue={stateValue}>
+        <Component />
+      </ContextWrapper>,
+    )
+
+    expect(container.textContent?.trim()).toBe('Child component')
+    expect(value).toStrictEqual(stateValue.value)
+    expect(state).toEqual(stateValue)
+  })
+
+  it('should render the Skeleton component when isActual is false', () => {
+    const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test', isActual: false }
+
+    let value
+    let state
+
+    const Component = () => {
+      value = useStrictContextValue()
+      state = useContextState()
+      return <ChildComponent />
+    }
+
+    const { container } = render(
+      <ContextWrapper Skeleton={Skeleton} ErrorState={ErrorState} stateValue={stateValue}>
+        <Component />
+      </ContextWrapper>,
+    )
+
+    expect(container.textContent?.trim()).toBe('Skeleton')
+    expect(value).toStrictEqual(undefined)
+    expect(state).toStrictEqual(undefined)
+  })
+
+  it('should render the Skeleton component when isLoading is true and isActual is false', () => {
+    const stateValue: HookCommonState<string | undefined> = {
+      ...emptyState,
+      value: 'test',
+      isActual: false,
+      isLoading: true,
+    }
+
+    let value
+    let state
+
+    const Component = () => {
+      value = useStrictContextValue()
+      state = useContextState()
+      return <ChildComponent />
+    }
+
+    const { container } = render(
+      <ContextWrapper Skeleton={Skeleton} ErrorState={ErrorState} stateValue={stateValue}>
+        <Component />
+      </ContextWrapper>,
+    )
+
+    expect(container.textContent?.trim()).toBe('Skeleton')
+    expect(value).toStrictEqual(undefined)
+    expect(state).toStrictEqual(undefined)
+  })
+
+  it('should render the ErrorState component when there is an error', () => {
+    const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test', error: 'error' }
+
+    let value
+    let state
+
+    const Component = () => {
+      value = useStrictContextValue()
+      state = useContextState()
+      return <ChildComponent />
+    }
+
+    const { container } = render(
+      <ContextWrapper Skeleton={Skeleton} ErrorState={ErrorState} stateValue={stateValue}>
+        <Component />
+      </ContextWrapper>,
+    )
+
+    expect(container.textContent?.trim()).toBe('Error')
+    expect(value).toStrictEqual(undefined)
+    expect(state).toStrictEqual(undefined)
+  })
+
+  it('should render the ErrorState component when value is undefined', () => {
+    let value
+    let state
+
+    const Component = () => {
+      value = useStrictContextValue()
+      state = useContextState()
+      return <ChildComponent />
+    }
+
+    const { container } = render(
+      <ContextWrapper Skeleton={Skeleton} ErrorState={ErrorState} stateValue={emptyState}>
+        <Component />
+      </ContextWrapper>,
+    )
+
+    expect(container.textContent?.trim()).toBe('Error')
+    expect(value).toStrictEqual(undefined)
+    expect(state).toStrictEqual(undefined)
+  })
+
+  it('should render children component without user custom context', () => {
+    const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test' }
+
+    let value
+    let state
+
+    const Component = () => {
+      value = useStrictValue()
+      state = useUncontestedState()
+      return <ChildComponent />
+    }
+
+    const { container } = render(
+      <Wrapper Skeleton={Skeleton} ErrorState={ErrorState} stateValue={stateValue}>
         <Component />
       </Wrapper>,
     )
 
     expect(container.textContent?.trim()).toBe('Child component')
-    expect(state).toStrictEqual(value)
+    expect(value).toStrictEqual('test')
+    expect(state).toStrictEqual(stateValue)
   })
 
-  it('should render children component without user custom context', () => {
-    const value = 'test'
+  it('should render the Skeleton component when isActual is false without user custom context', () => {
+    const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test', isActual: false }
 
+    let value
     let state
 
     const Component = () => {
-      state = hookWithoutCustomContext()
+      value = useStrictValue()
+      state = useUncontestedState()
       return <ChildComponent />
     }
 
     const { container } = render(
-      <WrapperWithoutCustomContext stateValue={{ ...emptyState, value }} Skeleton={Skeleton} ErrorState={Error}>
+      <Wrapper Skeleton={Skeleton} ErrorState={ErrorState} stateValue={stateValue}>
         <Component />
-      </WrapperWithoutCustomContext>,
+      </Wrapper>,
     )
 
-    expect(container.textContent?.trim()).toBe('Child component')
-    expect(state).toStrictEqual(value)
+    expect(container.textContent?.trim()).toBe('Skeleton')
+    expect(value).toStrictEqual(undefined)
+    expect(state).toStrictEqual(undefined)
+  })
+
+  it('should render the Skeleton component when isLoading is true and isActual is false without user custom context', () => {
+    const stateValue: HookCommonState<string | undefined> = {
+      ...emptyState,
+      value: 'test',
+      isActual: false,
+      isLoading: true,
+    }
+
+    let value
+    let state
+
+    const Component = () => {
+      value = useStrictValue()
+      state = useUncontestedState()
+      return <ChildComponent />
+    }
+
+    const { container } = render(
+      <Wrapper Skeleton={Skeleton} ErrorState={ErrorState} stateValue={stateValue}>
+        <Component />
+      </Wrapper>,
+    )
+
+    expect(container.textContent?.trim()).toBe('Skeleton')
+    expect(value).toStrictEqual(undefined)
+    expect(state).toStrictEqual(undefined)
+  })
+
+  it('should render the ErrorState component when there is an error without user custom context', () => {
+    const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test', error: 'error' }
+
+    let value
+    let state
+
+    const Component = () => {
+      value = useStrictValue()
+      state = useUncontestedState()
+      return <ChildComponent />
+    }
+
+    const { container } = render(
+      <Wrapper Skeleton={Skeleton} ErrorState={ErrorState} stateValue={stateValue}>
+        <Component />
+      </Wrapper>,
+    )
+
+    expect(container.textContent?.trim()).toBe('Error')
+    expect(value).toStrictEqual(undefined)
+    expect(state).toStrictEqual(undefined)
+  })
+
+  it('should render the ErrorState component when value is undefined without user custom context', () => {
+    let value
+    let state
+
+    const Component = () => {
+      value = useStrictValue()
+      state = useUncontestedState()
+      return <ChildComponent />
+    }
+
+    const { container } = render(
+      <Wrapper Skeleton={Skeleton} ErrorState={ErrorState} stateValue={emptyState}>
+        <Component />
+      </Wrapper>,
+    )
+
+    expect(container.textContent?.trim()).toBe('Error')
+    expect(value).toStrictEqual(undefined)
+    expect(state).toStrictEqual(undefined)
   })
 })
