@@ -2,6 +2,9 @@ import React, { FC, PropsWithChildren } from 'react'
 import { useStrictContext } from '../hooks'
 import { CreateStrictEnvironmentOutput, WrapperProps } from '../types'
 
+/**
+ * @deprecated use createStateContextEnvironment from @pragma-web-utils/common-state
+ */
 export function createStrictEnvironment<T>(
   contextName: string,
   userContext?: React.Context<T> | React.Context<unknown>,
