@@ -24,7 +24,6 @@
     "my-package": "^0.0.0"
   },
   "devDependencies": {
-    "@pragma-web-utils/common-state": "^0.0.35",
     "@pragma-web-utils/core": "^0.0.29",
     "@testing-library/react": "12.1.5",
     "@testing-library/react-hooks": "^8.0.1",

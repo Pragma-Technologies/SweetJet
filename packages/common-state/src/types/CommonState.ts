@@ -33,4 +33,8 @@ export interface StateManager<T = unknown, E = unknown> {
   setState: Dispatch<SetStateAction<CacheableState<T, E>>>
   setRefresh: (params: StateRefreshOption<T, E>) => void
 }
+
+/**
+ * @deprecated use StateManager
+ */
 export type CommonState<T = unknown, E = unknown> = StateManager<T, E>
