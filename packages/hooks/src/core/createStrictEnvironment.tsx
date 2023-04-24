@@ -2,6 +2,8 @@ import React, { FC, PropsWithChildren } from 'react'
 import { useStrictContext } from '../hooks'
 import { CreateStrictEnvironmentOutput, WrapperProps } from '../types'
 
+const isValueValid = (value: unknown) => value !== undefined && value !== null
+
 /**
  * @deprecated use createStateContextEnvironment from @pragma-web-utils/common-state
  */
@@ -15,13 +17,7 @@ export function createStrictEnvironment<T>(
     return useStrictContext(context, contextName) as T
   }
 
-  const wrapper: FC<PropsWithChildren<WrapperProps<T>>> = ({
-    children,
-    Skeleton,
-    ErrorState,
-    isValueValid = (value) => value !== undefined && value !== null,
-    valueState,
-  }) => {
+  const wrapper: FC<PropsWithChildren<WrapperProps<T>>> = ({ children, Skeleton, ErrorState, valueState }) => {
     const { isActual, value, error } = valueState
 
     if (!isActual) {
