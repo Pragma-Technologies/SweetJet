@@ -22,14 +22,20 @@ export function createStateContextEnvironment<T>(
   const strictValueHook = (): Defined<T> => useStrictStateValueContext<T>(context, contextName)
   const stateHook = (): HookCommonState<T> => useContext(context) as HookCommonState<T>
 
-  const wrapper: FC<PropsWithChildren<WrapperProps<T>>> = ({ children, Skeleton, ErrorState, stateValue }) => {
+  const wrapper: FC<PropsWithChildren<WrapperProps<T>>> = ({
+    children,
+    Skeleton,
+    ErrorState,
+    isValueValid = (value) => value !== undefined && value !== null,
+    stateValue,
+  }) => {
     const { isActual, value, error } = stateValue
 
     if (!isActual) {
       return <Skeleton />
     }
 
-    if (!value || error) {
+    if (!isValueValid(value as T) || error) {
       return <ErrorState />
     }
 

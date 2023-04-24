@@ -15,14 +15,20 @@ export function createStrictEnvironment<T>(
     return useStrictContext(context, contextName) as T
   }
 
-  const wrapper: FC<PropsWithChildren<WrapperProps<T>>> = ({ children, Skeleton, ErrorState, valueState }) => {
+  const wrapper: FC<PropsWithChildren<WrapperProps<T>>> = ({
+    children,
+    Skeleton,
+    ErrorState,
+    isValueValid = (value) => value !== undefined && value !== null,
+    valueState,
+  }) => {
     const { isActual, value, error } = valueState
 
     if (!isActual) {
       return <Skeleton />
     }
 
-    if (!value || error) {
+    if (!isValueValid(value as T) || error) {
       return <ErrorState />
     }
 
