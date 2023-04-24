@@ -6,6 +6,7 @@ export interface WrapperProps<T = unknown> {
   stateValue: HookCommonState<T | undefined>
   Skeleton: FC
   ErrorState: FC
+  isValueValid?: (value: T) => boolean
 }
 
 export type CreateStateContextEnvironmentOutput<T> = {
