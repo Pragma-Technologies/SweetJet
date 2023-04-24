@@ -89,4 +89,30 @@ describe('Address class', () => {
     expect(address_1.toHex()).toEqual(hexAddress_2)
     expect(address_1.toBase58()).toEqual(base58Address_2)
   })
+
+  it('check isEmpty method', () => {
+    const address_1 = new Address(hexAddress_1)
+    const address_2 = new Address(base58Address_2)
+    const empty_1 = new Address(EMPTY_ADDRESS)
+    const empty_2 = new Address()
+
+    expect(address_1.isEmpty()).toEqual(false)
+    expect(address_2.isEmpty()).toEqual(false)
+    expect(empty_1.isEmpty()).toEqual(true)
+    expect(empty_2.isEmpty()).toEqual(true)
+
+    address_1.set(hexAddress_2)
+    address_2.set(EMPTY_ADDRESS)
+    empty_1.set(base58Address_1)
+
+    expect(address_1.isEmpty()).toEqual(false)
+    expect(address_2.isEmpty()).toEqual(true)
+    expect(empty_1.isEmpty()).toEqual(false)
+  })
+
+  it('check static from method', () => {
+    const address_1 = Address.from(hexAddress_1)
+
+    expect(address_1).toBeInstanceOf(Address)
+  })
 })
