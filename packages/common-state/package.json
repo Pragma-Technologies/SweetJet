@@ -6,7 +6,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.1.0",
+  "version": "0.1.1",
   "files": [
     "dist/*"
   ],
@@ -21,7 +21,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@pragma-web-utils/hooks": "^0.1.0",
+    "@pragma-web-utils/hooks": "^0.1.1",
     "my-package": "^0.0.0"
   },
   "peerDependencies": {
