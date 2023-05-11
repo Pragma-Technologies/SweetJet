@@ -5,7 +5,8 @@ import {
   CreateStateContextEnvironmentOption,
   CreateStateContextEnvironmentOutput,
   HookCommonState,
-  WrapperProps,
+  StateWrapperProps,
+  StrictWrapperProps,
 } from '../types'
 
 const emptyState: HookCommonState = {
@@ -28,19 +29,33 @@ export function createStateContextEnvironment<T>(
   const strictValueHook = (): Defined<T> => useStrictStateValueContext<T>(context, contextName, isValueValid)
   const stateHook = (): HookCommonState<T> => useContext(context) as HookCommonState<T>
 
-  const wrapper: FC<PropsWithChildren<WrapperProps<T>>> = ({ children, Skeleton, ErrorState, stateValue }) => {
-    const { isActual, value, error } = stateValue
+  const stateWrapper: FC<PropsWithChildren<StateWrapperProps<T>>> = ({ stateValue, children }) => {
+    return <context.Provider value={stateValue}>{children}</context.Provider>
+  }
+
+  const _strictWrapper: FC<PropsWithChildren<Omit<StrictWrapperProps<T>, 'stateValue'>>> = (props) => {
+    const { isActual, value, error } = stateHook()
 
     if (!isActual) {
-      return <Skeleton />
+      return <props.skeleton />
     }
 
     if (!isValueValid(value as T) || error) {
-      return <ErrorState />
+      return <props.error />
     }
 
-    return <context.Provider value={stateValue}> {children} </context.Provider>
+    return <>{props.children}</>
   }
 
-  return { strictValueHook, stateHook, wrapper }
+  const strictWrapper: FC<PropsWithChildren<StrictWrapperProps<T>>> = ({ children, stateValue, error, skeleton }) => {
+    const strictContent = (
+      <_strictWrapper error={error} skeleton={skeleton}>
+        {children}
+      </_strictWrapper>
+    )
+
+    return stateValue ? stateWrapper({ stateValue, children: strictContent }) : strictContent
+  }
+
+  return { strictValueHook, stateHook, stateWrapper, strictWrapper }
 }

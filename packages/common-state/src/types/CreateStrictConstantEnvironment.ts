@@ -8,10 +8,21 @@ export interface WrapperProps<T = unknown> {
   ErrorState: FC
 }
 
+export interface StrictWrapperProps<T = unknown> {
+  stateValue?: HookCommonState<T | undefined>
+  skeleton: FC
+  error: FC
+}
+
+export interface StateWrapperProps<T = unknown> {
+  stateValue: HookCommonState<T | undefined>
+}
+
 export type CreateStateContextEnvironmentOutput<T> = {
   strictValueHook: () => Defined<T>
   stateHook: () => HookCommonState<T>
-  wrapper: FC<PropsWithChildren<WrapperProps<T>>>
+  strictWrapper: FC<PropsWithChildren<StrictWrapperProps<T>>>
+  stateWrapper: FC<PropsWithChildren<StateWrapperProps<T>>>
 }
 
 export type CreateStateContextEnvironmentOption<T> = {
