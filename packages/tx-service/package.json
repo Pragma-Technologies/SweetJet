@@ -6,7 +6,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.1.0",
+  "version": "0.1.2",
   "files": [
     "dist/*"
   ],
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@pragma-web-utils/contract-utils": "^0.0.14",
-    "@pragma-web-utils/core": "^0.1.0",
+    "@pragma-web-utils/core": "^0.1.2",
     "@pragma-web-utils/hooks": "^0.0.34"
   },
   "peerDependencies": {
