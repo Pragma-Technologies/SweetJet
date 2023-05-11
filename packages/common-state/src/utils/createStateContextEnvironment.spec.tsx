@@ -23,7 +23,7 @@ const {
   strictValueHook: useStrictContextValue,
   stateHook: useContextState,
   wrapper: ContextWrapper,
-} = createStateContextEnvironment<string | undefined>(contextName, mockContext)
+} = createStateContextEnvironment<string | undefined>(contextName, { userContext: mockContext })
 const {
   strictValueHook: useStrictValue,
   stateHook: useUncontestedState,
@@ -32,7 +32,7 @@ const {
 
 describe('createStateContextEnvironment', () => {
   it('should return an object with a hook and a wrapper', () => {
-    const withCustomContext = createStateContextEnvironment(contextName, mockContext)
+    const withCustomContext = createStateContextEnvironment(contextName, { userContext: mockContext })
 
     expect(withCustomContext).toHaveProperty('strictValueHook')
     expect(withCustomContext).toHaveProperty('stateHook')
@@ -271,6 +271,115 @@ describe('createStateContextEnvironment', () => {
 
     const { container } = render(
       <Wrapper Skeleton={Skeleton} ErrorState={ErrorState} stateValue={emptyState}>
+        <Component />
+      </Wrapper>,
+    )
+
+    expect(container.textContent?.trim()).toBe('Error')
+    expect(value).toStrictEqual(undefined)
+    expect(state).toStrictEqual(undefined)
+  })
+
+  it('check isValueValid props on empty value', () => {
+    const {
+      strictValueHook: useStrictValue,
+      stateHook: useUncontestedState,
+      wrapper: Wrapper,
+    } = createStateContextEnvironment<string>(contextName, { isValueValid: () => true })
+    let value
+    let state
+
+    const Component = () => {
+      value = useStrictValue()
+      state = useUncontestedState()
+      return <ChildComponent />
+    }
+
+    const { container } = render(
+      <Wrapper Skeleton={Skeleton} ErrorState={ErrorState} stateValue={emptyState}>
+        <Component />
+      </Wrapper>,
+    )
+
+    expect(container.textContent?.trim()).toBe('Child component')
+    expect(value).toStrictEqual(undefined)
+    expect(state).toStrictEqual(emptyState)
+  })
+
+  it('check isValueValid props on valid value', () => {
+    const {
+      strictValueHook: useStrictValue,
+      stateHook: useUncontestedState,
+      wrapper: Wrapper,
+    } = createStateContextEnvironment<string>(contextName, {
+      isValueValid: (value) => value === 'test',
+    })
+    const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test' }
+    let value
+    let state
+
+    const Component = () => {
+      value = useStrictValue()
+      state = useUncontestedState()
+      return <ChildComponent />
+    }
+
+    const { container } = render(
+      <Wrapper Skeleton={Skeleton} ErrorState={ErrorState} stateValue={stateValue}>
+        <Component />
+      </Wrapper>,
+    )
+
+    expect(container.textContent?.trim()).toBe('Child component')
+    expect(value).toStrictEqual('test')
+    expect(state).toStrictEqual(stateValue)
+  })
+
+  it('check isValueValid props on not valid value', () => {
+    const {
+      strictValueHook: useStrictValue,
+      stateHook: useUncontestedState,
+      wrapper: Wrapper,
+    } = createStateContextEnvironment<string>(contextName, { isValueValid: (value) => value === 'test' })
+    const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'not valid test' }
+    let value
+    let state
+
+    const Component = () => {
+      value = useStrictValue()
+      state = useUncontestedState()
+      return <ChildComponent />
+    }
+
+    const { container } = render(
+      <Wrapper Skeleton={Skeleton} ErrorState={ErrorState} stateValue={stateValue}>
+        <Component />
+      </Wrapper>,
+    )
+
+    expect(container.textContent?.trim()).toBe('Error')
+    expect(value).toStrictEqual(undefined)
+    expect(state).toStrictEqual(undefined)
+  })
+
+  it('check isValueValid props on valid value, but with error', () => {
+    const {
+      strictValueHook: useStrictValue,
+      stateHook: useUncontestedState,
+      wrapper: Wrapper,
+    } = createStateContextEnvironment<string>(contextName, { isValueValid: (value) => value === 'test' })
+    const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test', error: 'error' }
+    let value
+    let state
+
+    const Component = () => {
+      value = useStrictValue()
+      state = useUncontestedState()
+      return <ChildComponent />
+    }
+
+    const { container } = render(
+      <Wrapper Skeleton={Skeleton} ErrorState={ErrorState} stateValue={stateValue}>
         <Component />
       </Wrapper>,
     )
