@@ -17,7 +17,6 @@ export interface WrapperProps<T = unknown> {
   valueState: State<T | undefined>
   Skeleton: React.FC
   ErrorState: React.FC
-  isValueValid?: (value: T) => boolean
 }
 
 /**

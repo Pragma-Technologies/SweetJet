@@ -1,7 +1,13 @@
 import { Defined } from '@pragma-web-utils/core'
 import React, { Context, createContext, FC, PropsWithChildren, useContext } from 'react'
 import { useStrictStateValueContext } from '../hooks'
-import { CreateStateContextEnvironmentOutput, HookCommonState, WrapperProps } from '../types'
+import {
+  CreateStateContextEnvironmentOption,
+  CreateStateContextEnvironmentOutput,
+  HookCommonState,
+  StateWrapperProps,
+  StrictWrapperProps,
+} from '../types'
 
 const emptyState: HookCommonState = {
   value: undefined,
@@ -15,32 +21,41 @@ const emptyState: HookCommonState = {
 
 export function createStateContextEnvironment<T>(
   contextName: string,
-  userContext?: React.Context<T> | React.Context<unknown>,
+  option?: CreateStateContextEnvironmentOption<T>,
 ): CreateStateContextEnvironmentOutput<T> {
+  const { userContext, isValueValid = (value: T) => value !== undefined && value !== null } = { ...option }
   const context = !!userContext ? (userContext as Context<HookCommonState>) : createContext<HookCommonState>(emptyState)
 
-  const strictValueHook = (): Defined<T> => useStrictStateValueContext<T>(context, contextName)
+  const strictValueHook = (): Defined<T> => useStrictStateValueContext<T>(context, contextName, isValueValid)
   const stateHook = (): HookCommonState<T> => useContext(context) as HookCommonState<T>
 
-  const wrapper: FC<PropsWithChildren<WrapperProps<T>>> = ({
-    children,
-    Skeleton,
-    ErrorState,
-    isValueValid = (value) => value !== undefined && value !== null,
-    stateValue,
-  }) => {
-    const { isActual, value, error } = stateValue
+  const stateWrapper: FC<PropsWithChildren<StateWrapperProps<T>>> = ({ stateValue, children }) => {
+    return <context.Provider value={stateValue}>{children}</context.Provider>
+  }
+
+  const _strictWrapper: FC<PropsWithChildren<Omit<StrictWrapperProps<T>, 'stateValue'>>> = (props) => {
+    const { isActual, value, error } = stateHook()
 
     if (!isActual) {
-      return <Skeleton />
+      return <props.skeleton />
     }
 
     if (!isValueValid(value as T) || error) {
-      return <ErrorState />
+      return <props.error />
     }
 
-    return <context.Provider value={stateValue}> {children} </context.Provider>
+    return <>{props.children}</>
   }
 
-  return { strictValueHook, stateHook, wrapper }
+  const strictWrapper: FC<PropsWithChildren<StrictWrapperProps<T>>> = ({ children, stateValue, error, skeleton }) => {
+    const strictContent = (
+      <_strictWrapper error={error} skeleton={skeleton}>
+        {children}
+      </_strictWrapper>
+    )
+
+    return stateValue ? stateWrapper({ stateValue, children: strictContent }) : strictContent
+  }
+
+  return { strictValueHook, stateHook, stateWrapper, strictWrapper }
 }

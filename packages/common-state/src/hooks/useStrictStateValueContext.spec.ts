@@ -14,7 +14,7 @@ const emptyState: HookCommonState = {
   hardRefresh: () => undefined,
 }
 
-describe('useStrictContext', () => {
+describe('useStrictStateValueContext', () => {
   it('should throw an error if the context is not provided', () => {
     const mockContext = React.createContext<HookCommonState>(emptyState)
     const { error } = renderHook(() => useStrictStateValueContext(mockContext)).result
@@ -33,5 +33,29 @@ describe('useStrictContext', () => {
     const mockContext = React.createContext<HookCommonState>({ ...emptyState, value: customValue })
     const { current } = renderHook(() => useStrictStateValueContext(mockContext)).result
     expect(current).toBe(customValue)
+  })
+
+  it('check isValueValid function: valid undefined', () => {
+    const mockContext = React.createContext<HookCommonState>(emptyState)
+    const { current } = renderHook(() => useStrictStateValueContext(mockContext, '', () => true)).result
+    expect(current).toBe(undefined)
+  })
+
+  it('check isValueValid function: valid value', () => {
+    const customValue = 'Custom value'
+    const mockContext = React.createContext<HookCommonState>({ ...emptyState, value: customValue })
+    const { current } = renderHook(() =>
+      useStrictStateValueContext(mockContext, '', (value) => value === customValue),
+    ).result
+    expect(current).toBe(customValue)
+  })
+
+  it('check isValueValid function: invalid value', () => {
+    const customValue = 'Custom value'
+    const mockContext = React.createContext<HookCommonState>({ ...emptyState, value: customValue })
+    const { error } = renderHook(() =>
+      useStrictStateValueContext(mockContext, '', (value) => value !== customValue),
+    ).result
+    expect(error).toBe(NOT_PROVIDED_STATE_STRICT_CONTEXT)
   })
 })

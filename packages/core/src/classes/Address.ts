@@ -49,4 +49,12 @@ export class Address {
     const base58Address = fromHex(this._hexAddress)
     return (this._base58Address = base58Address)
   }
+
+  public isEmpty(): boolean {
+    return this.toHex() === EMPTY_ADDRESS
+  }
+
+  public static from(address: string = EMPTY_ADDRESS): Address {
+    return new Address(address)
+  }
 }

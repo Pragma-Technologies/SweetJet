@@ -21,4 +21,24 @@ describe('useStrictContext', () => {
     const { current } = renderHook(() => useStrictContext(mockContext)).result
     expect(current).toBe('contextValue')
   })
+
+  it('check isValueValid function: valid undefined', () => {
+    const mockContext = React.createContext<unknown>(undefined)
+    const { current } = renderHook(() => useStrictContext(mockContext, '', () => true)).result
+    expect(current).toBe(undefined)
+  })
+
+  it('check isValueValid function: valid value', () => {
+    const customValue = 'Custom value'
+    const mockContext = React.createContext<string>(customValue)
+    const { current } = renderHook(() => useStrictContext(mockContext, '', (value) => value === customValue)).result
+    expect(current).toBe(customValue)
+  })
+
+  it('check isValueValid function: invalid value', () => {
+    const customValue = 'Custom value'
+    const mockContext = React.createContext<string>(customValue)
+    const { error } = renderHook(() => useStrictContext(mockContext, '', (value) => value !== customValue)).result
+    expect(error).toBe(NOT_PROVIDED_STRICT_CONTEXT)
+  })
 })
