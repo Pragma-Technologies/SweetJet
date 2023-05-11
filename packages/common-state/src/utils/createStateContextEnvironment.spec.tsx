@@ -4,6 +4,7 @@ import { CreateStateContextEnvironmentOutput, HookCommonState } from '../types'
 import { createStateContextEnvironment } from './createStateContextEnvironment'
 
 type StateEnvironmentTestUtil = {
+  name: string
   getStateEnvironment: (
     isValueValid?: (value: string | undefined) => boolean,
   ) => CreateStateContextEnvironmentOutput<string | undefined>
@@ -27,18 +28,20 @@ const contextName = 'testContext'
 const mockContext = React.createContext<unknown>(undefined)
 
 const testUtil1: StateEnvironmentTestUtil = {
+  name: '#1 With context:',
   getStateEnvironment: (isValueValid) =>
     createStateContextEnvironment<string | undefined>(contextName, { userContext: mockContext, isValueValid }),
 }
 
 const testUtil2: StateEnvironmentTestUtil = {
+  name: '#2 Without context:',
   getStateEnvironment: (isValueValid) =>
     createStateContextEnvironment<string | undefined>(contextName, { isValueValid }),
 }
 
 describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
   'createStateContextEnvironment',
-  ({ getStateEnvironment }) => {
+  ({ getStateEnvironment, name }) => {
     const {
       strictValueHook: useStrictValue,
       stateHook: useStateValue,
@@ -46,7 +49,35 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
       stateWrapper: StateWrapper,
     } = getStateEnvironment()
 
-    it('should return an object with a hook and a wrapper', () => {
+    let value: string | undefined
+    let state: HookCommonState<string | undefined> | undefined
+
+    const Component = () => {
+      value = useStrictValue()
+      state = useStateValue()
+      return <ChildComponent />
+    }
+
+    const strictContent = (stateValue: HookCommonState<string | undefined>) => (
+      <StrictWrapper skeleton={Skeleton} error={ErrorState} stateValue={stateValue}>
+        <Component />
+      </StrictWrapper>
+    )
+
+    const strictByStateContent = (stateValue: HookCommonState<string | undefined>) => (
+      <StateWrapper stateValue={stateValue}>
+        <StrictWrapper skeleton={Skeleton} error={ErrorState}>
+          <Component />
+        </StrictWrapper>
+      </StateWrapper>
+    )
+
+    beforeEach(() => {
+      value = undefined
+      state = undefined
+    })
+
+    it(`${name} should return an object with a hook and a wrapper`, () => {
       const stateEnvironment = getStateEnvironment()
       expect(stateEnvironment).toHaveProperty('strictValueHook')
       expect(stateEnvironment).toHaveProperty('stateHook')
@@ -54,53 +85,39 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
       expect(stateEnvironment).toHaveProperty('stateWrapper')
     })
 
-    it('should render children component', () => {
+    it(`${name} should render children component`, () => {
       const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test' }
 
-      let value
-      let state
+      const { container, rerender } = render(strictContent(stateValue))
 
-      const Component = () => {
-        value = useStrictValue()
-        state = useStateValue()
-        return <ChildComponent />
-      }
+      expect(container.textContent?.trim()).toBe('Child component')
+      expect(value).toStrictEqual(stateValue.value)
+      expect(state).toEqual(stateValue)
 
-      const { container } = render(
-        <StrictWrapper skeleton={Skeleton} error={ErrorState} stateValue={stateValue}>
-          <Component />
-        </StrictWrapper>,
-      )
+      rerender(strictByStateContent(stateValue))
 
       expect(container.textContent?.trim()).toBe('Child component')
       expect(value).toStrictEqual(stateValue.value)
       expect(state).toEqual(stateValue)
     })
 
-    it('should render the Skeleton component when isActual is false', () => {
+    it(`${name} should render the Skeleton component when isActual is false`, () => {
       const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test', isActual: false }
 
-      let value
-      let state
+      const { container, rerender } = render(strictContent(stateValue))
 
-      const Component = () => {
-        value = useStrictValue()
-        state = useStateValue()
-        return <ChildComponent />
-      }
+      expect(container.textContent?.trim()).toBe('Skeleton')
+      expect(value).toStrictEqual(undefined)
+      expect(state).toStrictEqual(undefined)
 
-      const { container } = render(
-        <StrictWrapper skeleton={Skeleton} error={ErrorState} stateValue={stateValue}>
-          <Component />
-        </StrictWrapper>,
-      )
+      rerender(strictByStateContent(stateValue))
 
       expect(container.textContent?.trim()).toBe('Skeleton')
       expect(value).toStrictEqual(undefined)
       expect(state).toStrictEqual(undefined)
     })
 
-    it('should render the Skeleton component when isLoading is true and isActual is false', () => {
+    it(`${name} should render the Skeleton component when isLoading is true and isActual is false`, () => {
       const stateValue: HookCommonState<string | undefined> = {
         ...emptyState,
         value: 'test',
@@ -108,75 +125,55 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
         isLoading: true,
       }
 
-      let value
-      let state
+      const { container, rerender } = render(strictContent(stateValue))
 
-      const Component = () => {
-        value = useStrictValue()
-        state = useStateValue()
-        return <ChildComponent />
-      }
+      expect(container.textContent?.trim()).toBe('Skeleton')
+      expect(value).toStrictEqual(undefined)
+      expect(state).toStrictEqual(undefined)
 
-      const { container } = render(
-        <StrictWrapper skeleton={Skeleton} error={ErrorState} stateValue={stateValue}>
-          <Component />
-        </StrictWrapper>,
-      )
+      rerender(strictByStateContent(stateValue))
 
       expect(container.textContent?.trim()).toBe('Skeleton')
       expect(value).toStrictEqual(undefined)
       expect(state).toStrictEqual(undefined)
     })
 
-    it('should render the ErrorState component when there is an error', () => {
+    it(`${name} should render the ErrorState component when there is an error`, () => {
       const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test', error: 'error' }
 
-      let value
-      let state
+      const { container, rerender } = render(strictContent(stateValue))
 
-      const Component = () => {
-        value = useStrictValue()
-        state = useStateValue()
-        return <ChildComponent />
-      }
+      expect(container.textContent?.trim()).toBe('Error')
+      expect(value).toStrictEqual(undefined)
+      expect(state).toStrictEqual(undefined)
 
-      const { container } = render(
-        <StrictWrapper skeleton={Skeleton} error={ErrorState} stateValue={stateValue}>
-          <Component />
-        </StrictWrapper>,
-      )
+      rerender(strictByStateContent(stateValue))
 
       expect(container.textContent?.trim()).toBe('Error')
       expect(value).toStrictEqual(undefined)
       expect(state).toStrictEqual(undefined)
     })
 
-    it('should render the ErrorState component when value is undefined', () => {
-      let value
-      let state
+    it(`${name} should render the ErrorState component when value is undefined`, () => {
+      const { container, rerender } = render(strictContent(emptyState))
 
-      const Component = () => {
-        value = useStrictValue()
-        state = useStateValue()
-        return <ChildComponent />
-      }
+      expect(container.textContent?.trim()).toBe('Error')
+      expect(value).toStrictEqual(undefined)
+      expect(state).toStrictEqual(undefined)
 
-      const { container } = render(
-        <StrictWrapper skeleton={Skeleton} error={ErrorState} stateValue={emptyState}>
-          <Component />
-        </StrictWrapper>,
-      )
+      rerender(strictByStateContent(emptyState))
 
       expect(container.textContent?.trim()).toBe('Error')
       expect(value).toStrictEqual(undefined)
       expect(state).toStrictEqual(undefined)
     })
 
-    it('check isValueValid props on empty value', () => {
+    it(`${name} check isValueValid props on empty value`, () => {
       const {
         strictValueHook: useStrictValue,
         stateHook: useStateValue,
         strictWrapper: StrictWrapper,
+        stateWrapper: StateWrapper,
       } = getStateEnvironment(() => true)
       let value
       let state
@@ -187,7 +184,7 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
         return <ChildComponent />
       }
 
-      const { container } = render(
+      const { container, rerender } = render(
         <StrictWrapper skeleton={Skeleton} error={ErrorState} stateValue={emptyState}>
           <Component />
         </StrictWrapper>,
@@ -196,13 +193,26 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
       expect(container.textContent?.trim()).toBe('Child component')
       expect(value).toStrictEqual(undefined)
       expect(state).toStrictEqual(emptyState)
+
+      rerender(
+        <StateWrapper stateValue={emptyState}>
+          <StrictWrapper skeleton={Skeleton} error={ErrorState}>
+            <Component />
+          </StrictWrapper>
+        </StateWrapper>,
+      )
+
+      expect(container.textContent?.trim()).toBe('Child component')
+      expect(value).toStrictEqual(undefined)
+      expect(state).toStrictEqual(emptyState)
     })
 
-    it('check isValueValid props on valid value', () => {
+    it(`${name} check isValueValid props on valid value`, () => {
       const {
         strictValueHook: useStrictValue,
         stateHook: useStateValue,
         strictWrapper: StrictWrapper,
+        stateWrapper: StateWrapper,
       } = getStateEnvironment((value) => value === 'test')
       const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test' }
       let value
@@ -214,7 +224,7 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
         return <ChildComponent />
       }
 
-      const { container } = render(
+      const { container, rerender } = render(
         <StrictWrapper skeleton={Skeleton} error={ErrorState} stateValue={stateValue}>
           <Component />
         </StrictWrapper>,
@@ -223,13 +233,26 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
       expect(container.textContent?.trim()).toBe('Child component')
       expect(value).toStrictEqual('test')
       expect(state).toStrictEqual(stateValue)
+
+      rerender(
+        <StateWrapper stateValue={stateValue}>
+          <StrictWrapper skeleton={Skeleton} error={ErrorState}>
+            <Component />
+          </StrictWrapper>
+        </StateWrapper>,
+      )
+
+      expect(container.textContent?.trim()).toBe('Child component')
+      expect(value).toStrictEqual('test')
+      expect(state).toStrictEqual(stateValue)
     })
 
-    it('check isValueValid props on not valid value', () => {
+    it(`${name} check isValueValid props on not valid value`, () => {
       const {
         strictValueHook: useStrictValue,
         stateHook: useStateValue,
         strictWrapper: StrictWrapper,
+        stateWrapper: StateWrapper,
       } = getStateEnvironment((value) => value === 'test')
       const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'not valid test' }
       let value
@@ -241,7 +264,7 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
         return <ChildComponent />
       }
 
-      const { container } = render(
+      const { container, rerender } = render(
         <StrictWrapper skeleton={Skeleton} error={ErrorState} stateValue={stateValue}>
           <Component />
         </StrictWrapper>,
@@ -250,13 +273,26 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
       expect(container.textContent?.trim()).toBe('Error')
       expect(value).toStrictEqual(undefined)
       expect(state).toStrictEqual(undefined)
+
+      rerender(
+        <StateWrapper stateValue={stateValue}>
+          <StrictWrapper skeleton={Skeleton} error={ErrorState}>
+            <Component />
+          </StrictWrapper>
+        </StateWrapper>,
+      )
+
+      expect(container.textContent?.trim()).toBe('Error')
+      expect(value).toStrictEqual(undefined)
+      expect(state).toStrictEqual(undefined)
     })
 
-    it('check isValueValid props on valid value, but with error', () => {
+    it(`${name} check isValueValid props on valid value, but with error`, () => {
       const {
         strictValueHook: useStrictValue,
         stateHook: useStateValue,
         strictWrapper: StrictWrapper,
+        stateWrapper: StateWrapper,
       } = getStateEnvironment((value) => value === 'test')
       const stateValue: HookCommonState<string | undefined> = { ...emptyState, value: 'test', error: 'error' }
       let value
@@ -268,10 +304,22 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
         return <ChildComponent />
       }
 
-      const { container } = render(
+      const { container, rerender } = render(
         <StrictWrapper skeleton={Skeleton} error={ErrorState} stateValue={stateValue}>
           <Component />
         </StrictWrapper>,
+      )
+
+      expect(container.textContent?.trim()).toBe('Error')
+      expect(value).toStrictEqual(undefined)
+      expect(state).toStrictEqual(undefined)
+
+      rerender(
+        <StateWrapper stateValue={stateValue}>
+          <StrictWrapper skeleton={Skeleton} error={ErrorState}>
+            <Component />
+          </StrictWrapper>
+        </StateWrapper>,
       )
 
       expect(container.textContent?.trim()).toBe('Error')
