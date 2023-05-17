@@ -6,10 +6,15 @@ import { CacheableState, ErrorState, StateManager, StateRefreshOption } from '..
 
 type NotErrorCacheable<T, E, I> = Exclude<CacheableState<T, E, I>, ErrorState<I, E>>
 
-export function useCommonState<Value, Error = unknown>(initial?: undefined): StateManager<Value | undefined, Error>
-export function useCommonState<Value, Error = unknown>(initial: Value | (() => Value)): StateManager<Value, Error>
+export function useCommonState<Value, Error = unknown>(initial?: undefined): StateManager<Value, Error>
+export function useCommonState<Value, Error = unknown>(
+  initial: Value | (() => Value),
+): StateManager<Value, Error, Value>
+export function useCommonState<Value, Error = unknown, Initial = unknown>(
+  initial: Initial | (() => Initial),
+): StateManager<Value, Error, Initial>
 
-export function useCommonState<Value, Error = unknown, Initial = Value>(
+export function useCommonState<Value, Error, Initial>(
   initial: Initial | (() => Initial),
 ): StateManager<Value, Error, Initial> {
   const createCancelableFactory = useCancelableFactory()
