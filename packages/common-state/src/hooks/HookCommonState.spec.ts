@@ -6,6 +6,7 @@ import { CommonState } from '../types'
 import { useCombineCommonStates } from './useCombineCommonStates'
 import { useCommonState } from './useCommonState'
 import { useMapCommonState } from './useMapCommonState'
+import { useSwitchCommonState } from './useSwitchCommonState'
 
 type CommonStateTestUtil<T = unknown, E = unknown> = {
   utilName: string
@@ -134,6 +135,33 @@ describe.each<CommonStateTestUtil>([
       testIncrementor2.setErrorOnNextIncrementInit('error')
     },
   },
+  {
+    utilName: 'useSwitchCommonState',
+    reset: async () => {
+      testIncrementor.refresh()
+      testIncrementor2.refresh()
+      testIncrementor2.increment()
+      jest.runAllTimers()
+      await Promise.resolve()
+    },
+    expectedInitValue: undefined,
+    expectedValues: [2, 3],
+    expectedError: 'error',
+    expectedValueOnError: undefined,
+    expectedCacheOnError: 2,
+    initHook: () => {
+      const { state: state1, setRefresh: setRefresh1 } = useCommonState<number>(1)
+      const { state: state2, setRefresh: setRefresh2 } = useSwitchCommonState<typeof state1, number>(state1)
+
+      useEffect(() => setRefresh1({ refreshFn: () => testIncrementor.increment() }), [])
+      useEffect(() => setRefresh2({ refreshFn: async (origin) => origin + (await testIncrementor2.increment()) }), [])
+
+      return state2
+    },
+    throwErrorOnNextUpdateOnce: () => {
+      testIncrementor2.setErrorOnNextIncrementInit('error')
+    },
+  },
 ])(
   'CommonState interface implementations',
   ({
@@ -147,216 +175,219 @@ describe.each<CommonStateTestUtil>([
     expectedValueOnError,
     expectedCacheOnError,
   }) => {
-    beforeEach(() => {
-      jest.useFakeTimers()
-    })
-    // reset counter value before each test case
-    beforeEach(async () => await reset())
+    describe(utilName, () => {
+      beforeEach(() => {
+        jest.useFakeTimers()
+      })
+      // reset counter value before each test case
+      beforeEach(async () => await reset())
 
-    it(`${utilName}: check softRefresh`, async () => {
-      const { result, waitForNextUpdate } = renderHook(() => initHook())
+      it('check softRefresh', async () => {
+        const { result, waitForNextUpdate } = renderHook(() => initHook())
 
-      expect(result.current.value).toEqual(expectedInitValue)
-      expect(result.current.cached).toEqual(expectedInitValue)
-      expect(result.current.isActual).toBe(false)
-      expect(result.current.isLoading).toBe(false)
-      expect(result.current.error).toBe(undefined)
+        expect(result.current.value).toEqual(expectedInitValue)
+        expect(result.current.cached).toEqual(expectedInitValue)
+        expect(result.current.isActual).toBe(false)
+        expect(result.current.isLoading).toBe(false)
+        expect(result.current.error).toBe(undefined)
 
-      act(() => {
-        result.current.softRefresh()
+        act(() => {
+          result.current.softRefresh()
+        })
+
+        expect(result.current.value).toEqual(expectedInitValue)
+        expect(result.current.cached).toEqual(expectedInitValue)
+        expect(result.current.isActual).toBe(false)
+        expect(result.current.isLoading).toBe(true)
+        expect(result.current.error).toBe(undefined)
+
+        jest.runAllTimers()
+        await waitForNextUpdate()
+
+        expect(result.current.value).toEqual(expectedValues[0])
+        expect(result.current.cached).toEqual(expectedValues[0])
+        expect(result.current.isActual).toBe(true)
+        expect(result.current.isLoading).toBe(false)
+        expect(result.current.error).toBe(undefined)
+
+        act(() => {
+          result.current.softRefresh()
+        })
+
+        expect(result.current.value).toEqual(expectedValues[0])
+        expect(result.current.cached).toEqual(expectedValues[0])
+        expect(result.current.isActual).toBe(true)
+        expect(result.current.isLoading).toBe(true)
+        expect(result.current.error).toBe(undefined)
+
+        jest.advanceTimersByTime(10)
+
+        act(() => {
+          result.current.softRefresh()
+        })
+
+        jest.advanceTimersByTime(10)
+
+        act(() => {
+          result.current.softRefresh()
+        })
+
+        expect(result.current.value).toEqual(expectedValues[0])
+        expect(result.current.cached).toEqual(expectedValues[0])
+        expect(result.current.isActual).toBe(true)
+        expect(result.current.isLoading).toBe(true)
+        expect(result.current.error).toBe(undefined)
+
+        jest.runAllTimers()
+        await waitForNextUpdate()
+
+        expect(result.current.value).toEqual(expectedValues[1])
+        expect(result.current.cached).toEqual(expectedValues[1])
+        expect(result.current.isActual).toBe(true)
+        expect(result.current.isLoading).toBe(false)
+        expect(result.current.error).toBe(undefined)
       })
 
-      expect(result.current.value).toEqual(expectedInitValue)
-      expect(result.current.cached).toEqual(expectedInitValue)
-      expect(result.current.isActual).toBe(false)
-      expect(result.current.isLoading).toBe(true)
-      expect(result.current.error).toBe(undefined)
+      it('check hardRefresh', async () => {
+        const { result, waitForNextUpdate } = renderHook(() => initHook())
 
-      jest.runAllTimers()
-      await waitForNextUpdate()
+        expect(result.current.value).toEqual(expectedInitValue)
+        expect(result.current.cached).toEqual(expectedInitValue)
+        expect(result.current.isActual).toBe(false)
+        expect(result.current.isLoading).toBe(false)
+        expect(result.current.error).toBe(undefined)
 
-      expect(result.current.value).toEqual(expectedValues[0])
-      expect(result.current.cached).toEqual(expectedValues[0])
-      expect(result.current.isActual).toBe(true)
-      expect(result.current.isLoading).toBe(false)
-      expect(result.current.error).toBe(undefined)
+        act(() => {
+          result.current.hardRefresh()
+        })
 
-      act(() => {
-        result.current.softRefresh()
+        expect(result.current.value).toEqual(expectedInitValue)
+        expect(result.current.cached).toEqual(expectedInitValue)
+        expect(result.current.isActual).toBe(false)
+        expect(result.current.isLoading).toBe(true)
+        expect(result.current.error).toBe(undefined)
+
+        jest.runAllTimers()
+        await waitForNextUpdate()
+
+        expect(result.current.value).toEqual(expectedValues[0])
+        expect(result.current.cached).toEqual(expectedValues[0])
+        expect(result.current.isActual).toBe(true)
+        expect(result.current.isLoading).toBe(false)
+        expect(result.current.error).toBe(undefined)
+
+        act(() => {
+          result.current.hardRefresh()
+        })
+
+        expect(result.current.value).toEqual(expectedValues[0])
+        expect(result.current.cached).toEqual(expectedValues[0])
+        expect(result.current.isActual).toBe(false)
+        expect(result.current.isLoading).toBe(true)
+        expect(result.current.error).toBe(undefined)
+
+        jest.advanceTimersByTime(10)
+
+        act(() => {
+          result.current.hardRefresh()
+        })
+
+        jest.advanceTimersByTime(10)
+
+        act(() => {
+          result.current.hardRefresh()
+        })
+
+        expect(result.current.value).toEqual(expectedValues[0])
+        expect(result.current.cached).toEqual(expectedValues[0])
+        expect(result.current.isActual).toBe(false)
+        expect(result.current.isLoading).toBe(true)
+        expect(result.current.error).toBe(undefined)
+
+        jest.runAllTimers()
+        await waitForNextUpdate()
+
+        expect(result.current.value).toEqual(expectedValues[1])
+        expect(result.current.cached).toEqual(expectedValues[1])
+        expect(result.current.isActual).toBe(true)
+        expect(result.current.isLoading).toBe(false)
+        expect(result.current.error).toBe(undefined)
       })
 
-      expect(result.current.value).toEqual(expectedValues[0])
-      expect(result.current.cached).toEqual(expectedValues[0])
-      expect(result.current.isActual).toBe(true)
-      expect(result.current.isLoading).toBe(true)
-      expect(result.current.error).toBe(undefined)
+      it('check cancel refresh', async () => {
+        const { result, waitForNextUpdate } = renderHook(() => initHook())
 
-      jest.advanceTimersByTime(10)
+        act(() => {
+          result.current.softRefresh()
+        })
 
-      act(() => {
-        result.current.softRefresh()
+        jest.runAllTimers()
+        await waitForNextUpdate()
+
+        expect(result.current.value).toEqual(expectedValues[0])
+        expect(result.current.cached).toEqual(expectedValues[0])
+        expect(result.current.isActual).toBe(true)
+        expect(result.current.isLoading).toBe(false)
+        expect(result.current.error).toBe(undefined)
+
+        let cancel: Destructor | void
+        act(() => {
+          cancel = result.current.softRefresh()
+        })
+
+        expect(result.current.value).toEqual(expectedValues[0])
+        expect(result.current.cached).toEqual(expectedValues[0])
+        expect(result.current.isActual).toBe(true)
+        expect(result.current.isLoading).toBe(true)
+        expect(result.current.error).toBe(undefined)
+
+        act(() => cancel?.())
+        jest.runAllTimers()
+        await waitForNextUpdate()
+
+        expect(result.current.value).toEqual(expectedValues[0])
+        expect(result.current.cached).toEqual(expectedValues[0])
+        expect(result.current.isActual).toBe(true)
+        expect(result.current.isLoading).toBe(false)
+        expect(result.current.error).toEqual(undefined)
       })
 
-      jest.advanceTimersByTime(10)
+      it('check onError callback', async () => {
+        const { result, waitForNextUpdate } = renderHook(() => initHook())
 
-      act(() => {
-        result.current.softRefresh()
+        act(() => {
+          result.current.softRefresh()
+        })
+
+        jest.runAllTimers()
+        await waitForNextUpdate()
+
+        expect(result.current.value).toEqual(expectedValues[0])
+        expect(result.current.cached).toEqual(expectedValues[0])
+        expect(result.current.isActual).toBe(true)
+        expect(result.current.isLoading).toBe(false)
+        expect(result.current.error).toBe(undefined)
+
+        throwErrorOnNextUpdateOnce()
+        act(() => {
+          result.current.softRefresh()
+        })
+
+        expect(result.current.value).toEqual(expectedValues[0])
+        expect(result.current.cached).toEqual(expectedValues[0])
+        expect(result.current.isActual).toBe(true)
+        expect(result.current.isLoading).toBe(true)
+        expect(result.current.error).toBe(undefined)
+
+        jest.runAllTimers()
+        await waitForNextUpdate()
+
+        expect(result.current.value).toEqual(expectedValueOnError)
+        expect(result.current.cached).toEqual(expectedCacheOnError)
+        expect(result.current.isActual).toBe(true)
+        expect(result.current.isLoading).toBe(false)
+        expect(result.current.error).toEqual(expectedError)
       })
-
-      expect(result.current.value).toEqual(expectedValues[0])
-      expect(result.current.cached).toEqual(expectedValues[0])
-      expect(result.current.isActual).toBe(true)
-      expect(result.current.isLoading).toBe(true)
-      expect(result.current.error).toBe(undefined)
-
-      jest.runAllTimers()
-      await waitForNextUpdate()
-
-      expect(result.current.value).toEqual(expectedValues[1])
-      expect(result.current.cached).toEqual(expectedValues[1])
-      expect(result.current.isActual).toBe(true)
-      expect(result.current.isLoading).toBe(false)
-      expect(result.current.error).toBe(undefined)
-    })
-
-    it(`${utilName}: check hardRefresh`, async () => {
-      const { result, waitForNextUpdate } = renderHook(() => initHook())
-
-      expect(result.current.value).toEqual(expectedInitValue)
-      expect(result.current.cached).toEqual(expectedInitValue)
-      expect(result.current.isActual).toBe(false)
-      expect(result.current.isLoading).toBe(false)
-      expect(result.current.error).toBe(undefined)
-
-      act(() => {
-        result.current.hardRefresh()
-      })
-
-      expect(result.current.value).toEqual(expectedInitValue)
-      expect(result.current.cached).toEqual(expectedInitValue)
-      expect(result.current.isActual).toBe(false)
-      expect(result.current.isLoading).toBe(true)
-      expect(result.current.error).toBe(undefined)
-
-      jest.runAllTimers()
-      await waitForNextUpdate()
-
-      expect(result.current.value).toEqual(expectedValues[0])
-      expect(result.current.cached).toEqual(expectedValues[0])
-      expect(result.current.isActual).toBe(true)
-      expect(result.current.isLoading).toBe(false)
-      expect(result.current.error).toBe(undefined)
-
-      act(() => {
-        result.current.hardRefresh()
-      })
-
-      expect(result.current.value).toEqual(expectedValues[0])
-      expect(result.current.cached).toEqual(expectedValues[0])
-      expect(result.current.isActual).toBe(false)
-      expect(result.current.isLoading).toBe(true)
-      expect(result.current.error).toBe(undefined)
-
-      jest.advanceTimersByTime(10)
-
-      act(() => {
-        result.current.hardRefresh()
-      })
-
-      jest.advanceTimersByTime(10)
-
-      act(() => {
-        result.current.hardRefresh()
-      })
-
-      expect(result.current.value).toEqual(expectedValues[0])
-      expect(result.current.cached).toEqual(expectedValues[0])
-      expect(result.current.isActual).toBe(false)
-      expect(result.current.isLoading).toBe(true)
-      expect(result.current.error).toBe(undefined)
-
-      jest.runAllTimers()
-      await waitForNextUpdate()
-
-      expect(result.current.value).toEqual(expectedValues[1])
-      expect(result.current.cached).toEqual(expectedValues[1])
-      expect(result.current.isActual).toBe(true)
-      expect(result.current.isLoading).toBe(false)
-      expect(result.current.error).toBe(undefined)
-    })
-
-    it(`${utilName}: check cancel refresh`, async () => {
-      const { result, waitForNextUpdate } = renderHook(() => initHook())
-
-      act(() => {
-        result.current.softRefresh()
-      })
-
-      jest.runAllTimers()
-      await waitForNextUpdate()
-
-      expect(result.current.value).toEqual(expectedValues[0])
-      expect(result.current.cached).toEqual(expectedValues[0])
-      expect(result.current.isActual).toBe(true)
-      expect(result.current.isLoading).toBe(false)
-      expect(result.current.error).toBe(undefined)
-
-      let cancel: Destructor | void
-      act(() => {
-        cancel = result.current.softRefresh()
-      })
-
-      expect(result.current.value).toEqual(expectedValues[0])
-      expect(result.current.cached).toEqual(expectedValues[0])
-      expect(result.current.isActual).toBe(true)
-      expect(result.current.isLoading).toBe(true)
-      expect(result.current.error).toBe(undefined)
-
-      act(() => cancel?.())
-      jest.runAllTimers()
-      await waitForNextUpdate()
-
-      expect(result.current.value).toEqual(expectedValues[0])
-      expect(result.current.cached).toEqual(expectedValues[0])
-      expect(result.current.isActual).toBe(true)
-      expect(result.current.isLoading).toBe(false)
-      expect(result.current.error).toEqual(undefined)
-    })
-    it(`${utilName}: check onError callback`, async () => {
-      const { result, waitForNextUpdate } = renderHook(() => initHook())
-
-      act(() => {
-        result.current.softRefresh()
-      })
-
-      jest.runAllTimers()
-      await waitForNextUpdate()
-
-      expect(result.current.value).toEqual(expectedValues[0])
-      expect(result.current.cached).toEqual(expectedValues[0])
-      expect(result.current.isActual).toBe(true)
-      expect(result.current.isLoading).toBe(false)
-      expect(result.current.error).toBe(undefined)
-
-      throwErrorOnNextUpdateOnce()
-      act(() => {
-        result.current.softRefresh()
-      })
-
-      expect(result.current.value).toEqual(expectedValues[0])
-      expect(result.current.cached).toEqual(expectedValues[0])
-      expect(result.current.isActual).toBe(true)
-      expect(result.current.isLoading).toBe(true)
-      expect(result.current.error).toBe(undefined)
-
-      jest.runAllTimers()
-      await waitForNextUpdate()
-
-      expect(result.current.value).toEqual(expectedValueOnError)
-      expect(result.current.cached).toEqual(expectedCacheOnError)
-      expect(result.current.isActual).toBe(true)
-      expect(result.current.isLoading).toBe(false)
-      expect(result.current.error).toEqual(expectedError)
     })
   },
 )

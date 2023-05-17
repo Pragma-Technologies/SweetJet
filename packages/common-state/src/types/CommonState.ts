@@ -42,8 +42,10 @@ export type RefreshableState<T = unknown, E = unknown, I = undefined> = State<T,
 export type HookCommonState<T = unknown, E = unknown> = State<T, E, T> & Refreshable & Cacheable<T>
 export type CommonState<T = unknown, E = unknown, I = undefined> = State<T, E, I> & Refreshable & Cacheable<T | I>
 
-export type StateValue<S extends State<unknown, unknown, unknown>> = S extends State<infer T, unknown, unknown>
+export type StateValue<S extends State<unknown, unknown, unknown>> = S extends ActualState<infer T>
   ? T
+  : S extends ErrorState<infer I>
+  ? I
   : never
 
 export interface StateRefreshOption<T, E, I> {
@@ -52,7 +54,7 @@ export interface StateRefreshOption<T, E, I> {
   onError?: (error: E, state: CacheableState<T, E, I>) => void
 }
 
-export interface SwitchStateRefreshOption<O extends CommonState, T, E, I> {
+export interface SwitchStateRefreshOption<O extends CommonState<unknown, unknown, unknown>, T, E, I> {
   refreshFn: (origin: StateValue<O>) => Promise<T>
   requestKey?: (origin: StateValue<O>) => string
   onError?: (error: E, state: CacheableState<T, E, I>) => void
@@ -64,7 +66,12 @@ export interface StateManager<T = unknown, E = unknown, I = undefined> {
   setRefresh: (params: StateRefreshOption<T, E, I>) => void
 }
 
-export interface SwitchStateManager<O extends CommonState, T = unknown, E = unknown, I = undefined> {
+export interface SwitchStateManager<
+  O extends CommonState<unknown, unknown, unknown>,
+  T = unknown,
+  E = unknown,
+  I = undefined,
+> {
   state: CommonState<T, E, I>
   setState: Dispatch<SetStateAction<CacheableState<T, E, I>>>
   setRefresh: (params: SwitchStateRefreshOption<O, T, E, I>) => void
