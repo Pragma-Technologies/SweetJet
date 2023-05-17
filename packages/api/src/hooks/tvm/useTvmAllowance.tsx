@@ -1,4 +1,4 @@
-import { HookCommonState, useCommonState } from '@pragma-web-utils/common-state'
+import { CommonState, useCommonState } from '@pragma-web-utils/common-state'
 import { Address, MulticallRequestCollector } from '@pragma-web-utils/core'
 import { useEffect } from 'react'
 import { TRC10API } from '../../api'
@@ -11,7 +11,7 @@ export function useTvmAllowance(
   grpcUrl: string,
   multicall: Address,
   requestCollector: MulticallRequestCollector,
-): HookCommonState<BN | undefined> {
+): CommonState<BN | undefined> {
   const { state, setRefresh } = useCommonState<BN>()
 
   useEffect(() => {

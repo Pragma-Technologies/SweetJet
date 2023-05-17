@@ -1,12 +1,28 @@
 import { Dispatch, SetStateAction } from 'react'
 import { Destructor } from './common'
 
-export interface State<T = unknown, E = unknown> {
+export type ActualState<T = unknown> = {
   value: T
-  error: E | undefined
+  error: undefined
+  isLoading: boolean
+  isActual: true
+}
+
+export type NotActualState<T = unknown, I extends unknown = T> = {
+  value: T | I
+  error: undefined
+  isLoading: boolean
+  isActual: false
+}
+
+export type ErrorState<I = unknown, E = unknown> = {
+  value: I
+  error: E
   isLoading: boolean
   isActual: boolean
 }
+
+export type State<T = unknown, E = unknown, I = undefined> = ActualState<T> | NotActualState<T, I> | ErrorState<I, E>
 
 export interface Cacheable<T = unknown> {
   cached: T
@@ -17,24 +33,23 @@ export interface Refreshable {
   hardRefresh: () => Destructor | void
 }
 
-export interface CacheableState<T = unknown, E = unknown> extends State<T, E>, Cacheable<T> {}
-export interface RefreshableState<T = unknown, E = unknown> extends State<T, E>, Refreshable {}
-
-export interface HookCommonState<T = unknown, E = unknown> extends State<T, E>, Refreshable, Cacheable<T> {}
-
-export interface StateRefreshOption<T, E> {
-  refreshFn: () => Promise<T>
-  requestKey?: string
-  onError?: (error: E, state: CacheableState<T, E>) => void
-}
-
-export interface StateManager<T = unknown, E = unknown> {
-  state: HookCommonState<T, E>
-  setState: Dispatch<SetStateAction<CacheableState<T, E>>>
-  setRefresh: (params: StateRefreshOption<T, E>) => void
-}
+export type CacheableState<T = unknown, E = unknown, I = undefined> = State<T, E, I> & Cacheable<T | I>
+export type RefreshableState<T = unknown, E = unknown, I = undefined> = State<T, E, I> & Refreshable
 
 /**
- * @deprecated use StateManager
+ * @deprecated use CommonState
  */
-export type CommonState<T = unknown, E = unknown> = StateManager<T, E>
+export type HookCommonState<T = unknown, E = unknown> = State<T, E, T> & Refreshable & Cacheable<T>
+export type CommonState<T = unknown, E = unknown, I = undefined> = State<T, E, I> & Refreshable & Cacheable<T | I>
+
+export interface StateRefreshOption<T, E, I> {
+  refreshFn: () => Promise<T>
+  requestKey?: string
+  onError?: (error: E, state: CacheableState<T, E, I>) => void
+}
+
+export interface StateManager<T = unknown, E = unknown, I = undefined> {
+  state: CommonState<T, E, I>
+  setState: Dispatch<SetStateAction<CacheableState<T, E, I>>>
+  setRefresh: (params: StateRefreshOption<T, E, I>) => void
+}

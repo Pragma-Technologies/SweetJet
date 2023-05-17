@@ -2,14 +2,14 @@ import { Destructor } from '@pragma-web-utils/hooks'
 import { act, renderHook } from '@testing-library/react-hooks'
 import { useEffect } from 'react'
 import { TestIncrementor } from '../testUtils'
-import { HookCommonState } from '../types'
+import { CommonState } from '../types'
 import { useCombineCommonStates } from './useCombineCommonStates'
 import { useCommonState } from './useCommonState'
 import { useMapCommonState } from './useMapCommonState'
 
 type CommonStateTestUtil<T = unknown, E = unknown> = {
   utilName: string
-  initHook: () => HookCommonState<T, E>
+  initHook: () => CommonState<T, E>
   throwErrorOnNextUpdateOnce: () => void
   expectedInitValue: T
   expectedValues: [T, T]
@@ -64,7 +64,7 @@ describe.each<CommonStateTestUtil>([
           return undefined
         }
         return 2 * value + 1
-      })
+      }) as CommonState
     },
     throwErrorOnNextUpdateOnce: () => {
       testIncrementor.setErrorOnNextIncrementInit('error')
@@ -94,7 +94,7 @@ describe.each<CommonStateTestUtil>([
       useEffect(() => setRefresh1({ refreshFn: () => testIncrementor.increment() }), [])
       useEffect(() => setRefresh2({ refreshFn: () => testIncrementor2.increment() }), [])
 
-      return useCombineCommonStates(state1, state2)
+      return useCombineCommonStates(state1, state2) as CommonState
     },
     throwErrorOnNextUpdateOnce: () => {
       testIncrementor2.setErrorOnNextIncrementInit('error')
@@ -128,14 +128,14 @@ describe.each<CommonStateTestUtil>([
           return undefined
         }
         return first + second
-      })
+      }) as CommonState
     },
     throwErrorOnNextUpdateOnce: () => {
       testIncrementor2.setErrorOnNextIncrementInit('error')
     },
   },
 ])(
-  'HookCommonState interface implementations',
+  'CommonState interface implementations',
   ({
     utilName,
     reset,

@@ -26,7 +26,7 @@ interface Refreshable {
 interface CacheableState<T = unknown, E = unknown> extends State<T, E>, Cacheable<T> {}
 interface RefreshableState<T = unknown, E = unknown> extends State<T, E>, Refreshable {}
 
-interface HookCommonState<T = unknown, E = unknown> extends State<T, E>, Refreshable, Cacheable<T> {}
+interface CommonState<T = unknown, E = unknown> extends State<T, E>, Refreshable, Cacheable<T> {}
 ```
 
 Short field description:
@@ -40,7 +40,7 @@ Short field description:
 
 ## Usage
 
-For init and manage `HookCommonState` use `useCommonState` hook.
+For init and manage `CommonState` use `useCommonState` hook.
 
 ```ts
 interface StateRefreshOption<T, E> {
@@ -50,7 +50,7 @@ interface StateRefreshOption<T, E> {
 }
 
 interface StateManager<T = unknown, E = unknown> {
-  state: HookCommonState<T, E>
+  state: CommonState<T, E>
   setState: Dispatch<SetStateAction<State<T, E>>>
   setRefresh: (params: StateRefreshOption<T, E>) => void
 }
@@ -62,21 +62,21 @@ function useCommonState<Value, Error = unknown>(initial: Value | (() => Value)):
 ```
 
 Inputs:
-- `initial` - could be optional, if initial `value` of `HookCommonState` is `undefined`
+- `initial` - could be optional, if initial `value` of `CommonState` is `undefined`
 
 Outputs (returned object fields):
-- `state` - associated `HookCommonState`
+- `state` - associated `CommonState`
 - `setState` - for update state directly (for your custom logic of state behaviour). Not recommended for use without an urgent need
 - `setRefresh` - set refresh function, on error callback handler and request key for caching requests
 
 Usage example:
 
 ```tsx
-function examples(url: string, slug: string): HookCommonState<ReturnType | undefined> {
+function examples(url: string, slug: string): CommonState<ReturnType | undefined> {
   const { state, setRefreshFn } = useCommonState<ReturnType>()
 
   useEffect(() => {
-    // function for get value for HookCommonState
+    // function for get value for CommonState
     const refreshFn = () => getEntityDetails(url, slug)
     // on catch updating error
     const onError = (error)=> console.error('EntityDetails', error)
@@ -97,14 +97,14 @@ function examples(url: string, slug: string): HookCommonState<ReturnType | undef
 
 ### useMapCommonState
 
-For mapping `HookCommonState` value
+For mapping `CommonState` value
 
 ```ts
-const state: HookCommonState<ReturnType | undefined> = useCommonState<ReturnType>()
+const state: CommonState<ReturnType | undefined> = useCommonState<ReturnType>()
 
 //  ...
 
-const mappedState: HookCommonState<MappedType | undefined> = useMapCommonState(
+const mappedState: CommonState<MappedType | undefined> = useMapCommonState(
   state,
   (value: ReturnType | undefined): MappedType | undefined => {
     // ... return mapped value
@@ -115,14 +115,14 @@ const mappedState: HookCommonState<MappedType | undefined> = useMapCommonState(
 
 ### useCombineCommonStates
 
-For combine few `HookCommonState` values in one `HookCommonState` in array of values
+For combine few `CommonState` values in one `CommonState` in array of values
 
 ```ts
-const state1: HookCommonState<ReturnType1> = useCommonState<ReturnType1>(init1)
-const state2: HookCommonState<ReturnType2> = useCommonState<ReturnType2>(init2)
-const state3: HookCommonState<ReturnType3> = useCommonState<ReturnType3>(init3)
+const state1: CommonState<ReturnType1> = useSomeCommonState1<ReturnType1>(init1)
+const state2: CommonState<ReturnType2> = useSomeCommonState2<ReturnType2>(init2)
+const state3: CommonState<ReturnType3> = useSomeCommonState3<ReturnType3>(init3)
 
 //  ...
 
-const combinedState: HookCommonState<[ReturnType1, ReturnType2, ReturnType3]> = useMapCommonState(state1, state2, state3)
+const combinedState: CommonState<[ReturnType1, ReturnType2, ReturnType3]> = useCombineCommonStates(state1, state2, state3)
 ```

@@ -29,10 +29,10 @@
     "ts-jest": "^29.0.3"
   },
   "dependencies": {
-    "@pragma-web-utils/core": "^0.0.29",
+    "@pragma-web-utils/core": "^0.1.2",
     "@pragma-web-utils/contract-utils": "^0.0.14",
-    "@pragma-web-utils/common-state": "^0.0.35",
-    "@pragma-web-utils/tx-service": "^0.0.31",
+    "@pragma-web-utils/common-state": "^0.1.2",
+    "@pragma-web-utils/tx-service": "^0.1.2",
     "@typechain/ethers-v5": "^10.1.0",
     "ethers": "^5.4.1",
     "my-package": "^0.0.0",
