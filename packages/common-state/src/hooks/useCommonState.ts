@@ -1,31 +1,42 @@
 // hook types overloading
 import { useCancelableFactory, useCancelablePool, useIsMounted, useRequestMemo } from '@pragma-web-utils/hooks'
 import { useCallback, useMemo, useRef, useState } from 'react'
-import { CANCEL_PROMISE } from '../constants'
-import { CacheableState, StateManager, StateRefreshOption } from '../types'
+import { CANCEL_PROMISE, NOT_PROVIDED_REFRESH_FUNCTION } from '../constants'
+import { CacheableState, ErrorState, StateManager, StateRefreshOption } from '../types'
 
-export function useCommonState<Value, Error = unknown>(initial?: undefined): StateManager<Value | undefined, Error>
-export function useCommonState<Value, Error = unknown>(initial: Value | (() => Value)): StateManager<Value, Error>
+type NotErrorCacheable<T, E, I> = Exclude<CacheableState<T, E, I>, ErrorState<I, E>>
 
-export function useCommonState<Value, Error = unknown>(initial: Value | (() => Value)): StateManager<Value, Error> {
+export function useCommonState<Value, Error = unknown>(initial?: undefined): StateManager<Value, Error>
+export function useCommonState<Value, Error = unknown>(
+  initial: Value | (() => Value),
+): StateManager<Value, Error, Value>
+export function useCommonState<Value, Error = unknown, Initial = unknown>(
+  initial: Initial | (() => Initial),
+): StateManager<Value, Error, Initial>
+
+export function useCommonState<Value, Error, Initial>(
+  initial: Initial | (() => Initial),
+): StateManager<Value, Error, Initial> {
   const createCancelableFactory = useCancelableFactory()
   const { addToCancelablePool, clearCancelablePool } = useCancelablePool()
   const { memoizedRequest } = useRequestMemo()
   const isMounted = useIsMounted()
-  const refreshRef = useRef<StateRefreshOption<Value, Error>>()
+  const refreshRef = useRef<StateRefreshOption<Value, Error, Initial>>()
   // if initial is dispatch function call it ones for get value (imitate useState common logic)
-  const [_initial] = useState<Value>(initial)
-  const [state, setState] = useState<CacheableState<Value, Error>>({
+  const [_initial] = useState<Initial>(initial)
+  const [state, setState] = useState<CacheableState<Value, Error, Initial>>({
     value: _initial,
     isLoading: false,
-    isActual: _initial !== undefined,
+    isActual: false,
     error: undefined,
     cached: _initial,
   })
 
   const refreshCallback = useCallback(() => {
-    const getInitial = async () => _initial
-    const request = refreshRef.current?.refreshFn ?? getInitial
+    const throwErrorOnRefresh = async () => {
+      throw NOT_PROVIDED_REFRESH_FUNCTION
+    }
+    const request = refreshRef.current?.refreshFn ?? throwErrorOnRefresh
     const key = refreshRef.current?.requestKey ?? ''
     // important save onError callback on init request, for handle changing callback during waiting request
     const onError = refreshRef.current?.onError
@@ -41,11 +52,18 @@ export function useCommonState<Value, Error = unknown>(initial: Value | (() => V
 
     const tryUpdate = async () => {
       try {
-        setState((prevState) => ({ ...prevState, isLoading: true, error: undefined }))
+        setState(
+          (prevState) =>
+            ({
+              ...prevState,
+              isLoading: true,
+              error: undefined,
+            } as NotErrorCacheable<Value, Error, Initial>),
+        )
         const _value = await cancellable.cancellablePromise
         // if not mounted doesn't update state
         if (isMounted()) {
-          setState((prevState) => ({ ...prevState, value: _value, isActual: true, isLoading: false, cached: _value }))
+          setState(() => ({ value: _value, error: undefined, isActual: true, isLoading: false, cached: _value }))
         }
       } catch (error) {
         // if not mounted doesn't update state
@@ -68,7 +86,7 @@ export function useCommonState<Value, Error = unknown>(initial: Value | (() => V
     return cancellable.cancel
   }, [])
 
-  return useMemo<StateManager<Value, Error>>(
+  return useMemo<StateManager<Value, Error, Initial>>(
     () => ({
       state: {
         ...state,

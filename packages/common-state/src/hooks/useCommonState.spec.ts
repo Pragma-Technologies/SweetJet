@@ -1,5 +1,7 @@
 import { act, renderHook } from '@testing-library/react-hooks'
+import { NOT_PROVIDED_REFRESH_FUNCTION } from '../constants'
 import { TestIncrementor } from '../testUtils'
+import { CacheableState } from '../types'
 import { useCommonState } from './useCommonState'
 
 const testIncrementor = new TestIncrementor()
@@ -37,7 +39,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.cached).toBe(undefined)
     expect(result.current.state.isActual).toBe(true)
     expect(result.current.state.isLoading).toBe(false)
-    expect(result.current.state.error).toBe(undefined)
+    expect(result.current.state.error).toBe('Refresh function not provided')
 
     result.current.setRefresh({ refreshFn: () => testIncrementor.increment() })
     act(() => {
@@ -84,7 +86,7 @@ describe('useCommonState hook', () => {
 
     expect(result.current.state.value).toBe(-1)
     expect(result.current.state.cached).toBe(-1)
-    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isActual).toBe(false)
     expect(result.current.state.isLoading).toBe(false)
     expect(result.current.state.error).toBe(undefined)
 
@@ -94,7 +96,7 @@ describe('useCommonState hook', () => {
 
     expect(result.current.state.value).toBe(-1)
     expect(result.current.state.cached).toBe(-1)
-    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isActual).toBe(false)
     expect(result.current.state.isLoading).toBe(true)
     expect(result.current.state.error).toBe(undefined)
 
@@ -105,7 +107,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.cached).toBe(-1)
     expect(result.current.state.isActual).toBe(true)
     expect(result.current.state.isLoading).toBe(false)
-    expect(result.current.state.error).toBe(undefined)
+    expect(result.current.state.error).toBe(NOT_PROVIDED_REFRESH_FUNCTION)
 
     result.current.setRefresh({ refreshFn: () => testIncrementor.increment() })
     act(() => {
@@ -153,7 +155,7 @@ describe('useCommonState hook', () => {
 
     expect(result.current.state.value).toBe(-1)
     expect(result.current.state.cached).toBe(-1)
-    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isActual).toBe(false)
     expect(result.current.state.isLoading).toBe(false)
     expect(result.current.state.error).toBe(undefined)
 
@@ -163,7 +165,7 @@ describe('useCommonState hook', () => {
 
     expect(result.current.state.value).toBe(-1)
     expect(result.current.state.cached).toBe(-1)
-    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isActual).toBe(false)
     expect(result.current.state.isLoading).toBe(true)
     expect(result.current.state.error).toBe(undefined)
 
@@ -174,7 +176,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.cached).toBe(-1)
     expect(result.current.state.isActual).toBe(true)
     expect(result.current.state.isLoading).toBe(false)
-    expect(result.current.state.error).toBe(undefined)
+    expect(result.current.state.error).toBe(NOT_PROVIDED_REFRESH_FUNCTION)
 
     result.current.setRefresh({ refreshFn: () => testIncrementor.increment() })
     act(() => {
@@ -244,7 +246,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.error).toBe(undefined)
 
     act(() => {
-      result.current.setState((prev) => ({ ...prev, value: 2 }))
+      result.current.setState((prev) => ({ ...prev, value: 2 } as CacheableState<number>))
     })
 
     expect(result.current.state.value).toBe(2)
@@ -254,8 +256,8 @@ describe('useCommonState hook', () => {
     expect(result.current.state.error).toBe(undefined)
 
     act(() => {
-      result.current.setState((prev) => ({ ...prev, value: 3 }))
-      result.current.setState((prev) => ({ ...prev, value: 4 }))
+      result.current.setState((prev) => ({ ...prev, value: 3 } as CacheableState<number>))
+      result.current.setState((prev) => ({ ...prev, value: 4 } as CacheableState<number>))
     })
 
     expect(result.current.state.value).toBe(4)

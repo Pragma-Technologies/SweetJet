@@ -1,4 +1,4 @@
-import { HookCommonState, useCommonState } from '@pragma-web-utils/common-state'
+import { CommonState, useCommonState } from '@pragma-web-utils/common-state'
 import { Address, MulticallRequestCollector } from '@pragma-web-utils/core'
 import { BigNumber } from 'ethers'
 import { useEffect } from 'react'
@@ -11,7 +11,7 @@ export function useEvmTokenBalance(
   rpcUrl: string,
   multicall: Address,
   multicallCollector: MulticallRequestCollector,
-): HookCommonState<BN | undefined> {
+): CommonState<BN | undefined> {
   const { state, setRefresh } = useCommonState<BigNumber>()
 
   useEffect(() => {

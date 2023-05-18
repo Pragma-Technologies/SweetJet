@@ -1,10 +1,10 @@
 import { renderHook } from '@testing-library/react-hooks'
 import React from 'react'
 import { NOT_PROVIDED_STATE_STRICT_CONTEXT } from '../constants'
-import { HookCommonState } from '../types'
+import { CommonState } from '../types'
 import { useStrictStateValueContext } from './useStrictStateValueContext'
 
-const emptyState: HookCommonState = {
+const emptyState: CommonState = {
   value: undefined,
   error: undefined,
   isActual: false,
@@ -16,13 +16,13 @@ const emptyState: HookCommonState = {
 
 describe('useStrictStateValueContext', () => {
   it('should throw an error if the context is not provided', () => {
-    const mockContext = React.createContext<HookCommonState>(emptyState)
+    const mockContext = React.createContext<CommonState>(emptyState)
     const { error } = renderHook(() => useStrictStateValueContext(mockContext)).result
     expect(error).toBe(NOT_PROVIDED_STATE_STRICT_CONTEXT)
   })
 
   it('should throw an error with a custom message if the context is not provided', () => {
-    const mockContext = React.createContext<HookCommonState>(emptyState)
+    const mockContext = React.createContext<CommonState>(emptyState)
     const customMessage = 'Custom Message'
     const { error } = renderHook(() => useStrictStateValueContext(mockContext, customMessage)).result
     expect(error).toBe(`${customMessage}: ${NOT_PROVIDED_STATE_STRICT_CONTEXT}`)
@@ -30,20 +30,20 @@ describe('useStrictStateValueContext', () => {
 
   it('should return the context value if it is provided', () => {
     const customValue = 'Custom value'
-    const mockContext = React.createContext<HookCommonState>({ ...emptyState, value: customValue })
+    const mockContext = React.createContext({ ...emptyState, value: customValue } as CommonState)
     const { current } = renderHook(() => useStrictStateValueContext(mockContext)).result
     expect(current).toBe(customValue)
   })
 
   it('check isValueValid function: valid undefined', () => {
-    const mockContext = React.createContext<HookCommonState>(emptyState)
+    const mockContext = React.createContext<CommonState>(emptyState)
     const { current } = renderHook(() => useStrictStateValueContext(mockContext, '', () => true)).result
     expect(current).toBe(undefined)
   })
 
   it('check isValueValid function: valid value', () => {
     const customValue = 'Custom value'
-    const mockContext = React.createContext<HookCommonState>({ ...emptyState, value: customValue })
+    const mockContext = React.createContext({ ...emptyState, value: customValue } as CommonState)
     const { current } = renderHook(() =>
       useStrictStateValueContext(mockContext, '', (value) => value === customValue),
     ).result
@@ -52,7 +52,7 @@ describe('useStrictStateValueContext', () => {
 
   it('check isValueValid function: invalid value', () => {
     const customValue = 'Custom value'
-    const mockContext = React.createContext<HookCommonState>({ ...emptyState, value: customValue })
+    const mockContext = React.createContext({ ...emptyState, value: customValue } as CommonState)
     const { error } = renderHook(() =>
       useStrictStateValueContext(mockContext, '', (value) => value !== customValue),
     ).result
