@@ -72,7 +72,7 @@ describe('useSwitchCommonState', () => {
       result.current.originState.softRefresh()
     })
 
-    // wait finishing init request
+    // wait finishing origin refresh
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -88,7 +88,7 @@ describe('useSwitchCommonState', () => {
     expect(result.current.switchState.isActual).toBe(false)
     expect(result.current.switchState.cached).toBe(1)
 
-    // wait finishing init request
+    // wait finishing switch refresh
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -127,7 +127,7 @@ describe('useSwitchCommonState', () => {
       return { originState, switchState }
     })
 
-    // wrap check initial checks, because useSwitchCommonState has refreshing on init
+    // initial checks
     expect(result.current.originState.value).toBe(1)
     expect(result.current.originState.error).toBe(undefined)
     expect(result.current.originState.isLoading).toBe(false)
@@ -144,7 +144,7 @@ describe('useSwitchCommonState', () => {
       result.current.originState.softRefresh()
     })
 
-    // wait finishing init request
+    // wait finishing refresh
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -234,7 +234,7 @@ describe('useSwitchCommonState', () => {
     expect(mockOriginRefresh).toBeCalledTimes(1)
     expect(mockSwitchRefresh).toBeCalledTimes(1)
 
-    // wait finishing init request
+    // wait finishing origin refresh
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -252,7 +252,7 @@ describe('useSwitchCommonState', () => {
     expect(result.current.switchState.isActual).toBe(false)
     expect(result.current.switchState.cached).toBe(1)
 
-    // wait finishing куакуірштп
+    // wait finishing switch refresh
     jest.runAllTimers()
     await waitForNextUpdate()
 
