@@ -76,3 +76,8 @@ export interface SwitchStateManager<
   setState: Dispatch<SetStateAction<CacheableState<T, E, I>>>
   setRefresh: (params: SwitchStateRefreshOption<O, T, E, I>) => void
 }
+
+export type SwitchOption<Initial> = {
+  initial: Initial | (() => Initial)
+  withRefreshOriginUpdate?: boolean
+}

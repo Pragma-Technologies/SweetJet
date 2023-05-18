@@ -151,7 +151,9 @@ describe.each<CommonStateTestUtil>([
     expectedCacheOnError: 2,
     initHook: () => {
       const { state: state1, setRefresh: setRefresh1 } = useCommonState<number>(1)
-      const { state: state2, setRefresh: setRefresh2 } = useSwitchCommonState<typeof state1, number>(state1)
+      const { state: state2, setRefresh: setRefresh2 } = useSwitchCommonState<typeof state1, number>(state1, {
+        withRefreshOriginUpdate: false,
+      })
 
       useEffect(() => setRefresh1({ refreshFn: () => testIncrementor.increment() }), [])
       useEffect(() => setRefresh2({ refreshFn: async (origin) => origin + (await testIncrementor2.increment()) }), [])
