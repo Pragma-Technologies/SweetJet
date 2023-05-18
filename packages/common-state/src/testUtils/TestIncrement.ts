@@ -16,6 +16,10 @@ export class TestIncrementor {
     return this._value++
   }
 
+  setValue(value: number): void {
+    this._value = value
+  }
+
   refresh(): void {
     this._value = 0
     this._nextError = undefined

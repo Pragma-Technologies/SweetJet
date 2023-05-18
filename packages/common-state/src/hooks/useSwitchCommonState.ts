@@ -1,43 +1,107 @@
-import { useEffect, useMemo } from 'react'
-import { CommonState, StateValue, SwitchStateManager } from '../types'
+import { useEffect, useMemo, useRef } from 'react'
+import { NOT_PROVIDED_REFRESH_FUNCTION } from '../constants'
+import {
+  CommonState,
+  StateRefreshOption,
+  StateValue,
+  SwitchOption,
+  SwitchStateManager,
+  SwitchStateRefreshOption,
+} from '../types'
 import { useCommonState } from './useCommonState'
 
-// TODO: write tests if needed refactor without `useCommonState`
-export const useSwitchCommonState = <Origin extends CommonState, Value, Error = unknown, Initial = Value>(
+const defaultOptions: SwitchOption<undefined> = {
+  initial: undefined,
+  withRefreshOriginUpdate: true,
+}
+
+// @ts-ignore
+export function useSwitchCommonState<Origin extends CommonState<unknown, unknown, unknown>, Value, Error = unknown>(
   origin: Origin,
-  initial: Initial | (() => Initial),
-): SwitchStateManager<Origin, Value, Error, Initial> => {
-  const { state, setState, setRefresh } = useCommonState<Value, Error, Initial>(initial)
+  options?: Partial<SwitchOption<undefined>>,
+): SwitchStateManager<Origin, Value, Error>
+export function useSwitchCommonState<Origin extends CommonState<unknown, unknown, unknown>, Value, Error = unknown>(
+  origin: Origin,
+  options: SwitchOption<Value>,
+): SwitchStateManager<Origin, Value, Error, Value>
+export function useSwitchCommonState<
+  Origin extends CommonState<unknown, unknown, unknown>,
+  Value,
+  Error = unknown,
+  Initial = unknown,
+>(origin: Origin, options: SwitchOption<Initial>): SwitchStateManager<Origin, Value, Error, Initial>
+
+export function useSwitchCommonState<
+  Origin extends CommonState<unknown, unknown, unknown>,
+  Value,
+  Error = unknown,
+  Initial = Value,
+>(origin: Origin, options: SwitchOption<Initial>): SwitchStateManager<Origin, Value, Error, Initial> {
+  options = { ...defaultOptions, ...options }
+  // for cache refresh requests when origin value loading
+  const refreshCountRef = useRef({ count: 0, isHardReload: false })
+  const optionsRef = useRef<SwitchStateRefreshOption<Origin, Value, Error, Initial>>({
+    refreshFn: async () => {
+      throw NOT_PROVIDED_REFRESH_FUNCTION
+    },
+  })
+  const { state, setState, setRefresh } = useCommonState<Value, Error, Initial>(options.initial)
 
   const stateManager = useMemo<SwitchStateManager<Origin, Value, Error, Initial>>(
     () => ({
       state: {
         ...state,
-        isActual: origin.isActual && state.isActual,
-        isLoading: origin.isLoading || state.isLoading,
         softRefresh: () => {
+          refreshCountRef.current.count++
           if (!origin.isLoading) {
+            refreshCountRef.current.count = 0
             return state.softRefresh()
           }
         },
         hardRefresh: () => {
+          refreshCountRef.current.count++
+          refreshCountRef.current.isHardReload = true
           if (!origin.isLoading) {
+            refreshCountRef.current.count = 0
+            refreshCountRef.current.isHardReload = false
             return state.hardRefresh()
           }
         },
       } as CommonState<Value, Error, Initial>,
       setState,
-      setRefresh: (options) =>
+      setRefresh: (options) => {
+        optionsRef.current = options
         setRefresh({
-          refreshFn: async () => options.refreshFn(origin.value as StateValue<Origin>),
-          requestKey: options.requestKey?.(origin.value as StateValue<Origin>),
-          onError: options.onError,
-        }),
+          refreshFn: async () => optionsRef.current.refreshFn(origin.value as StateValue<Origin>),
+          requestKey: optionsRef.current.requestKey?.(origin.value as StateValue<Origin>),
+          onError: optionsRef.current.onError,
+        })
+      },
     }),
     [state, origin],
   )
 
-  useEffect(() => stateManager.state.hardRefresh(), [origin.isLoading])
+  useEffect(() => {
+    setRefresh({
+      refreshFn: async () => optionsRef.current.refreshFn(origin.value as StateValue<Origin>),
+      requestKey: optionsRef.current.requestKey?.(origin.value as StateValue<Origin>),
+      onError: optionsRef.current.onError,
+    })
+  }, [origin])
+
+  useEffect(() => {
+    if (options.withRefreshOriginUpdate && !origin.isLoading) {
+      refreshCountRef.current.count = 0
+      refreshCountRef.current.isHardReload = false
+      return state.hardRefresh()
+    }
+  }, [origin.value])
+
+  useEffect(() => {
+    if (!origin.isLoading && !!refreshCountRef.current.count) {
+      return refreshCountRef.current.isHardReload ? stateManager.state.hardRefresh() : stateManager.state.softRefresh()
+    }
+  }, [origin.isLoading])
 
   return stateManager
 }
