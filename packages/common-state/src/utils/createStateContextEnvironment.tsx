@@ -1,10 +1,11 @@
-import { Defined } from '@pragma-web-utils/core'
 import React, { Context, createContext, FC, PropsWithChildren, useContext } from 'react'
 import { useStrictStateValueContext } from '../hooks'
 import {
+  ActualStateValue,
   CommonState,
   CreateStateContextEnvironmentOption,
   CreateStateContextEnvironmentOutput,
+  StateValue,
   StateWrapperProps,
   StrictWrapperProps,
 } from '../types'
@@ -19,15 +20,15 @@ const emptyState: CommonState = {
   hardRefresh: () => undefined,
 }
 
-export function createStateContextEnvironment<T>(
+export function createStateContextEnvironment<T extends CommonState<unknown, unknown, unknown>>(
   contextName: string,
   option?: CreateStateContextEnvironmentOption<T>,
 ): CreateStateContextEnvironmentOutput<T> {
-  const { userContext, isValueValid = (value: T) => value !== undefined && value !== null } = { ...option }
-  const context = !!userContext ? (userContext as Context<CommonState>) : createContext<CommonState>(emptyState)
+  const { userContext, isValueValid = (value: StateValue<T>) => value !== undefined && value !== null } = { ...option }
+  const context = !!userContext ? (userContext as Context<T>) : createContext(emptyState as T)
 
-  const strictValueHook = (): Defined<T> => useStrictStateValueContext<T>(context, contextName, isValueValid)
-  const stateHook = (): CommonState<T> => useContext(context) as CommonState<T>
+  const strictValueHook = (): ActualStateValue<T> => useStrictStateValueContext<T>(context, contextName, isValueValid)
+  const stateHook = () => useContext(context)
 
   const stateWrapper: FC<PropsWithChildren<StateWrapperProps<T>>> = ({ stateValue, children }) => {
     return <context.Provider value={stateValue}>{children}</context.Provider>
@@ -40,7 +41,7 @@ export function createStateContextEnvironment<T>(
       return <props.skeleton />
     }
 
-    if (!isValueValid(value as T) || error) {
+    if (!isValueValid(value as ActualStateValue<T>) || error) {
       return <props.error />
     }
 

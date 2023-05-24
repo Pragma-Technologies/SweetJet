@@ -1,13 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { NOT_PROVIDED_REFRESH_FUNCTION } from '../constants'
-import {
-  CommonState,
-  StateRefreshOption,
-  StateValue,
-  SwitchOption,
-  SwitchStateManager,
-  SwitchStateRefreshOption,
-} from '../types'
+import { CommonState, StateValue, SwitchOption, SwitchStateManager, SwitchStateRefreshOption } from '../types'
 import { useCommonState } from './useCommonState'
 
 const defaultOptions: SwitchOption<undefined> = {
