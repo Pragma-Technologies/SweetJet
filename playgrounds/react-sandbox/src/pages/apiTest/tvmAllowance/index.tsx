@@ -1,6 +1,5 @@
-import { useTvmAllowance } from '@pragma-web-utils/api'
-import { useMulticallCollector } from '../../../services/multicall/MulticallService'
 import { Address } from '@pragma-web-utils/core'
+import { useMulticallCollector } from '../../../services/multicall/MulticallService'
 
 export const TvmAllowance = (): JSX.Element => {
   const testSpender = ''
@@ -10,6 +9,6 @@ export const TvmAllowance = (): JSX.Element => {
   const multicall = new Address('')
   const requestCollector = useMulticallCollector()
 
-  const allowance = useTvmAllowance()
+  // const allowance = useTvmAllowance()
   return <div></div>
 }

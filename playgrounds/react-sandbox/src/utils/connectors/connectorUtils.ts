@@ -19,7 +19,7 @@ const _supportedNetworks: EvmNetworkInfo[] = [
   Networks.OptimismMainnet,
   Networks.OptimismTestnet,
 ]
-const supportedNetworks: NetworkDetails[] = _supportedNetworks.map((item) => ({
+const supportedNetworks = _supportedNetworks.map((item) => ({
   chainId: item.chainId,
   rpc: item.rpcUrl,
   nativeCurrency: {
@@ -28,7 +28,7 @@ const supportedNetworks: NetworkDetails[] = _supportedNetworks.map((item) => ({
     decimals: 18, // TODO: add decimals to network info
   },
   chainName: item.networkName,
-}))
+})) as NetworkDetails[]
 
 const defaultChainId = EvmChainIdsEnum.BSC_MAINNET
 const defaultActiveChainIds = [
@@ -42,7 +42,7 @@ const defaultActiveChainIds = [
   EvmChainIdsEnum.AVALANCHE_TESTNET,
   EvmChainIdsEnum.AVALANCHE_MAINNET,
   EvmChainIdsEnum.ETHEREUM_MAINNET,
-  EvmChainIdsEnum.ETHEREUM_GOERLI_TESTNET,
+  EvmChainIdsEnum.ETHEREUM_RINKEBY_TESTNET,
 ]
 
 const metamaskConnector = new MetamaskConnector(supportedNetworks, defaultChainId, defaultActiveChainIds)

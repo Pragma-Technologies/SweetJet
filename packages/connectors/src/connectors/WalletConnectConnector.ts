@@ -1,5 +1,6 @@
 import EthereumProvider from '@walletconnect/ethereum-provider'
 import { EthereumProviderOptions } from '@walletconnect/ethereum-provider/dist/types/EthereumProvider'
+import { ProviderRpcError } from '@walletconnect/ethereum-provider/dist/types/types'
 import { NetworkDetails } from '../types'
 import { EthereumConnector } from './EthereumConnector'
 
@@ -28,7 +29,7 @@ export class WalletConnectConnector extends EthereumConnector<EthereumProvider> 
     this._account = undefined
 
     this._provider?.removeListener('connect', this._onConnect)
-    this._provider?.removeListener('disconnect', this._onDisconnect)
+    this._provider?.removeListener('disconnect', this._onDisconnect as unknown as (err: ProviderRpcError) => void)
     this._provider?.removeListener('chainChanged', this._onChangeChainId)
     this._provider?.removeListener('accountsChanged', this._onChangeAccount)
 
