@@ -94,6 +94,7 @@ describe.each<{ name: string; getConnector: () => BaseConnector; reset: () => vo
       new WalletConnectConnector(supportedNetworks, defaultNetwork.chainId, {
         projectId: 'testProjectId',
         chains: activeChainId,
+        showQrModal: true,
       }),
     reset: () => (testWalletConnectProvider = new TestWalletConnectProvider()),
   },
