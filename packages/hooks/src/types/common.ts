@@ -1,2 +1,2 @@
 export type Destructor = () => void
-export type Deps = [] | [unknown, ...unknown[]]
+export type Deps<T = unknown> = [] | [T, ...T[]]

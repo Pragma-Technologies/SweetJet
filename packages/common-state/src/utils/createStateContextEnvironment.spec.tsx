@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react'
 import React from 'react'
-import { CreateStateContextEnvironmentOutput, CommonState } from '../types'
+import { CommonState, CreateStateContextEnvironmentOutput } from '../types'
 import { createStateContextEnvironment } from './createStateContextEnvironment'
 
 type StateEnvironmentTestUtil = {
   name: string
   getStateEnvironment: (
     isValueValid?: (value: string | undefined) => boolean,
-  ) => CreateStateContextEnvironmentOutput<string | undefined>
+  ) => CreateStateContextEnvironmentOutput<CommonState<string, string>>
 }
 
 const Skeleton = () => <>Skeleton</>
@@ -30,13 +30,13 @@ const mockContext = React.createContext<unknown>(undefined)
 const testUtil1: StateEnvironmentTestUtil = {
   name: '#1 With context:',
   getStateEnvironment: (isValueValid) =>
-    createStateContextEnvironment<string | undefined>(contextName, { userContext: mockContext, isValueValid }),
+    createStateContextEnvironment<CommonState<string, string>>(contextName, { userContext: mockContext, isValueValid }),
 }
 
 const testUtil2: StateEnvironmentTestUtil = {
   name: '#2 Without context:',
   getStateEnvironment: (isValueValid) =>
-    createStateContextEnvironment<string | undefined>(contextName, { isValueValid }),
+    createStateContextEnvironment<CommonState<string, string>>(contextName, { isValueValid }),
 }
 
 describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
@@ -50,21 +50,21 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
     } = getStateEnvironment()
 
     let value: string | undefined
-    let state: CommonState<string | undefined, string> | undefined
+    let state: CommonState<string, string> | undefined
 
     const Component = () => {
       value = useStrictValue()
-      state = useStateValue() as CommonState<string | undefined, string>
+      state = useStateValue() as CommonState<string, string>
       return <ChildComponent />
     }
 
-    const strictContent = (stateValue: CommonState<string | undefined, string>) => (
+    const strictContent = (stateValue: CommonState<string, string>) => (
       <StrictWrapper skeleton={Skeleton} error={ErrorState} stateValue={stateValue}>
         <Component />
       </StrictWrapper>
     )
 
-    const strictByStateContent = (stateValue: CommonState<string | undefined, string>) => (
+    const strictByStateContent = (stateValue: CommonState<string, string>) => (
       <StateWrapper stateValue={stateValue}>
         <StrictWrapper skeleton={Skeleton} error={ErrorState}>
           <Component />
@@ -86,7 +86,7 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
     })
 
     it(`${name} should render children component`, () => {
-      const stateValue = { ...emptyState, value: 'test' } as CommonState<string | undefined, string>
+      const stateValue: CommonState<string, string> = { ...emptyState, value: 'test' }
 
       const { container, rerender } = render(strictContent(stateValue))
 
@@ -102,7 +102,7 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
     })
 
     it(`${name} should render the Skeleton component when isActual is false`, () => {
-      const stateValue = { ...emptyState, value: 'test', isActual: false } as CommonState<string | undefined, string>
+      const stateValue: CommonState<string, string> = { ...emptyState, value: 'test', isActual: false }
 
       const { container, rerender } = render(strictContent(stateValue))
 
@@ -118,12 +118,12 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
     })
 
     it(`${name} should render the Skeleton component when isLoading is true and isActual is false`, () => {
-      const stateValue = {
+      const stateValue: CommonState<string, string> = {
         ...emptyState,
         value: 'test',
         isActual: false,
         isLoading: true,
-      } as CommonState<string | undefined, string>
+      }
 
       const { container, rerender } = render(strictContent(stateValue))
 
@@ -139,10 +139,7 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
     })
 
     it(`${name} should render the ErrorState component when there is an error`, () => {
-      const stateValue = { ...emptyState, value: 'test' as string | undefined, error: 'error' } as CommonState<
-        string | undefined,
-        string
-      >
+      const stateValue: CommonState<string, string> = { ...emptyState, value: undefined, error: 'error' }
 
       const { container, rerender } = render(strictContent(stateValue))
 
@@ -158,13 +155,13 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
     })
 
     it(`${name} should render the ErrorState component when value is undefined`, () => {
-      const { container, rerender } = render(strictContent(emptyState))
+      const { container, rerender } = render(strictContent(emptyState as CommonState<string, string>))
 
       expect(container.textContent?.trim()).toBe('Error')
       expect(value).toStrictEqual(undefined)
       expect(state).toStrictEqual(undefined)
 
-      rerender(strictByStateContent(emptyState))
+      rerender(strictByStateContent(emptyState as CommonState<string, string>))
 
       expect(container.textContent?.trim()).toBe('Error')
       expect(value).toStrictEqual(undefined)
@@ -188,7 +185,7 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
       }
 
       const { container, rerender } = render(
-        <StrictWrapper skeleton={Skeleton} error={ErrorState} stateValue={emptyState}>
+        <StrictWrapper skeleton={Skeleton} error={ErrorState} stateValue={emptyState as CommonState<string, string>}>
           <Component />
         </StrictWrapper>,
       )
@@ -198,7 +195,7 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
       expect(state).toStrictEqual(emptyState)
 
       rerender(
-        <StateWrapper stateValue={emptyState}>
+        <StateWrapper stateValue={emptyState as CommonState<string, string>}>
           <StrictWrapper skeleton={Skeleton} error={ErrorState}>
             <Component />
           </StrictWrapper>
@@ -217,7 +214,7 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
         strictWrapper: StrictWrapper,
         stateWrapper: StateWrapper,
       } = getStateEnvironment((value) => value === 'test')
-      const stateValue: CommonState<string | undefined> = { ...emptyState, value: 'test' }
+      const stateValue: CommonState<string, string> = { ...emptyState, value: 'test' }
       let value
       let state
 
@@ -257,7 +254,7 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
         strictWrapper: StrictWrapper,
         stateWrapper: StateWrapper,
       } = getStateEnvironment((value) => value === 'test')
-      const stateValue: CommonState<string | undefined> = { ...emptyState, value: 'not valid test' }
+      const stateValue: CommonState<string, string> = { ...emptyState, value: 'not valid test' }
       let value
       let state
 
@@ -297,10 +294,8 @@ describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
         strictWrapper: StrictWrapper,
         stateWrapper: StateWrapper,
       } = getStateEnvironment((value) => value === 'test')
-      const stateValue = { ...emptyState, value: 'test' as string | undefined, error: 'error' } as CommonState<
-        string | undefined,
-        string
-      >
+      const stateValue: CommonState<string, string> = { ...emptyState, value: undefined, error: 'error' }
+
       let value
       let state
 

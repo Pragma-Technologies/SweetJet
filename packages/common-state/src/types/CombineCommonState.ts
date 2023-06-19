@@ -19,11 +19,11 @@ export type CombineHookCommonStateTupleErrors<T extends [...CommonState[]]> = T 
   : []
 
 export type CombineHookCommonStateTupleInitials<T extends [...CommonState[]]> = T extends [
-  CommonState<unknown, unknown, infer Head>,
+  CommonState<infer Head1, unknown, infer Head2>,
   ...infer Tail,
 ]
   ? Tail extends CommonState[]
-    ? [Head, ...CombineHookCommonStateTupleInitials<Tail>]
+    ? [Head1 | Head2, ...CombineHookCommonStateTupleInitials<Tail>]
     : []
   : []
 
@@ -31,6 +31,14 @@ export type CombineHookCommonStateArrayStates<T extends CommonState[]> = T exten
 
 export type CombineHookCommonStateArrayErrors<T extends [...CommonState[]]> = T extends CommonState<unknown, infer E>[]
   ? E[]
+  : never
+
+export type CombineHookCommonStateArrayInitials<T extends CommonState[]> = T extends CommonState<
+  infer S,
+  unknown,
+  infer K
+>[]
+  ? (S | K)[]
   : never
 
 export type CombineHookCommonStateStates<T extends CommonState[]> = T extends [CommonState, ...CommonState[]]
@@ -46,7 +54,7 @@ export type CombineHookCommonStateErrors<T extends [...CommonState[]]> = T exten
   : never
 
 export type CombineHookCommonStateInitials<T extends CommonState[]> = T extends [CommonState, ...CommonState[]]
-  ? CombineHookCommonStateTupleStates<T>
+  ? CombineHookCommonStateTupleInitials<T>
   : T extends CommonState[]
   ? CombineHookCommonStateArrayStates<T>
   : never
