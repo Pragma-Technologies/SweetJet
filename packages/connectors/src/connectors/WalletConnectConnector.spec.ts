@@ -37,6 +37,7 @@ describe('WalletConnectConnector', () => {
     const connector = new WalletConnectConnector(supportedNetworks, defaultNetwork.chainId, {
       projectId: 'testProjectId',
       chains: activeChainId,
+      showQrModal: true,
     })
 
     const connect = jest.spyOn(testProvider, 'connect')
@@ -52,6 +53,7 @@ describe('WalletConnectConnector', () => {
     const connector = new WalletConnectConnector(supportedNetworks, defaultNetwork.chainId, {
       projectId: 'testProjectId',
       chains: activeChainId,
+      showQrModal: true,
     })
 
     const connect = jest.spyOn(testProvider, 'connect')
@@ -64,6 +66,7 @@ describe('WalletConnectConnector', () => {
     const connector = new WalletConnectConnector(supportedNetworks, defaultNetwork.chainId, {
       projectId: 'testProjectId',
       chains: activeChainId,
+      showQrModal: true,
     })
 
     const disconnect = jest.spyOn(testProvider, 'disconnect')

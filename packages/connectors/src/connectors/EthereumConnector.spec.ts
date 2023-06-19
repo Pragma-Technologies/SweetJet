@@ -145,6 +145,7 @@ describe.each<EthereumConnectorSuit>([
       new WalletConnectConnector(supportedNetworks, defaultNetwork.chainId, {
         projectId: 'testProjectId',
         chains: activeChainId,
+        showQrModal: true,
       }),
     changeAccount: (account) => {
       testWalletConnectProvider._testAccount = account

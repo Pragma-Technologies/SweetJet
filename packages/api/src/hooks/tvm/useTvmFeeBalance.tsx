@@ -1,4 +1,4 @@
-import { CommonState, useCommonState } from '@pragma-web-utils/common-state'
+import { HookCommonState, useCommonState } from '@pragma-web-utils/common-state'
 import { TvmChainIdsEnum } from '@pragma-web-utils/core'
 import { useEffect } from 'react'
 import { TronWeb } from 'tronweb-typings'
@@ -9,7 +9,7 @@ export const useTvmFeeBalance = (
   account: string,
   tronWeb: TronWeb,
   chainId: TvmChainIdsEnum,
-): CommonState<BN | undefined> => {
+): HookCommonState<BN | undefined> => {
   const { state, setRefresh } = useCommonState<BN>(undefined)
 
   useEffect(() => {
