@@ -1,8 +1,9 @@
 import { FC } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { API_TEST_PAGE } from './core/constants/routers'
+import { API_TEST_PAGE, CONNECTOR_PAGE } from './core/constants/routers'
 import { Layout } from './layout'
 import { ApiTestPage } from './pages/apiTest'
+import { ConnectorsPage } from './pages/connectors'
 import { ThemeServiceTest } from './pages/themeServiceTest'
 import { AccountContextProvider } from './services/accountService/AccountsService'
 import { ThemeContextProvider } from './services/ThemeService'
@@ -17,6 +18,7 @@ export const App: FC = () => {
             <Routes>
               <Route path="/*" element={<ThemeServiceTest />} />
               <Route path={API_TEST_PAGE} element={<ApiTestPage />} />
+              <Route path={CONNECTOR_PAGE} element={<ConnectorsPage />} />
             </Routes>
           </Layout>
         </BrowserRouter>
