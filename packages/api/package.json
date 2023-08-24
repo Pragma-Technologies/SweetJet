@@ -4,7 +4,7 @@
     "pragma-web-utils"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "restricted"
   },
   "version": "0.0.1",
   "private": true,
