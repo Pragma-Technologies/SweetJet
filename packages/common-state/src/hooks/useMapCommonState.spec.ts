@@ -7,6 +7,7 @@ import { useMapCommonState } from './useMapCommonState'
 
 const testIncrementor = new TestIncrementor()
 
+// TODO: add key tests
 describe('useMapCommonState', () => {
   beforeEach(() => {
     jest.useFakeTimers()

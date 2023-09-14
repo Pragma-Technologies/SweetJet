@@ -30,6 +30,7 @@ export function useCommonState<Value, Error, Initial>(
     isActual: false,
     error: undefined,
     cached: _initial,
+    key: '',
   })
 
   const refreshCallback = useCallback(() => {
@@ -63,7 +64,7 @@ export function useCommonState<Value, Error, Initial>(
         const _value = await cancellable.cancellablePromise
         // if not mounted doesn't update state
         if (isMounted()) {
-          setState(() => ({ value: _value, error: undefined, isActual: true, isLoading: false, cached: _value }))
+          setState(() => ({ value: _value, error: undefined, isActual: true, isLoading: false, cached: _value, key }))
         }
       } catch (error) {
         // if not mounted doesn't update state
@@ -98,6 +99,9 @@ export function useCommonState<Value, Error, Initial>(
         },
       },
       setRefresh: (options) => (refreshRef.current = options),
+      resetStateActuality: () => {
+        setState((prev) => ({ ...prev, isActual: false, key: refreshRef.current?.requestKey ?? '' }))
+      },
       setState,
     }),
     [state],

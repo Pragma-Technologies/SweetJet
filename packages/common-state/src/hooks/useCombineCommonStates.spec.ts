@@ -8,6 +8,7 @@ import { useCommonState } from './useCommonState'
 const testIncrementor = new TestIncrementor()
 const testIncrementor2 = new TestIncrementor()
 
+// TODO: add key tests
 describe('useCombineCommonStates', () => {
   beforeEach(() => {
     jest.useFakeTimers()

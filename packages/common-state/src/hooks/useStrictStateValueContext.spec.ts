@@ -10,10 +10,12 @@ const emptyState: CommonState = {
   isActual: false,
   isLoading: false,
   cached: undefined,
+  key: '',
   softRefresh: () => undefined,
   hardRefresh: () => undefined,
 }
 
+// TODO: add key tests
 describe('useStrictStateValueContext', () => {
   it('should throw an error if the context is not provided', () => {
     const mockContext = React.createContext<CommonState>(emptyState)
