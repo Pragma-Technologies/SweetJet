@@ -16,6 +16,7 @@ const emptyState: CommonState = {
   isActual: false,
   isLoading: false,
   cached: undefined,
+  key: '',
   softRefresh: () => undefined,
   hardRefresh: () => undefined,
 }

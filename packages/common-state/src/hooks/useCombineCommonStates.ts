@@ -16,6 +16,7 @@ export function useCombineCommonStates<T extends CommonState[]>(...states: T): C
       isLoading: states.some(({ isLoading }) => isLoading),
       isActual: states.every(({ isActual }) => isActual),
       cached: states.map(({ cached }) => cached) as CombineHookCommonStateStates<T>,
+      key: states.map((state, index) => `key${index}: ${state.key}`).join('\n'),
       softRefresh: () => {
         const cancels = states.map(({ softRefresh }) => softRefresh())
         return () => {
