@@ -20,6 +20,7 @@ const emptyState: CommonState<string | undefined, string> = {
   isActual: true,
   isLoading: false,
   cached: undefined,
+  key: '',
   softRefresh: () => undefined,
   hardRefresh: () => undefined,
 }
@@ -39,6 +40,7 @@ const testUtil2: StateEnvironmentTestUtil = {
     createStateContextEnvironment<CommonState<string, string>>(contextName, { isValueValid }),
 }
 
+// TODO: add key tests
 describe.each<StateEnvironmentTestUtil>([testUtil1, testUtil2])(
   'createStateContextEnvironment',
   ({ getStateEnvironment, name }) => {

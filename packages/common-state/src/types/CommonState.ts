@@ -6,6 +6,7 @@ export type ActualState<T = unknown> = {
   error: undefined
   isLoading: boolean
   isActual: true
+  key: string
 }
 
 export type NotActualState<T = unknown, I extends unknown = T> = {
@@ -13,6 +14,7 @@ export type NotActualState<T = unknown, I extends unknown = T> = {
   error: undefined
   isLoading: boolean
   isActual: false
+  key: string
 }
 
 export type ErrorState<I = unknown, E = unknown> = {
@@ -20,6 +22,7 @@ export type ErrorState<I = unknown, E = unknown> = {
   error: E
   isLoading: boolean
   isActual: boolean
+  key: string
 }
 
 export type State<T = unknown, E = unknown, I = undefined> = ActualState<T> | NotActualState<T, I> | ErrorState<I, E>
@@ -77,6 +80,7 @@ export interface StateManager<T = unknown, E = unknown, I = undefined> {
   state: CommonState<T, E, I>
   setState: Dispatch<SetStateAction<CacheableState<T, E, I>>>
   setRefresh: (params: StateRefreshOption<T, E, I>) => void
+  resetStateActuality: () => void
 }
 
 export interface SwitchStateManager<

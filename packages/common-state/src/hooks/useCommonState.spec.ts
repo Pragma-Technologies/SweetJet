@@ -6,6 +6,7 @@ import { useCommonState } from './useCommonState'
 
 const testIncrementor = new TestIncrementor()
 
+// TODO: add key tests
 describe('useCommonState hook', () => {
   beforeEach(() => {
     jest.useFakeTimers()
@@ -236,6 +237,7 @@ describe('useCommonState hook', () => {
         isActual: true,
         isLoading: false,
         error: undefined,
+        key: '',
       })
     })
 
@@ -244,6 +246,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isActual).toBe(true)
     expect(result.current.state.isLoading).toBe(false)
     expect(result.current.state.error).toBe(undefined)
+    expect(result.current.state.key).toBe('')
 
     act(() => {
       result.current.setState((prev) => ({ ...prev, value: 2 } as CacheableState<number>))
@@ -254,6 +257,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isActual).toBe(true)
     expect(result.current.state.isLoading).toBe(false)
     expect(result.current.state.error).toBe(undefined)
+    expect(result.current.state.key).toBe('')
 
     act(() => {
       result.current.setState((prev) => ({ ...prev, value: 3 } as CacheableState<number>))
@@ -265,6 +269,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isActual).toBe(true)
     expect(result.current.state.isLoading).toBe(false)
     expect(result.current.state.error).toBe(undefined)
+    expect(result.current.state.key).toBe('')
   })
 
   it('check onError callback', async () => {
@@ -307,6 +312,7 @@ describe('useCommonState hook', () => {
       cached: 0,
       value: undefined,
       error: 'error',
+      key: '',
     })
   })
 })
