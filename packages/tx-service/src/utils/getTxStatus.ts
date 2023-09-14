@@ -11,6 +11,7 @@ export const getTxStatus = async (grpcUrl: string, hash: string): Promise<Transa
     case 'SUCCESS':
       return TransactionStatusEnum.SUCCESS
     case 'REVERT':
+    case 'OUT_OF_ENERGY':
       return TransactionStatusEnum.FAILED
     default:
       return undefined
