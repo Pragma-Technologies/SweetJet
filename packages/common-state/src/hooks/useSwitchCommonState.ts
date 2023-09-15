@@ -5,7 +5,7 @@ import { useCommonState } from './useCommonState'
 
 const defaultOptions: SwitchOption<undefined> = {
   initial: undefined,
-  withRefreshOriginUpdate: true,
+  withRefreshOnOriginUpdate: true,
 }
 
 // @ts-ignore
@@ -46,7 +46,7 @@ export function useSwitchCommonState<
         ...state,
         softRefresh: () => {
           refreshCountRef.current.count++
-          if (!origin.isLoading) {
+          if (!origin.isLoading && origin.isActual) {
             refreshCountRef.current.count = 0
             return state.softRefresh()
           }
@@ -54,7 +54,8 @@ export function useSwitchCommonState<
         hardRefresh: () => {
           refreshCountRef.current.count++
           refreshCountRef.current.isHardReload = true
-          if (!origin.isLoading) {
+          console.log('hard')
+          if (!origin.isLoading && origin.isActual) {
             refreshCountRef.current.count = 0
             refreshCountRef.current.isHardReload = false
             return state.hardRefresh()
@@ -83,12 +84,12 @@ export function useSwitchCommonState<
   }, [origin])
 
   useEffect(() => {
-    if (options.withRefreshOriginUpdate && !origin.isLoading) {
+    if (options.withRefreshOnOriginUpdate && !origin.isLoading && origin.isActual) {
       refreshCountRef.current.count = 0
       refreshCountRef.current.isHardReload = false
       return state.hardRefresh()
     }
-  }, [origin.value])
+  }, [origin.value, origin.isActual])
 
   useEffect(() => {
     if (!origin.isLoading && !!refreshCountRef.current.count) {

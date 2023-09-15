@@ -96,5 +96,5 @@ export interface SwitchStateManager<
 
 export type SwitchOption<Initial> = {
   initial: Initial | (() => Initial)
-  withRefreshOriginUpdate?: boolean
+  withRefreshOnOriginUpdate?: boolean
 }

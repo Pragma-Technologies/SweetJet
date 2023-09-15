@@ -6,7 +6,6 @@ import { useCommonState } from './useCommonState'
 
 const testIncrementor = new TestIncrementor()
 
-// TODO: add key tests
 describe('useCommonState hook', () => {
   beforeEach(() => {
     jest.useFakeTimers()
@@ -22,6 +21,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isActual).toBe(false)
     expect(result.current.state.isLoading).toBe(false)
     expect(result.current.state.error).toBe(undefined)
+    expect(result.current.state.key).toBe('')
 
     act(() => {
       result.current.state.softRefresh()
@@ -32,6 +32,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isActual).toBe(false)
     expect(result.current.state.isLoading).toBe(true)
     expect(result.current.state.error).toBe(undefined)
+    expect(result.current.state.key).toBe('')
 
     jest.runAllTimers()
     await waitForNextUpdate()
@@ -41,8 +42,9 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isActual).toBe(true)
     expect(result.current.state.isLoading).toBe(false)
     expect(result.current.state.error).toBe('Refresh function not provided')
+    expect(result.current.state.key).toBe('')
 
-    result.current.setRefresh({ refreshFn: () => testIncrementor.increment() })
+    result.current.setRefresh({ refreshFn: () => testIncrementor.increment(), requestKey: 'key' })
     act(() => {
       result.current.state.softRefresh()
     })
@@ -52,6 +54,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isActual).toBe(true)
     expect(result.current.state.isLoading).toBe(true)
     expect(result.current.state.error).toBe(undefined)
+    expect(result.current.state.key).toBe('')
 
     jest.runAllTimers()
     await waitForNextUpdate()
@@ -61,6 +64,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isActual).toBe(true)
     expect(result.current.state.isLoading).toBe(false)
     expect(result.current.state.error).toBe(undefined)
+    expect(result.current.state.key).toBe('key')
 
     act(() => {
       result.current.state.softRefresh()
@@ -71,6 +75,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isActual).toBe(true)
     expect(result.current.state.isLoading).toBe(true)
     expect(result.current.state.error).toBe(undefined)
+    expect(result.current.state.key).toBe('key')
 
     jest.runAllTimers()
     await waitForNextUpdate()
@@ -80,6 +85,29 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isActual).toBe(true)
     expect(result.current.state.isLoading).toBe(false)
     expect(result.current.state.error).toBe(undefined)
+    expect(result.current.state.key).toBe('key')
+
+    result.current.setRefresh({ refreshFn: () => testIncrementor.increment(), requestKey: 'key2' })
+    act(() => {
+      result.current.state.softRefresh()
+    })
+
+    expect(result.current.state.value).toBe(1)
+    expect(result.current.state.cached).toBe(1)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(true)
+    expect(result.current.state.error).toBe(undefined)
+    expect(result.current.state.key).toBe('key')
+
+    jest.runAllTimers()
+    await waitForNextUpdate()
+
+    expect(result.current.state.value).toBe(2)
+    expect(result.current.state.cached).toBe(2)
+    expect(result.current.state.isActual).toBe(true)
+    expect(result.current.state.isLoading).toBe(false)
+    expect(result.current.state.error).toBe(undefined)
+    expect(result.current.state.key).toBe('key2')
   })
 
   it('check initial value', async () => {
