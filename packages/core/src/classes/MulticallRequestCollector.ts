@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { AbiCoder } from 'ethers/lib/utils'
-import { ADDRESS_PREFIX_REGEX } from '../constants'
+import { ADDRESS_PREFIX_REGEX, MAX_TRON_MULTICALL_COUNT } from '../constants'
 import { ConnectorBaseEnum } from '../enums'
 import { CallOption, MulticallOptions, Output, UnwrapCallOption, UnwrapOutput, UnwrapOutputs } from '../types'
 import { getEvmMulticallCaller, getTvmMulticallCaller } from '../utils'
@@ -68,10 +68,16 @@ export class MulticallRequestCollector {
     const values = callInfos.map(({ values, scInterface, method }) => scInterface.encodeFunctionData(method, values))
     const outputsList = callInfos.map(({ output }) => output)
 
-    const caller = getTvmMulticallCaller(contractAddress, rpcUrl)
-    const [result] = await caller(targets, values)
+    let results: string[] = []
+    for (let i = 0; callInfos.length / MAX_TRON_MULTICALL_COUNT > i; i++) {
+      const caller = getTvmMulticallCaller(contractAddress, rpcUrl)
+      const _targets = targets.slice(i * MAX_TRON_MULTICALL_COUNT, (i + 1) * MAX_TRON_MULTICALL_COUNT)
+      const _values = values.slice(i * MAX_TRON_MULTICALL_COUNT, (i + 1) * MAX_TRON_MULTICALL_COUNT)
+      const [result] = await caller(_targets, _values)
+      results = results.concat(result)
+    }
 
-    return this._decodeArrayOfParams(outputsList, result)
+    return this._decodeArrayOfParams(outputsList, results)
   }
 
   protected async _evmMulticall({ callInfos, contractAddress, rpcUrl }: MulticallOptions): Promise<unknown[]> {
