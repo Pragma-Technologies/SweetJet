@@ -65,7 +65,7 @@ export function useStrictStateValue<T extends BaseStatesStorage, K extends keyof
 ): ActualStateValue<StrictStorageState<T, K>> {
   const state = useStateValue(context, stateKey)
 
-  if (state === undefined || state === null || !isValueValid(stateKey, state as StateValue<StrictStorageState<T, K>>)) {
+  if (!isValueValid(stateKey, state as StateValue<StrictStorageState<T, K>>)) {
     throw `${stateKey as string}: ${NOT_PROVIDED_STATE_STRICT_CONTEXT}`
   }
   return state.value as ActualStateValue<StrictStorageState<T, K>>

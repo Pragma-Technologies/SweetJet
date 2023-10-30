@@ -1,5 +1,6 @@
 export * from './useStrictStateValueContext'
 export * from './useCommonState'
+export * from './useStorageCommonState'
 export * from './useMapCommonState'
 export * from './useCombineCommonStates'
 export * from './useSwitchCommonState'
