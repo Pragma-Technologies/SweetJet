@@ -1,5 +1,6 @@
 import { FC } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { AtomPage } from './pages/atom'
 import { API_TEST_PAGE, CONNECTOR_PAGE, STATE } from './core/constants/routers'
 import { Layout } from './layout'
 import { ApiTestPage } from './pages/apiTest'
@@ -21,6 +22,7 @@ export const App: FC = () => {
               <Route path={API_TEST_PAGE} element={<ApiTestPage />} />
               <Route path={CONNECTOR_PAGE} element={<ConnectorsPage />} />
               <Route path={STATE} element={<StatePage />} />
+              <Route path={'atom'} element={<AtomPage />} />
             </Routes>
           </Layout>
         </BrowserRouter>

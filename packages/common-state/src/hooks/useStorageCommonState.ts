@@ -1,7 +1,7 @@
 // hook types overloading
-import { Context, Dispatch, SetStateAction, useContext, useState } from 'react'
+import { Context, Dispatch, SetStateAction, useCallback, useContext, useState } from 'react'
 import { useRegisterStateToStorage } from '../context'
-import { BaseStatesStorage, CacheableState, StateManager, StatesStorage } from '../types'
+import { BaseStatesStorage, CacheableState, Refreshable, RefreshCallback, StateManager, StatesStorage } from '../types'
 import { commonStateFactory } from '../utils'
 
 export function useStorageCommonState<T extends BaseStatesStorage, K extends keyof T>(
@@ -22,7 +22,10 @@ export function useStorageCommonState<T extends BaseStatesStorage, K extends key
 ): <Value, Error, Initial>(stateKey: K, initial: Initial | (() => Initial)) => StateManager<Value, Error, Initial> {
   const stateStore = defaultStateStore(context)
   return <Value, Error, Initial>(stateKey: K, initial: Initial | (() => Initial)) => {
-    const stateManager = commonStateFactory<Value, Error, Initial>((initial) => stateStore(stateKey, initial))(initial)
+    const stateManager = commonStateFactory<Value, Error, Initial>(
+      (initial) => stateStore(stateKey, initial),
+      defaultRefreshStore,
+    )(initial)
     useRegisterStateToStorage(context, stateKey, stateManager.state as Exclude<T[K], undefined>)
     return stateManager
   }
@@ -55,4 +58,19 @@ const defaultStateStore = <T extends BaseStatesStorage, K extends keyof T>(
     )
     return [state, setState, _initial]
   }
+}
+
+const defaultRefreshStore: (refresh: RefreshCallback, beforeHardRefresh: RefreshCallback) => Refreshable = (
+  refresh,
+  beforeHardRefresh,
+) => {
+  const softRefresh = useCallback(refresh, [])
+  const hardRefresh = useCallback(() => {
+    const destructors = [beforeHardRefresh(), refresh()]
+    return () => {
+      destructors.forEach((destructor) => destructor?.())
+    }
+  }, [])
+
+  return { softRefresh, hardRefresh }
 }

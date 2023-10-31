@@ -28,6 +28,7 @@
     "@types/react-router-dom": "^5.1.8",
     "@types/styled-components": "^5.1.26",
     "ethers": "^5.4.1",
+    "jotai": "^2.5.0",
     "styled-components": "^5.3.6",
     "tronweb-typings": "^1.0.1",
     "react-router-dom": "^6.2.2",

@@ -31,9 +31,11 @@ export interface Cacheable<T = unknown> {
   cached: T
 }
 
+export type RefreshCallback = () => Destructor | void
+
 export interface Refreshable {
-  softRefresh: () => Destructor | void
-  hardRefresh: () => Destructor | void
+  softRefresh: RefreshCallback
+  hardRefresh: RefreshCallback
 }
 
 export type CacheableState<T = unknown, E = unknown, I = undefined> = State<T, E, I> & Cacheable<T | I>

@@ -1,28 +1,19 @@
-import {
-  CommonState,
-  CommonStatesStorage,
-  getStrictWrapper,
-  registerCommonStateStorage,
-  useCommonState,
-  useRegisterStateToStorage,
-  useStateValue,
-  useStorageCommonState,
-  useStrictStateValue,
-} from '@pragma-web-utils/common-state'
+import { BaseStatesStorage, CommonState } from '@pragma-web-utils/common-state'
 import { wait } from '@pragma-web-utils/core'
 import { Deps } from '@pragma-web-utils/hooks'
 import { EffectCallback, FC, useEffect, useRef, useState } from 'react'
 import { useAccount } from '../../services/accountService/AccountsService'
 import { useConnectorService } from '../../services/accountService/ChosenConnectorsService'
+import { useCommonStateFactory } from './factory'
+import { AtomStatesBaseStorage, getStrictWrapper, useStrictStateValue } from './utils'
 
-const testStateStore = new CommonStatesStorage()
-const TestStateStoreContext = registerCommonStateStorage(testStateStore)
-const TestStoreWrapper = getStrictWrapper(TestStateStoreContext)
+const testStateStore = new AtomStatesBaseStorage<BaseStatesStorage>()
+const TestStoreWrapper = getStrictWrapper(testStateStore)
 console.log(testStateStore)
 
-const useStrictValue = (key: string) => useStrictStateValue(TestStateStoreContext, key)
+const useStrictValue = (key: string) => useStrictStateValue(testStateStore, key)
 
-const useCommonState2 = useStorageCommonState(TestStateStoreContext)
+const useCommonState2 = useCommonStateFactory(testStateStore)
 const useTestCommonState = (key: string, deps: Deps<string> = []): CommonState<number> => {
   const counterRef = useRef(0)
   const { state, setRefresh } = useCommonState2<number>(key)
