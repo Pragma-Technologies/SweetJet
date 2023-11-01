@@ -1,43 +1,23 @@
 // hook types overloading
 import { useCancelableFactory, useCancelablePool, useIsMounted, useRequestMemo } from '@pragma-web-utils/hooks'
-import { Dispatch, SetStateAction, useMemo, useRef } from 'react'
+import { useRef } from 'react'
 import { CANCEL_PROMISE, NOT_PROVIDED_REFRESH_FUNCTION } from '../constants'
-import { CacheableState, ErrorState, Refreshable, RefreshCallback, StateManager, StateRefreshOption } from '../types'
+import { CacheableState, ErrorState, StateManager, StateRefreshOption, StateStoreFactory } from '../types'
 
 type NotErrorCacheable<T, E, I> = Exclude<CacheableState<T, E, I>, ErrorState<I, E>>
 
 export function commonStateFactory<Value, Error = unknown>(
-  stateStorage: (
-    initial?: undefined | (() => void),
-  ) => [CacheableState<Value, Error>, Dispatch<SetStateAction<CacheableState<Value, Error>>>, undefined],
-  refreshStore: (refresh: RefreshCallback, beforeHardRefresh: RefreshCallback) => Refreshable,
+  stateStorage: StateStoreFactory<Value, Error>,
 ): (initial?: undefined) => StateManager<Value, Error>
 export function commonStateFactory<Value, Error = unknown>(
-  stateStorage: (
-    initial: Value | (() => Value),
-  ) => [CacheableState<Value, Error, Value>, Dispatch<SetStateAction<CacheableState<Value, Error, Value>>>, Value],
-  refreshStore: (refresh: RefreshCallback, beforeHardRefresh: RefreshCallback) => Refreshable,
+  stateStorage: StateStoreFactory<Value, Error, Value>,
 ): (initial: Value | (() => Value)) => StateManager<Value, Error, Value>
 export function commonStateFactory<Value, Error = unknown, Initial = unknown>(
-  stateStorage: (
-    initial: Initial | (() => Initial),
-  ) => [
-    CacheableState<Value, Error, Initial>,
-    Dispatch<SetStateAction<CacheableState<Value, Error, Initial>>>,
-    Initial,
-  ],
-  refreshStore: (refresh: RefreshCallback, beforeHardRefresh: RefreshCallback) => Refreshable,
+  stateStorage: StateStoreFactory<Value, Error, Initial>,
 ): (initial: Initial | (() => Initial)) => StateManager<Value, Error, Initial>
 
 export function commonStateFactory<Value, Error, Initial>(
-  stateStorage: (
-    initial: Initial | (() => Initial),
-  ) => [
-    CacheableState<Value, Error, Initial>,
-    Dispatch<SetStateAction<CacheableState<Value, Error, Initial>>>,
-    Initial,
-  ],
-  refreshStore: (refresh: RefreshCallback, beforeHardRefresh: RefreshCallback) => Refreshable,
+  stateStorage: StateStoreFactory<Value, Error, Initial>,
 ): (initial: Initial | (() => Initial)) => StateManager<Value, Error, Initial> {
   return (initial) => {
     const createCancelableFactory = useCancelableFactory()
@@ -46,12 +26,18 @@ export function commonStateFactory<Value, Error, Initial>(
     const isMounted = useIsMounted()
     const refreshRef = useRef<StateRefreshOption<Value, Error, Initial>>()
 
-    const { softRefresh, hardRefresh } = refreshStore(
-      () => {
+    const { state, setState, refreshable } = stateStorage({
+      initial,
+      refresh: (initial, setState) => {
         const throwErrorOnRefresh = async () => {
           throw NOT_PROVIDED_REFRESH_FUNCTION
         }
-        const request = refreshRef.current?.refreshFn ?? throwErrorOnRefresh
+        const request = async () => {
+          // wait finish all child components useEffects with init refresh and init refresh function in parent component
+          await Promise.resolve()
+          // call refresh callback after all useEffects
+          return (refreshRef.current?.refreshFn ?? throwErrorOnRefresh)()
+        }
         const key = refreshRef.current?.requestKey ?? ''
         // important save onError callback on init request, for handle changing callback during waiting request
         const onError = refreshRef.current?.onError
@@ -99,7 +85,7 @@ export function commonStateFactory<Value, Error, Initial>(
               setState((prevState) => {
                 const newState = {
                   ...prevState,
-                  value: _initial,
+                  value: initial,
                   isActual: true,
                   isLoading: false,
                   error: error as Error,
@@ -113,28 +99,22 @@ export function commonStateFactory<Value, Error, Initial>(
         tryUpdate()
         return cancellable.cancel
       },
-      () => {
+      beforeRefresh: () => {
         clearCancelablePool()
         setState((prevState) => ({ ...prevState, isActual: false }))
       },
-    )
+    })
 
-    const [state, setState, _initial] = stateStorage(initial)
-
-    return useMemo<StateManager<Value, Error, Initial>>(
-      () => ({
-        state: {
-          ...state,
-          softRefresh,
-          hardRefresh,
-        },
-        setRefresh: (options) => (refreshRef.current = options),
-        resetStateActuality: () => {
-          setState((prev) => ({ ...prev, isActual: false, key: refreshRef.current?.requestKey ?? '' }))
-        },
-        setState,
-      }),
-      [state],
-    )
+    return {
+      state: {
+        ...state,
+        ...refreshable,
+      },
+      setRefresh: (options) => (refreshRef.current = options),
+      resetStateActuality: () => {
+        setState((prev) => ({ ...prev, isActual: false, key: refreshRef.current?.requestKey ?? '' }))
+      },
+      setState,
+    }
   }
 }

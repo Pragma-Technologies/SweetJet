@@ -54,7 +54,6 @@ export function useSwitchCommonState<
         hardRefresh: () => {
           refreshCountRef.current.count++
           refreshCountRef.current.isHardReload = true
-          console.log('hard')
           if (!origin.isLoading && origin.isActual) {
             refreshCountRef.current.count = 0
             refreshCountRef.current.isHardReload = false

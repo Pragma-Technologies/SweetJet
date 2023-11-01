@@ -51,6 +51,7 @@ describe('useMapCommonState', () => {
     expect(result.current.cached).toBe(undefined)
     expect(result.current.key).toBe('')
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -77,6 +78,7 @@ describe('useMapCommonState', () => {
     expect(result.current.cached).toBe(1)
     expect(result.current.key).toBe('key1')
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 

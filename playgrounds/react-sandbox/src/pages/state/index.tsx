@@ -1,19 +1,21 @@
-import { BaseStatesStorage, CommonState } from '@pragma-web-utils/common-state'
+import {
+  AtomStatesBaseStorage,
+  BaseStatesStorage,
+  CommonState,
+  getAtomStrictWrapper,
+  useAtomStorageCommonState,
+  useStrictAtomStateValue,
+} from '@pragma-web-utils/common-state'
 import { wait } from '@pragma-web-utils/core'
 import { Deps } from '@pragma-web-utils/hooks'
 import { EffectCallback, FC, useEffect, useRef, useState } from 'react'
-import { useAccount } from '../../services/accountService/AccountsService'
-import { useConnectorService } from '../../services/accountService/ChosenConnectorsService'
-import { useCommonStateFactory } from './factory'
-import { AtomStatesBaseStorage, getStrictWrapper, useStrictStateValue } from './utils'
 
 const testStateStore = new AtomStatesBaseStorage<BaseStatesStorage>()
-const TestStoreWrapper = getStrictWrapper(testStateStore)
-console.log(testStateStore)
+const TestStoreWrapper = getAtomStrictWrapper(testStateStore)
 
-const useStrictValue = (key: string) => useStrictStateValue(testStateStore, key)
+const useStrictValue = (key: string) => useStrictAtomStateValue(testStateStore, key)
 
-const useCommonState2 = useCommonStateFactory(testStateStore)
+const useCommonState2 = useAtomStorageCommonState(testStateStore)
 const useTestCommonState = (key: string, deps: Deps<string> = []): CommonState<number> => {
   const counterRef = useRef(0)
   const { state, setRefresh } = useCommonState2<number>(key)
@@ -86,8 +88,6 @@ export const useStateAutoRefresh = (...states: Deps<CommonState>): void => {
 }
 
 export const StatePage: FC = () => {
-  const { connectorBase } = useConnectorService()
-  const { account } = useAccount()[connectorBase]
   const [key, setKey] = useState('key1')
   const [globalStateKey, setGlobalStateKey] = useState('global')
   useTestCommonState('global', [globalStateKey])
@@ -95,7 +95,6 @@ export const StatePage: FC = () => {
 
   return (
     <>
-      <div>{account}</div>
       <div>{globalStateKey}</div>
       <button onClick={() => setGlobalStateKey(`global_${counterRef.current++}`)}>new global</button>
       <div>

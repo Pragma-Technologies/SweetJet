@@ -85,6 +85,7 @@ describe('useCombineCommonStates', () => {
     expect(result.current.state2.error).toBe(undefined)
     expect(result.current.state2.key).toBe('')
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -138,6 +139,7 @@ describe('useCombineCommonStates', () => {
     expect(result.current.state2.error).toBe(undefined)
     expect(result.current.state2.key).toBe('key2')
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -191,6 +193,7 @@ describe('useCombineCommonStates', () => {
     expect(result.current.state2.error).toBe(undefined)
     expect(result.current.state2.key).toBe('key2')
 
+    await Promise.resolve()
     jest.advanceTimersByTime(50)
 
     act(() => {
@@ -246,6 +249,7 @@ describe('useCombineCommonStates', () => {
     expect(result.current.state2.error).toBe(undefined)
     expect(result.current.state2.key).toBe('key2')
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -299,6 +303,7 @@ describe('useCombineCommonStates', () => {
     expect(result.current.state2.error).toBe(undefined)
     expect(result.current.state2.key).toBe('key2')
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -382,6 +387,7 @@ describe('useCombineCommonStates', () => {
     expect(result.current.state2.isLoading).toBe(true)
     expect(result.current.state2.error).toBe(undefined)
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -431,6 +437,7 @@ describe('useCombineCommonStates', () => {
     expect(result.current.state2.error).toBe(undefined)
 
     act(() => cancel?.())
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -479,6 +486,7 @@ describe('useCombineCommonStates', () => {
     expect(result.current.state2.error).toBe(undefined)
 
     act(() => cancel?.())
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -526,6 +534,7 @@ describe('useCombineCommonStates', () => {
     expect(result.current.state2.isLoading).toBe(true)
     expect(result.current.state2.error).toBe(undefined)
 
+    await Promise.resolve()
     jest.advanceTimersByTime(50)
 
     act(() => cancel?.())
@@ -576,6 +585,7 @@ describe('useCombineCommonStates', () => {
     expect(result.current.state2.isLoading).toBe(false)
     expect(result.current.state2.error).toBe(undefined)
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 

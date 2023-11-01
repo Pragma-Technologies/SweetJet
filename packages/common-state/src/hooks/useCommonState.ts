@@ -1,6 +1,6 @@
 // hook types overloading
-import { Dispatch, SetStateAction, useCallback, useState } from 'react'
-import { CacheableState, Refreshable, RefreshCallback, StateManager } from '../types'
+import { useCallback, useState } from 'react'
+import { CacheableState, StateManager, StateStoreFactory, StateStoreOptions } from '../types'
 import { commonStateFactory } from '../utils'
 
 export function useCommonState<Value, Error = unknown>(initial?: undefined): StateManager<Value, Error>
@@ -14,16 +14,14 @@ export function useCommonState<Value, Error = unknown, Initial = unknown>(
 export function useCommonState<Value, Error, Initial>(
   initial: Initial | (() => Initial),
 ): StateManager<Value, Error, Initial> {
-  return commonStateFactory<Value, Error, Initial>(defaultStateStore, defaultRefreshStore)(initial)
+  return commonStateFactory<Value, Error, Initial>(defaultStateStore)(initial)
 }
 
-const defaultStateStore = <Value, Error = unknown, Initial = unknown>(
-  initial: Initial | (() => Initial),
-): [
-  CacheableState<Value, Error, Initial>,
-  Dispatch<SetStateAction<CacheableState<Value, Error, Initial>>>,
-  Initial,
-] => {
+const defaultStateStore = <Value, Error, Initial>({
+  initial,
+  beforeRefresh,
+  refresh,
+}: StateStoreOptions<Value, Error, Initial>): ReturnType<StateStoreFactory<Value, Error, Initial>> => {
   // if initial is dispatch function call it ones for get value (imitate useState common logic)
   const [_initial] = useState<Initial>(initial)
   const [state, setState] = useState<CacheableState<Value, Error, Initial>>({
@@ -34,20 +32,14 @@ const defaultStateStore = <Value, Error = unknown, Initial = unknown>(
     cached: _initial,
     key: '',
   })
-  return [state, setState, _initial]
-}
 
-const defaultRefreshStore: (refresh: RefreshCallback, beforeHardRefresh: RefreshCallback) => Refreshable = (
-  refresh,
-  beforeHardRefresh,
-) => {
-  const softRefresh = useCallback(refresh, [])
+  const softRefresh = useCallback(() => refresh(_initial, setState), [])
   const hardRefresh = useCallback(() => {
-    const destructors = [beforeHardRefresh(), refresh()]
+    const destructors = [beforeRefresh?.(_initial, setState), refresh(_initial, setState)]
     return () => {
       destructors.forEach((destructor) => destructor?.())
     }
   }, [])
 
-  return { softRefresh, hardRefresh }
+  return { state, setState, refreshable: { softRefresh, hardRefresh } }
 }

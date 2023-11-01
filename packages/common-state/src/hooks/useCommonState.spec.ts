@@ -34,6 +34,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.error).toBe(undefined)
     expect(result.current.state.key).toBe('')
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -56,6 +57,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.error).toBe(undefined)
     expect(result.current.state.key).toBe('')
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -77,6 +79,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.error).toBe(undefined)
     expect(result.current.state.key).toBe('key')
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -99,6 +102,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.error).toBe(undefined)
     expect(result.current.state.key).toBe('key')
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -129,6 +133,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isLoading).toBe(true)
     expect(result.current.state.error).toBe(undefined)
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -149,6 +154,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isLoading).toBe(true)
     expect(result.current.state.error).toBe(undefined)
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -168,6 +174,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isLoading).toBe(true)
     expect(result.current.state.error).toBe(undefined)
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -198,6 +205,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isLoading).toBe(true)
     expect(result.current.state.error).toBe(undefined)
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -218,6 +226,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isLoading).toBe(true)
     expect(result.current.state.error).toBe(undefined)
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -237,6 +246,7 @@ describe('useCommonState hook', () => {
     expect(result.current.state.isLoading).toBe(true)
     expect(result.current.state.error).toBe(undefined)
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -309,6 +319,7 @@ describe('useCommonState hook', () => {
       result.current.state.softRefresh()
     })
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -330,6 +341,7 @@ describe('useCommonState hook', () => {
 
     expect(mockErrorRequest).toBeCalledTimes(0)
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
