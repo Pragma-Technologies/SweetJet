@@ -46,11 +46,12 @@ const defaultStateStore = <T extends BaseStatesStorage, K extends keyof T>(
   ) => {
     // if initial is dispatch function call it ones for get value (imitate useState common logic)
     const [_initial] = useState(initial)
-    const [{ stateAtom }] = useState(() => {
+    const [{ stateAtom, refreshAtom }] = useState(() => {
       return storage.initState(stateKey, initial as StateValue<Exclude<T[K], undefined>>, (setState) => {
         setState({ softRefresh, hardRefresh })
       })
     })
+    useAtom(refreshAtom)
     // TODO: finish types conflict resolving
     const [state, setState] = useAtom(stateAtom) as unknown as [
       CacheableState<Value, Error, Initial>,

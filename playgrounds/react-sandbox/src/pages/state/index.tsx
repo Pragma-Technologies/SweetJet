@@ -3,22 +3,60 @@ import {
   BaseStatesStorage,
   CommonState,
   getAtomStrictWrapper,
+  StrictStorageWrapper,
+  useAtomStateValue,
   useAtomStorageCommonState,
   useStrictAtomStateValue,
 } from '@pragma-web-utils/common-state'
 import { wait } from '@pragma-web-utils/core'
-import { Deps } from '@pragma-web-utils/hooks'
-import { EffectCallback, FC, useEffect, useRef, useState } from 'react'
+import { Deps, useMountEffectFactory } from '@pragma-web-utils/hooks'
+import { FC, PropsWithChildren, useEffect, useRef, useState } from 'react'
 
+// ========= setup state utils
 const testStateStore = new AtomStatesBaseStorage<BaseStatesStorage>()
-const TestStoreWrapper = getAtomStrictWrapper(testStateStore)
+const TestStoreCommonWrapper = getAtomStrictWrapper(testStateStore)
+// strict wrapper
+const TestStoreWrapper: FC<
+  { stateKeys: string[] } & Omit<PropsWithChildren<StrictStorageWrapper<BaseStatesStorage, string>>, 'stateKey'>
+> = ({ children, skeleton, error, stateKeys: [stateKey, ...stateKeys] }) => {
+  return (
+    <TestStoreCommonWrapper stateKey={stateKey} skeleton={skeleton} error={error}>
+      {stateKeys.length ? (
+        <TestStoreWrapper stateKeys={stateKeys} skeleton={skeleton} error={error}>
+          {children}
+        </TestStoreWrapper>
+      ) : (
+        children
+      )}
+    </TestStoreCommonWrapper>
+  )
+}
 
 const useStrictValue = (key: string) => useStrictAtomStateValue(testStateStore, key)
+const useStateValue = (key: string) => useAtomStateValue(testStateStore, key)
 
-const useCommonState2 = useAtomStorageCommonState(testStateStore)
-const useTestCommonState = (key: string, deps: Deps<string> = []): CommonState<number> => {
-  const counterRef = useRef(0)
-  const { state, setRefresh } = useCommonState2<number>(key)
+const useAtomCommonState = useAtomStorageCommonState(testStateStore)
+// ========= end setup state utils
+
+const local1 = 'local1'
+const local2 = 'local2'
+const global1 = 'global1'
+const global2 = 'global2'
+
+type counterKey = 'local1' | 'local2' | 'global1' | 'global2'
+const counter: Record<counterKey, number> = {
+  [local1]: 0,
+  [local2]: 0,
+  [global1]: 0,
+  [global2]: 0,
+} as const
+// universal common state hook (in real cases use own custom hooks)
+const useTestCommonState = (
+  key: counterKey,
+  deps: Deps<string> = [],
+  refreshActualityOnChange = false,
+): CommonState<number> => {
+  const { state, setRefresh, resetStateActuality } = useAtomCommonState<number>(key)
   const useMountEffect = useMountEffectFactory()
 
   useEffect(() => {
@@ -26,16 +64,16 @@ const useTestCommonState = (key: string, deps: Deps<string> = []): CommonState<n
       requestKey: deps.join('_') + '_' + key,
       refreshFn: async () => {
         await wait(1000)
-        return counterRef.current++
+        return counter[key]++
       },
     })
   }, [deps.join('_')])
 
   useMountEffect({
-    callback: () => state.hardRefresh(),
+    callback: () => (refreshActualityOnChange ? resetStateActuality() : state.hardRefresh()),
     onInit: () => {
       if (!state.isActual || state.error) {
-        return state.hardRefresh()
+        return refreshActualityOnChange ? resetStateActuality() : state.hardRefresh()
       }
     },
     deps: [deps.join('_')],
@@ -44,41 +82,17 @@ const useTestCommonState = (key: string, deps: Deps<string> = []): CommonState<n
   return state
 }
 
-export interface MountEffectProps {
-  callback?: EffectCallback
-  onInit?: EffectCallback
-  deps?: Deps
-}
-
-export type MountEffect = ({ callback, onInit, deps }: MountEffectProps) => void
-
-export const useMountEffectFactory = (): MountEffect => {
-  const initRef = useRef(false)
-
-  return ({ callback, onInit, deps }) =>
-    useEffect(() => {
-      const destructor = initRef.current ? callback?.() : onInit?.()
-      return () => {
-        // mark as initiated in destructor, bsc we don't know how many times useMountEffect will be used
-        // but destructor is called always after all useEffect callbacks
-        initRef.current = true
-        destructor?.()
-      }
-    }, deps)
-}
-
-export const useStateAutoRefresh = (...states: Deps<CommonState>): void => {
+// setup auto refresher TODO: add it to library
+export const useStateAutoRefresh = (...states: Deps<CommonState<unknown, unknown, unknown>>): void => {
   const useMountEffect = useMountEffectFactory()
 
   states.forEach((state) => {
     useMountEffect({
       callback: () => {
-        console.log('callback', state.key)
         return state.softRefresh()
       },
       onInit: () => {
-        if ((!state.isActual || state.error) && state.key) {
-          console.log('onInit', state.key)
+        if (!state.isActual || state.error) {
           return state.softRefresh()
         }
       },
@@ -88,34 +102,58 @@ export const useStateAutoRefresh = (...states: Deps<CommonState>): void => {
 }
 
 export const StatePage: FC = () => {
-  const [key, setKey] = useState('key1')
-  const [globalStateKey, setGlobalStateKey] = useState('global')
-  useTestCommonState('global', [globalStateKey])
+  // imitation of global1 dependence changed
+  const [key, setKey] = useState(local1)
+  const [globalStateKey, setGlobalStateKey] = useState('global1')
   const counterRef = useRef(0)
+
+  useTestCommonState(global1, [globalStateKey])
+  const { hardRefresh } = useTestCommonState(global2, [globalStateKey], true)
 
   return (
     <>
-      <div>{globalStateKey}</div>
-      <button onClick={() => setGlobalStateKey(`global_${counterRef.current++}`)}>new global</button>
+      <div>global1 key: {globalStateKey}</div>
+      <button onClick={() => setGlobalStateKey(`${global1}_${counterRef.current++}`)}>update global1 key</button>
+      <button onClick={() => hardRefresh()}>refresh global2</button>
+      <div>current tab {key}</div>
       <div>
-        <button onClick={() => setKey('key1')}>key1</button>
-        <button onClick={() => setKey('key2')}>key2</button>
+        <button onClick={() => setKey(local1)} style={{ color: local1 === key ? 'red' : 'black' }}>
+          local1
+        </button>
+        <button onClick={() => setKey(local2)} style={{ color: local2 === key ? 'red' : 'black' }}>
+          local2
+        </button>
       </div>
-      <TestStateContent stateKey={key} key={key} />
+      {local1 === key && <TestStateContent1 />}
+      {local2 === key && <TestStateContent2 />}
     </>
   )
 }
 
-const TestStateContent: FC<{ stateKey: string }> = ({ stateKey: key }) => {
-  const state = useTestCommonState(key)
+const TestStateContent1: FC = () => {
+  const state = useTestCommonState(local1)
 
   return (
     <>
       <button onClick={() => state.hardRefresh()}>new</button>
-      <TestStoreWrapper stateKey={key} error={() => <>error</>} skeleton={() => <>loading</>}>
-        <TestStoreWrapper stateKey={'global'} error={() => <>error</>} skeleton={() => <>loading</>}>
-          <TestStateStrictContent stateKey={key} />
-        </TestStoreWrapper>
+      <TestStoreWrapper stateKeys={[local1, global1]} error={() => <>error</>} skeleton={() => <>loading</>}>
+        <TestStateStrictContent stateKey={local1} />
+      </TestStoreWrapper>
+    </>
+  )
+}
+const TestStateContent2: FC = () => {
+  const state = useTestCommonState(local2)
+  const globalState = useStateValue(global2)
+
+  useStateAutoRefresh(globalState)
+
+  return (
+    <>
+      <button onClick={() => state.hardRefresh()}>refresh local</button>
+      <TestStoreWrapper stateKeys={[local2, global1, global2]} error={() => <>error</>} skeleton={() => <>loading</>}>
+        <TestStateStrictContent stateKey={local2} />
+        <TestStateStrictContent2 />
       </TestStoreWrapper>
     </>
   )
@@ -123,11 +161,20 @@ const TestStateContent: FC<{ stateKey: string }> = ({ stateKey: key }) => {
 
 const TestStateStrictContent: FC<{ stateKey: string }> = ({ stateKey: key }) => {
   const value = useStrictValue(key)
-  const global = useStrictValue('global')
+  const global = useStrictValue(global1)
   return (
     <>
-      <div>{value}</div>
-      <div>{global}</div>
+      <div>local value: {value}</div>
+      <div>global1 value: {global}</div>
+    </>
+  )
+}
+
+const TestStateStrictContent2: FC = () => {
+  const global = useStrictValue(global2)
+  return (
+    <>
+      <div>global2 value: {global}</div>
     </>
   )
 }
