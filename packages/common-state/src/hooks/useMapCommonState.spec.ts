@@ -7,7 +7,6 @@ import { useMapCommonState } from './useMapCommonState'
 
 const testIncrementor = new TestIncrementor()
 
-// TODO: add key tests
 describe('useMapCommonState', () => {
   beforeEach(() => {
     jest.useFakeTimers()
@@ -15,7 +14,7 @@ describe('useMapCommonState', () => {
 
   beforeEach(() => testIncrementor.refresh())
 
-  it(' check deps usage', async () => {
+  it('check deps usage', async () => {
     const mapper = jest.fn((value: number | undefined): number | undefined => {
       if (value === undefined) {
         return undefined
@@ -27,7 +26,10 @@ describe('useMapCommonState', () => {
       (deps: Deps) => {
         const { state, setRefresh } = useCommonState<number>()
 
-        useEffect(() => setRefresh({ refreshFn: () => testIncrementor.increment() }), [])
+        useEffect(
+          () => setRefresh({ refreshFn: () => testIncrementor.increment(), requestKey: 'key' + deps[0] }),
+          [deps[0]],
+        )
 
         return useMapCommonState(state, mapper, [deps])
       },
@@ -37,6 +39,7 @@ describe('useMapCommonState', () => {
     expect(mapper).toBeCalledTimes(2)
     expect(result.current.value).toBe(undefined)
     expect(result.current.cached).toBe(undefined)
+    expect(result.current.key).toBe('')
 
     act(() => {
       result.current.softRefresh()
@@ -46,7 +49,9 @@ describe('useMapCommonState', () => {
     expect(mapper).toBeCalledTimes(4)
     expect(result.current.value).toBe(undefined)
     expect(result.current.cached).toBe(undefined)
+    expect(result.current.key).toBe('')
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -54,11 +59,32 @@ describe('useMapCommonState', () => {
     expect(mapper).toBeCalledTimes(6)
     expect(result.current.value).toBe(1)
     expect(result.current.cached).toBe(1)
+    expect(result.current.key).toBe('key1')
 
     rerender([2])
 
     expect(mapper).toBeCalledTimes(8)
     expect(result.current.value).toBe(1)
     expect(result.current.cached).toBe(1)
+    expect(result.current.key).toBe('key1')
+
+    act(() => {
+      result.current.softRefresh()
+    })
+
+    // loading started
+    expect(mapper).toBeCalledTimes(10)
+    expect(result.current.value).toBe(1)
+    expect(result.current.cached).toBe(1)
+    expect(result.current.key).toBe('key1')
+
+    await Promise.resolve()
+    jest.runAllTimers()
+    await waitForNextUpdate()
+
+    expect(mapper).toBeCalledTimes(12)
+    expect(result.current.value).toBe(3)
+    expect(result.current.cached).toBe(3)
+    expect(result.current.key).toBe('key2')
   })
 })
