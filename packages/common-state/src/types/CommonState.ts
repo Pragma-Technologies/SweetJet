@@ -31,9 +31,12 @@ export interface Cacheable<T = unknown> {
   cached: T
 }
 
+export type Cancelable = () => Destructor | void
+export type RefreshCallback = Cancelable
+
 export interface Refreshable {
-  softRefresh: () => Destructor | void
-  hardRefresh: () => Destructor | void
+  softRefresh: RefreshCallback
+  hardRefresh: RefreshCallback
 }
 
 export type CacheableState<T = unknown, E = unknown, I = undefined> = State<T, E, I> & Cacheable<T | I>
@@ -96,5 +99,24 @@ export interface SwitchStateManager<
 
 export type SwitchOption<Initial> = {
   initial: Initial | (() => Initial)
-  withRefreshOriginUpdate?: boolean
+  withRefreshOnOriginUpdate?: boolean
 }
+
+export type StateStoreOptions<T = unknown, E = unknown, I = unknown> = {
+  initial: I | (() => I)
+  refresh: (initial: I, setState: Dispatch<SetStateAction<CacheableState<T, E, I>>>) => Destructor | void
+  beforeRefresh?: (initial: I, setState: Dispatch<SetStateAction<CacheableState<T, E, I>>>) => Destructor | void
+}
+export type StateStore<T = unknown, E = unknown, I = unknown> = {
+  state: CacheableState<T, E, I>
+  setState: Dispatch<SetStateAction<CacheableState<T, E, I>>>
+  refreshable: Refreshable
+}
+
+export type StateStoreFactory<T = unknown, E = unknown, I = unknown> = (
+  options: StateStoreOptions<T, E, I>,
+) => StateStore<T, E, I>
+export type StorageStateStoreFactory<T = unknown, E = unknown, I = unknown> = (
+  stateKey: string,
+  options: StateStoreOptions<T, E, I>,
+) => StateStore<T, E, I>

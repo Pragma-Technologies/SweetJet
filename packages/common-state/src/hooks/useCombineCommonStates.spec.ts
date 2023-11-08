@@ -8,7 +8,6 @@ import { useCommonState } from './useCommonState'
 const testIncrementor = new TestIncrementor()
 const testIncrementor2 = new TestIncrementor()
 
-// TODO: add key tests
 describe('useCombineCommonStates', () => {
   beforeEach(() => {
     jest.useFakeTimers()
@@ -25,16 +24,19 @@ describe('useCombineCommonStates', () => {
   it('check state updates', async () => {
     const refreshFn1 = jest.fn(() => testIncrementor.increment())
     const refreshFn2 = jest.fn(() => testIncrementor2.increment())
-    const { result, waitForNextUpdate } = renderHook(() => {
-      const { state: state1, setRefresh: setRefresh1 } = useCommonState<number>()
-      const { state: state2, setRefresh: setRefresh2 } = useCommonState<number>()
+    const { result, waitForNextUpdate, rerender } = renderHook(
+      ([key1, key2]) => {
+        const { state: state1, setRefresh: setRefresh1 } = useCommonState<number>()
+        const { state: state2, setRefresh: setRefresh2 } = useCommonState<number>()
 
-      useEffect(() => setRefresh1({ refreshFn: refreshFn1 }), [])
-      useEffect(() => setRefresh2({ refreshFn: refreshFn2 }), [])
+        useEffect(() => setRefresh1({ refreshFn: refreshFn1, requestKey: key1 }), [key1])
+        useEffect(() => setRefresh2({ refreshFn: refreshFn2, requestKey: key2 }), [key2])
 
-      const combine = useCombineCommonStates(state1, state2)
-      return { combine, state1, state2 }
-    })
+        const combine = useCombineCommonStates(state1, state2)
+        return { combine, state1, state2 }
+      },
+      { initialProps: ['key1', 'key2'] },
+    )
 
     // init combine result
     expect(result.current.combine.value).toEqual([undefined, undefined])
@@ -42,6 +44,7 @@ describe('useCombineCommonStates', () => {
     expect(result.current.combine.isActual).toBe(false)
     expect(result.current.combine.isLoading).toBe(false)
     expect(result.current.combine.error).toBe(undefined)
+    expect(result.current.combine.key).toBe(`key0: \nkey1: `)
     // init state1
     expect(result.current.state1.value).toEqual(undefined)
     expect(result.current.state1.cached).toEqual(undefined)
@@ -66,19 +69,23 @@ describe('useCombineCommonStates', () => {
     expect(result.current.combine.isActual).toBe(false)
     expect(result.current.combine.isLoading).toBe(true)
     expect(result.current.combine.error).toBe(undefined)
+    expect(result.current.combine.key).toBe(`key0: \nkey1: `)
     // state1
     expect(result.current.state1.value).toEqual(undefined)
     expect(result.current.state1.cached).toEqual(undefined)
     expect(result.current.state1.isActual).toBe(false)
     expect(result.current.state1.isLoading).toBe(true)
     expect(result.current.state1.error).toBe(undefined)
+    expect(result.current.state1.key).toBe('')
     // state2
     expect(result.current.state2.value).toEqual(undefined)
     expect(result.current.state2.cached).toEqual(undefined)
     expect(result.current.state2.isActual).toBe(false)
     expect(result.current.state2.isLoading).toBe(true)
     expect(result.current.state2.error).toBe(undefined)
+    expect(result.current.state2.key).toBe('')
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -89,18 +96,21 @@ describe('useCombineCommonStates', () => {
     expect(result.current.combine.isActual).toBe(true)
     expect(result.current.combine.isLoading).toBe(false)
     expect(result.current.combine.error).toBe(undefined)
+    expect(result.current.combine.key).toBe(`key0: key1\nkey1: key2`)
     // state1
     expect(result.current.state1.value).toEqual(0)
     expect(result.current.state1.cached).toEqual(0)
     expect(result.current.state1.isActual).toBe(true)
     expect(result.current.state1.isLoading).toBe(false)
     expect(result.current.state1.error).toBe(undefined)
+    expect(result.current.state1.key).toBe('key1')
     // state2
     expect(result.current.state2.value).toEqual(1)
     expect(result.current.state2.cached).toEqual(1)
     expect(result.current.state2.isActual).toBe(true)
     expect(result.current.state2.isLoading).toBe(false)
     expect(result.current.state2.error).toBe(undefined)
+    expect(result.current.state2.key).toBe('key2')
 
     act(() => {
       result.current.state1.softRefresh()
@@ -113,19 +123,23 @@ describe('useCombineCommonStates', () => {
     expect(result.current.combine.isActual).toBe(true)
     expect(result.current.combine.isLoading).toBe(true)
     expect(result.current.combine.error).toBe(undefined)
+    expect(result.current.combine.key).toBe(`key0: key1\nkey1: key2`)
     // state1
     expect(result.current.state1.value).toEqual(0)
     expect(result.current.state1.cached).toEqual(0)
     expect(result.current.state1.isActual).toBe(true)
     expect(result.current.state1.isLoading).toBe(true)
     expect(result.current.state1.error).toBe(undefined)
+    expect(result.current.state1.key).toBe('key1')
     // state2
     expect(result.current.state2.value).toEqual(1)
     expect(result.current.state2.cached).toEqual(1)
     expect(result.current.state2.isActual).toBe(true)
     expect(result.current.state2.isLoading).toBe(false)
     expect(result.current.state2.error).toBe(undefined)
+    expect(result.current.state2.key).toBe('key2')
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -136,18 +150,21 @@ describe('useCombineCommonStates', () => {
     expect(result.current.combine.isActual).toBe(true)
     expect(result.current.combine.isLoading).toBe(false)
     expect(result.current.combine.error).toBe(undefined)
+    expect(result.current.combine.key).toBe(`key0: key1\nkey1: key2`)
     // state1
     expect(result.current.state1.value).toEqual(1)
     expect(result.current.state1.cached).toEqual(1)
     expect(result.current.state1.isActual).toBe(true)
     expect(result.current.state1.isLoading).toBe(false)
     expect(result.current.state1.error).toBe(undefined)
+    expect(result.current.state1.key).toBe('key1')
     // state2
     expect(result.current.state2.value).toEqual(1)
     expect(result.current.state2.cached).toEqual(1)
     expect(result.current.state2.isActual).toBe(true)
     expect(result.current.state2.isLoading).toBe(false)
     expect(result.current.state2.error).toBe(undefined)
+    expect(result.current.state2.key).toBe('key2')
 
     act(() => {
       result.current.state2.hardRefresh()
@@ -160,19 +177,23 @@ describe('useCombineCommonStates', () => {
     expect(result.current.combine.isActual).toBe(false)
     expect(result.current.combine.isLoading).toBe(true)
     expect(result.current.combine.error).toBe(undefined)
+    expect(result.current.combine.key).toBe(`key0: key1\nkey1: key2`)
     // state1
     expect(result.current.state1.value).toEqual(1)
     expect(result.current.state1.cached).toEqual(1)
     expect(result.current.state1.isActual).toBe(true)
     expect(result.current.state1.isLoading).toBe(false)
     expect(result.current.state1.error).toBe(undefined)
+    expect(result.current.state1.key).toBe('key1')
     // state2
     expect(result.current.state2.value).toEqual(1)
     expect(result.current.state2.cached).toEqual(1)
     expect(result.current.state2.isActual).toBe(false)
     expect(result.current.state2.isLoading).toBe(true)
     expect(result.current.state2.error).toBe(undefined)
+    expect(result.current.state2.key).toBe('key2')
 
+    await Promise.resolve()
     jest.advanceTimersByTime(50)
 
     act(() => {
@@ -186,18 +207,21 @@ describe('useCombineCommonStates', () => {
     expect(result.current.combine.isActual).toBe(false)
     expect(result.current.combine.isLoading).toBe(true)
     expect(result.current.combine.error).toBe(undefined)
+    expect(result.current.combine.key).toBe(`key0: key1\nkey1: key2`)
     // state1
     expect(result.current.state1.value).toEqual(1)
     expect(result.current.state1.cached).toEqual(1)
     expect(result.current.state1.isActual).toBe(true)
     expect(result.current.state1.isLoading).toBe(true)
     expect(result.current.state1.error).toBe(undefined)
+    expect(result.current.state1.key).toBe('key1')
     // state2
     expect(result.current.state2.value).toEqual(1)
     expect(result.current.state2.cached).toEqual(1)
     expect(result.current.state2.isActual).toBe(false)
     expect(result.current.state2.isLoading).toBe(true)
     expect(result.current.state2.error).toBe(undefined)
+    expect(result.current.state2.key).toBe('key2')
 
     jest.advanceTimersByTime(50)
     await waitForNextUpdate()
@@ -209,19 +233,23 @@ describe('useCombineCommonStates', () => {
     expect(result.current.combine.isActual).toBe(true)
     expect(result.current.combine.isLoading).toBe(true)
     expect(result.current.combine.error).toBe(undefined)
+    expect(result.current.combine.key).toBe(`key0: key1\nkey1: key2`)
     // state1
     expect(result.current.state1.value).toEqual(1)
     expect(result.current.state1.cached).toEqual(1)
     expect(result.current.state1.isActual).toBe(true)
     expect(result.current.state1.isLoading).toBe(true)
     expect(result.current.state1.error).toBe(undefined)
+    expect(result.current.state1.key).toBe('key1')
     // state2
     expect(result.current.state2.value).toEqual(2)
     expect(result.current.state2.cached).toEqual(2)
     expect(result.current.state2.isActual).toBe(true)
     expect(result.current.state2.isLoading).toBe(false)
     expect(result.current.state2.error).toBe(undefined)
+    expect(result.current.state2.key).toBe('key2')
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -232,18 +260,74 @@ describe('useCombineCommonStates', () => {
     expect(result.current.combine.isActual).toBe(true)
     expect(result.current.combine.isLoading).toBe(false)
     expect(result.current.combine.error).toBe(undefined)
+    expect(result.current.combine.key).toBe(`key0: key1\nkey1: key2`)
     // state1
     expect(result.current.state1.value).toEqual(2)
     expect(result.current.state1.cached).toEqual(2)
     expect(result.current.state1.isActual).toBe(true)
     expect(result.current.state1.isLoading).toBe(false)
     expect(result.current.state1.error).toBe(undefined)
+    expect(result.current.state1.key).toBe('key1')
     // state2
     expect(result.current.state2.value).toEqual(2)
     expect(result.current.state2.cached).toEqual(2)
     expect(result.current.state2.isActual).toBe(true)
     expect(result.current.state2.isLoading).toBe(false)
     expect(result.current.state2.error).toBe(undefined)
+    expect(result.current.state2.key).toBe('key2')
+
+    rerender(['key1_1', 'key2_1'])
+    act(() => {
+      result.current.combine.softRefresh()
+    })
+
+    // combine
+    expect(result.current.combine.value).toEqual([2, 2])
+    expect(result.current.combine.cached).toEqual([2, 2])
+    expect(result.current.combine.isActual).toBe(true)
+    expect(result.current.combine.isLoading).toBe(true)
+    expect(result.current.combine.error).toBe(undefined)
+    expect(result.current.combine.key).toBe(`key0: key1\nkey1: key2`)
+    // state1
+    expect(result.current.state1.value).toEqual(2)
+    expect(result.current.state1.cached).toEqual(2)
+    expect(result.current.state1.isActual).toBe(true)
+    expect(result.current.state1.isLoading).toBe(true)
+    expect(result.current.state1.error).toBe(undefined)
+    expect(result.current.state1.key).toBe('key1')
+    // state2
+    expect(result.current.state2.value).toEqual(2)
+    expect(result.current.state2.cached).toEqual(2)
+    expect(result.current.state2.isActual).toBe(true)
+    expect(result.current.state2.isLoading).toBe(true)
+    expect(result.current.state2.error).toBe(undefined)
+    expect(result.current.state2.key).toBe('key2')
+
+    await Promise.resolve()
+    jest.runAllTimers()
+    await waitForNextUpdate()
+
+    // combine
+    expect(result.current.combine.value).toEqual([3, 3])
+    expect(result.current.combine.cached).toEqual([3, 3])
+    expect(result.current.combine.isActual).toBe(true)
+    expect(result.current.combine.isLoading).toBe(false)
+    expect(result.current.combine.error).toBe(undefined)
+    expect(result.current.combine.key).toBe(`key0: key1_1\nkey1: key2_1`)
+    // state1
+    expect(result.current.state1.value).toEqual(3)
+    expect(result.current.state1.cached).toEqual(3)
+    expect(result.current.state1.isActual).toBe(true)
+    expect(result.current.state1.isLoading).toBe(false)
+    expect(result.current.state1.error).toBe(undefined)
+    expect(result.current.state1.key).toBe('key1_1')
+    // state2
+    expect(result.current.state2.value).toEqual(3)
+    expect(result.current.state2.cached).toEqual(3)
+    expect(result.current.state2.isActual).toBe(true)
+    expect(result.current.state2.isLoading).toBe(false)
+    expect(result.current.state2.error).toBe(undefined)
+    expect(result.current.state2.key).toBe('key2_1')
   })
 
   it('check canceling state updates', async () => {
@@ -303,6 +387,7 @@ describe('useCombineCommonStates', () => {
     expect(result.current.state2.isLoading).toBe(true)
     expect(result.current.state2.error).toBe(undefined)
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -352,6 +437,7 @@ describe('useCombineCommonStates', () => {
     expect(result.current.state2.error).toBe(undefined)
 
     act(() => cancel?.())
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -400,6 +486,7 @@ describe('useCombineCommonStates', () => {
     expect(result.current.state2.error).toBe(undefined)
 
     act(() => cancel?.())
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
@@ -447,6 +534,7 @@ describe('useCombineCommonStates', () => {
     expect(result.current.state2.isLoading).toBe(true)
     expect(result.current.state2.error).toBe(undefined)
 
+    await Promise.resolve()
     jest.advanceTimersByTime(50)
 
     act(() => cancel?.())
@@ -497,6 +585,7 @@ describe('useCombineCommonStates', () => {
     expect(result.current.state2.isLoading).toBe(false)
     expect(result.current.state2.error).toBe(undefined)
 
+    await Promise.resolve()
     jest.runAllTimers()
     await waitForNextUpdate()
 
