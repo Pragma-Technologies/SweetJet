@@ -22,6 +22,7 @@ export function useAtomStorageCommonState<T extends BaseStatesStorage, K extends
   storage: AtomStatesStorage<T>,
   stateKey: K,
 ): <Value, Error = unknown, Initial = unknown>(
+  stateKey: K,
   initial: Initial | (() => Initial),
 ) => StateManager<Value, Error, Initial>
 
