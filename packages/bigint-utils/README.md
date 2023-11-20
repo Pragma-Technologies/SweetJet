@@ -9,7 +9,7 @@ type BIish = BI | string | number
 
 ## Convert
 
-###`toDecimals`
+### `toDecimals`
 
 #### Signature
 ```ts
@@ -19,7 +19,7 @@ function toDecimals(amount: BIish, decimals: number): string {}
 #### Description
 Convert `BIish` to string by provided decimals
 
-###`fromDecimals`
+### `fromDecimals`
 
 #### Signature
 ```ts
@@ -46,7 +46,7 @@ type BIParseOption = {
 }
 ```
 
-###`fromBIish`
+### `fromBIish`
 
 #### Signature
 ```ts
@@ -56,7 +56,7 @@ function fromBIish(amount: BIish): BI {}
 #### Description
 Convert `BIish` to strict `BI`
 
-###`fromBP`
+### `fromBP`
 
 #### Signature
 ```ts
@@ -88,7 +88,7 @@ const defaultOptions = {
 }
 ```
 
-###`formattedDecimals`
+### `formattedDecimals`
 
 #### Signature
 ```ts
@@ -111,7 +111,7 @@ const defaultOptions = {
 
 ## BIMath
 
-###`BIMath.min`
+### `BIMath.min`
 
 #### Signature
 ```ts
@@ -121,7 +121,7 @@ BIMath.min(...values: BI[]): BI
 #### Description
 Return min of provided values
 
-###`BIMath.max`
+### `BIMath.max`
 
 #### Signature
 ```ts
