@@ -1,0 +1,37 @@
+{
+  "name": "@pragma-web-utils/bigint-utils",
+  "keywords": [
+    "pragma-web-utils"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.1.0",
+  "files": [
+    "dist/*"
+  ],
+  "type": "commonjs",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "tsc --build",
+    "start": "tsc --watch",
+    "test": "jest --passWithNoTests"
+  },
+  "devDependencies": {
+    "ts-jest": "26.5.6"
+  },
+  "description": "types",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Pragma-Technologies/pragma-web-utils/tree/main/packages/bigint-utils"
+  },
+  "author": "JumboJet",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Pragma-Technologies/pragma-web-utils/issues"
+  },
+  "homepage": "https://github.com/Pragma-Technologies/pragma-web-utils/tree/main/packages/bigint-utils#readme"
+}
