@@ -4,18 +4,6 @@
     "./src"
   ],
   "compilerOptions": {
-    "outDir": "./dist",
-    "jsx": "react-jsx",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "isolatedModules": true,
-    "noEmit": true
+    "outDir": "./dist"
   }
 }
