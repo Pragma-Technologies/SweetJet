@@ -4,12 +4,10 @@ import { toDecimals } from './convert'
 export function formattedDecimals(
   amountTKN: BIish,
   decimals: number,
-  symbol = '',
   formatOptions?: Intl.NumberFormatOptions,
 ): string {
   const units = toDecimals(amountTKN, decimals)
-  const unitsNumber = formattedNumber(+units, formatOptions)
-  return !!symbol ? `${unitsNumber} ${symbol}` : unitsNumber
+  return formattedNumber(+units, formatOptions)
 }
 
 export function formattedNumber(value: number, formatOptions?: Intl.NumberFormatOptions): string {
