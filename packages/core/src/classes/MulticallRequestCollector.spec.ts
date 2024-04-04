@@ -15,10 +15,11 @@ const abiItem = {
   type: 'function',
 }
 
-const _testMulticallCaller: MulticallCaller = async () => {
+const mockCaller = async (): ReturnType<MulticallCaller> => {
   await wait(100)
   return [['0x00000000000000000000000000000000000000000000000000000000000003e8']]
 }
+const _testMulticallCaller: jest.Mock<ReturnType<MulticallCaller>> = jest.fn(mockCaller)
 
 const scInterface = new ethers.utils.Interface([abiItem])
 
@@ -33,6 +34,7 @@ describe('MulticallRequestCollector class', () => {
   beforeEach(() => {
     _getTvmMulticallCaller.mockReset().mockImplementation(() => _testMulticallCaller)
     _getEvmMulticallCaller.mockReset().mockImplementation(() => _testMulticallCaller)
+    _testMulticallCaller.mockReset().mockImplementation(mockCaller)
   })
 
   it('check single EVM request', async () => {
@@ -188,5 +190,67 @@ describe('MulticallRequestCollector class', () => {
 
     expect(_getEvmMulticallCaller).toBeCalledTimes(2)
     expect(_getTvmMulticallCaller).toBeCalledTimes(0)
+  })
+
+  it('check few requests scope split requests by energy', async () => {
+    const multicallRequestCollector = new MulticallRequestCollector(3_500, 1_400)
+
+    const evmRequestOptions = {
+      contractAddress: new Address(),
+      base: ConnectorBaseEnum.EVM,
+      rpcUrl: 'rpcUrl',
+      callInfo: {
+        method: abiItem.name,
+        output: abiItem.outputs,
+        scInterface,
+        values: [],
+        target: new Address(),
+      },
+    }
+
+    expect(_getEvmMulticallCaller).toBeCalledTimes(0)
+    expect(_getTvmMulticallCaller).toBeCalledTimes(0)
+    expect(_testMulticallCaller).toBeCalledTimes(0)
+
+    const response1 = multicallRequestCollector.request(evmRequestOptions)
+    const response2 = multicallRequestCollector.request(evmRequestOptions)
+    const response3 = multicallRequestCollector.request(evmRequestOptions)
+
+    // wait collecting request
+    await wait(10)
+
+    expect(_testMulticallCaller).toBeCalledTimes(2)
+    expect(_getEvmMulticallCaller).toBeCalledTimes(1)
+    expect(_getTvmMulticallCaller).toBeCalledTimes(0)
+
+    expect((await response1).toString()).toBe('1000')
+    expect((await response2).toString()).toBe('1000')
+    expect((await response3).toString()).toBe('1000')
+
+    const response4 = multicallRequestCollector.request({
+      ...evmRequestOptions,
+      callInfo: { ...evmRequestOptions.callInfo, energy: 4_000 },
+    })
+    const response5 = multicallRequestCollector.request({
+      ...evmRequestOptions,
+      callInfo: { ...evmRequestOptions.callInfo, energy: 400 },
+    })
+    const response6 = multicallRequestCollector.request(evmRequestOptions)
+    const response7 = multicallRequestCollector.request({
+      ...evmRequestOptions,
+      callInfo: { ...evmRequestOptions.callInfo, energy: 3_300 },
+    })
+
+    // wait collecting request
+    await wait(10)
+
+    expect(_testMulticallCaller).toBeCalledTimes(5)
+    expect(_getEvmMulticallCaller).toBeCalledTimes(2)
+    expect(_getTvmMulticallCaller).toBeCalledTimes(0)
+
+    expect((await response4).toString()).toBe('1000')
+    expect((await response5).toString()).toBe('1000')
+    expect((await response6).toString()).toBe('1000')
+    expect((await response7).toString()).toBe('1000')
   })
 })

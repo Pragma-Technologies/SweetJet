@@ -1,16 +1,34 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { AbiCoder } from 'ethers/lib/utils'
-import { ADDRESS_PREFIX_REGEX, MAX_TRON_MULTICALL_COUNT } from '../constants'
+import { ADDRESS_PREFIX_REGEX } from '../constants'
 import { ConnectorBaseEnum } from '../enums'
-import { CallOption, MulticallOptions, Output, UnwrapCallOption, UnwrapOutput, UnwrapOutputs } from '../types'
+import {
+  CallInfo,
+  CallOption,
+  MulticallOptions,
+  Output,
+  OutputTuple,
+  UnwrapCallOption,
+  UnwrapOutput,
+  UnwrapOutputs,
+} from '../types'
 import { getEvmMulticallCaller, getTvmMulticallCaller } from '../utils'
 import { ObservableSubject } from './ObservableSubject'
-import { OutputTuple } from '../types'
 
 export class MulticallRequestCollector {
   protected _needCollection = false
   protected _requestQueue = new Map<string, { requestOptions: CallOption; key: string }[]>()
   protected _requestListener = new ObservableSubject()
+
+  constructor(protected _maxEnergyPerCall = 5_000, protected _defaultCallEnergy = 1_000) {}
+
+  public setMaxEnergyPerCall(value: number) {
+    this._maxEnergyPerCall = value
+  }
+
+  public setDefaultCallEnergy(value: number) {
+    this._defaultCallEnergy = value
+  }
 
   // TODO: add check for this rule
   // multicall contract address and base for all request should be same for each rpcUrl
@@ -46,49 +64,78 @@ export class MulticallRequestCollector {
     this._requestQueue.forEach(async (data, rpcUrl) => {
       const callInfos = data.map(({ requestOptions: { callInfo } }) => callInfo)
       const { contractAddress, base } = data[0].requestOptions
+      const _keys = data.map(({ key }) => key)
       try {
-        const options = { rpcUrl, contractAddress, callInfos }
-        const request = base === ConnectorBaseEnum.EVM ? this._evmMulticall(options) : this._tvmMulticall(options)
-        const response = await request
-        data.forEach(({ key }, index) => {
-          response[index] === '0x'
-            ? this._requestListener.sendError(key, 'Failed request')
-            : this._requestListener.sendValue(key, response[index])
+        const options = { base, rpcUrl, contractAddress, callInfos }
+        const responses = this._multicall(options, _keys)
+        responses.map(async ({ keys, results }) => {
+          try {
+            ;(await results).forEach((response, index) =>
+              response === '0x'
+                ? this._requestListener.sendError(keys[index], 'Failed request')
+                : this._requestListener.sendValue(keys[index], response),
+            )
+          } catch (err) {
+            keys.forEach((key) => this._requestListener.sendError(key, err))
+          }
         })
       } catch (err) {
-        data.forEach(({ key }) => this._requestListener.sendError(key, err))
+        _keys.forEach((key) => this._requestListener.sendError(key, err))
       }
     })
     this._requestQueue.clear()
     this._needCollection = false
   }
 
-  protected async _tvmMulticall({ callInfos, contractAddress, rpcUrl }: MulticallOptions): Promise<unknown[]> {
-    const targets = callInfos.map(({ target }) => target.toHex())
-    const values = callInfos.map(({ values, scInterface, method }) => scInterface.encodeFunctionData(method, values))
-    const outputsList = callInfos.map(({ output }) => output)
+  protected _multicall(
+    { callInfos, contractAddress, rpcUrl, base }: MulticallOptions,
+    keys: string[],
+  ): { keys: string[]; results: Promise<unknown[]> }[] {
+    const caller =
+      base === ConnectorBaseEnum.EVM
+        ? getEvmMulticallCaller(contractAddress, rpcUrl)
+        : getTvmMulticallCaller(contractAddress, rpcUrl)
+    const callGroups = this._getGroupedCallInfos(callInfos, keys)
 
-    let results: string[] = []
-    for (let i = 0; callInfos.length / MAX_TRON_MULTICALL_COUNT > i; i++) {
-      const caller = getTvmMulticallCaller(contractAddress, rpcUrl)
-      const _targets = targets.slice(i * MAX_TRON_MULTICALL_COUNT, (i + 1) * MAX_TRON_MULTICALL_COUNT)
-      const _values = values.slice(i * MAX_TRON_MULTICALL_COUNT, (i + 1) * MAX_TRON_MULTICALL_COUNT)
-      const [result] = await caller(_targets, _values)
-      results = results.concat(result)
+    const requests: { request: Promise<[string[]]>; outputs: [...Output[]][]; keys: string[] }[] = []
+    for (const callGroup of callGroups) {
+      const targets = callGroup.map(({ callInfo: { target } }) => target.toHex())
+      const values = callGroup.map(({ callInfo: { values, scInterface, method } }) =>
+        scInterface.encodeFunctionData(method, values),
+      )
+      const outputs = callGroup.map(({ callInfo: { output } }) => output)
+      const _keys = callGroup.map(({ key }) => key)
+
+      requests.push({ request: caller(targets, values), outputs, keys: _keys })
     }
 
-    return this._decodeArrayOfParams(outputsList, results)
+    return requests.map(({ request, outputs, keys }) => ({
+      keys,
+      results: request.then(([result]) => this._decodeArrayOfParams(outputs, result)),
+    }))
   }
 
-  protected async _evmMulticall({ callInfos, contractAddress, rpcUrl }: MulticallOptions): Promise<unknown[]> {
-    const targets = callInfos.map(({ target }) => target.toHex())
-    const values = callInfos.map(({ values, scInterface, method }) => scInterface.encodeFunctionData(method, values))
-    const outputsList = callInfos.map(({ output }) => output)
+  protected _getGroupedCallInfos(callInfos: CallInfo[], keys: string[]): { callInfo: CallInfo; key: string }[][] {
+    const energies = callInfos
+      .map(({ energy }, index) => ({ energy: energy ?? this._defaultCallEnergy, index }))
+      .sort((a, b) => b.energy - a.energy)
+    const result: { callInfo: CallInfo; key: string }[][] = []
+    let currGroup: { callInfo: CallInfo; key: string }[] = []
+    let currGroupEnergy = 0
 
-    const caller = getEvmMulticallCaller(contractAddress, rpcUrl)
-    const [result] = await caller(targets, values)
+    for (let energyInfo of energies) {
+      if (currGroup.length && currGroupEnergy + energyInfo.energy > this._maxEnergyPerCall) {
+        result.push(currGroup)
+        currGroup = []
+        currGroupEnergy = 0
+      }
 
-    return this._decodeArrayOfParams(outputsList, result)
+      currGroup.push({ callInfo: callInfos[energyInfo.index], key: keys[energyInfo.index] })
+      currGroupEnergy += energyInfo.energy
+    }
+
+    result.push(currGroup)
+    return result
   }
 
   protected _decodeParams<T extends [...Output[]]>(outputs: T, data: string): UnwrapOutputs<T> {

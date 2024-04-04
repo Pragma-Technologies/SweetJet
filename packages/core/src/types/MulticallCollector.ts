@@ -100,6 +100,7 @@ export interface CallInfo<T extends [...Output[]] | Output[] = [...Output[]]> {
   values: unknown[]
   output: T
   target: Address
+  energy?: number
 }
 
 export interface CallOption<T extends [...Output[]] | Output[] = [...Output[]]> {
@@ -113,4 +114,5 @@ export interface MulticallOptions {
   callInfos: CallInfo[]
   contractAddress: Address
   rpcUrl: string
+  base: ConnectorBaseEnum
 }
