@@ -1,4 +1,4 @@
-import { toChecksumAddress } from 'ethereum-checksum-address'
+import { Address } from '@pragma-web-utils/core'
 import Fortmatic from 'fortmatic'
 import { AbstractProvider, NetworkDetails } from '../types'
 import { BaseConnector, ConnectResultEnum } from './BaseConnector'
@@ -38,8 +38,8 @@ export class FortmaticConnector extends BaseConnector<AbstractProvider | null> {
     this.emitEvent()
     try {
       this._chainId = chainId
-      const accounts = (await this._provider.request({ method: 'eth_accounts' })) as string[]
-      this._account = toChecksumAddress(accounts[0])
+      const [account] = (await this._provider.request({ method: 'eth_accounts' })) as string[]
+      this._account = account ? Address.from(account) : undefined
       this._isActivating = false
       this.emitEvent()
       return ConnectResultEnum.SUCCESS

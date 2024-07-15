@@ -1,3 +1,4 @@
+import { Address } from '@pragma-web-utils/core'
 import { BaseProvider, ConnectionInfo, Destructor, Listener, NetworkDetails } from '../types'
 
 export enum ConnectResultEnum {
@@ -14,10 +15,10 @@ export abstract class BaseConnector<T extends BaseProvider = BaseProvider> {
     return this._chainId
   }
 
-  protected _account: string | undefined
+  protected _account: Address | undefined
 
   // make account field readonly for getting out of class
-  get account(): string | undefined {
+  get account(): Address | undefined {
     return this._account
   }
 
@@ -82,7 +83,7 @@ export abstract class BaseConnector<T extends BaseProvider = BaseProvider> {
     return this.chainId
   }
 
-  public getAccount(): string | undefined {
+  public getAccount(): Address | undefined {
     return this.account
   }
 

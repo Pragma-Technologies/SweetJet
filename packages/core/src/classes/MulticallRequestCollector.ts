@@ -7,7 +7,7 @@ import {
   CallOption,
   MulticallOptions,
   Output,
-  OutputTuple,
+  OutputTupleTypes,
   UnwrapCallOption,
   UnwrapOutput,
   UnwrapOutputs,
@@ -166,7 +166,7 @@ export class MulticallRequestCollector {
   }
 }
 
-export function isOutputTuple(output: Output): output is OutputTuple {
+export function isOutputTuple(output: Output): output is Output<OutputTupleTypes> {
   return output.type === 'tuple' || output.type === 'tuple[]'
 }
 

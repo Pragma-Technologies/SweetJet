@@ -1,3 +1,4 @@
+import { Address } from '@pragma-web-utils/core'
 import { HttpProvider, IpcProvider, RequestArguments, WebsocketProvider } from 'web3-core'
 import { JsonRpcPayload, JsonRpcResponse } from 'web3-core-helpers'
 
@@ -15,7 +16,7 @@ export type BaseProvider = HttpProvider | IpcProvider | WebsocketProvider | Abst
 export type Destructor = () => void
 export type ConnectionInfo = {
   chainId?: number
-  account?: string
+  account?: Address
   isConnected: boolean
   isActive: boolean
   isActivating: boolean
@@ -55,4 +56,25 @@ export interface EthereumProvider {
   request<T = unknown>(args: RequestArguments): Promise<T>
 
   send?(payload: JsonRpcPayload, callback: (error: Error | null, result?: JsonRpcResponse) => void): void
+}
+
+export type TronListener = (...args: unknown[]) => void
+
+export interface TronProvider {
+  isCustom?: boolean
+  isTokenPocket?: boolean
+  isTronLink?: boolean
+  tronWeb:
+    | false
+    | {
+        fullNode: false | { host: string }
+        defaultAddress: false | { base58: string }
+        request<T = unknown>(args: RequestArguments): Promise<T>
+      }
+
+  removeListener(eventName: string | symbol, listener: TronListener): void
+
+  on(eventName: string | symbol, listener: TronListener): void
+
+  request<T = unknown>(args: RequestArguments): Promise<T>
 }

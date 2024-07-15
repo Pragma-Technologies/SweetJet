@@ -1,4 +1,4 @@
-import { EMPTY_ADDRESS } from '@pragma-web-utils/core'
+import { Address, EMPTY_ADDRESS } from '@pragma-web-utils/core'
 import { BaseConnector, ConnectResultEnum } from '../connectors'
 import { AbstractProvider, BaseProvider, NetworkDetails } from '../types'
 
@@ -16,7 +16,7 @@ export class TestBaseConnector extends BaseConnector {
 
   connect(chainId?: number): Promise<ConnectResultEnum> {
     this._chainId = chainId ?? this.defaultChainId
-    this._account = EMPTY_ADDRESS
+    this._account = Address.from()
     this.emitEvent()
     return Promise.resolve(ConnectResultEnum.SUCCESS)
   }
