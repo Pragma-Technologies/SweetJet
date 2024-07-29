@@ -10,6 +10,8 @@ export const testProvider = {
 } as AbstractProvider
 
 export class TestBaseConnector extends BaseConnector {
+  name = TestBaseConnector.name
+
   constructor(supportedNetworks: NetworkDetails[], defaultChainId: number, activeChainId: number[] = []) {
     super(supportedNetworks, defaultChainId, activeChainId)
   }

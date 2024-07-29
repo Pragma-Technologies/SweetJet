@@ -3,6 +3,8 @@ import { EthereumProvider, NetworkDetails } from '../types'
 import { EthereumConnector } from './EthereumConnector'
 
 export class InjectedConnector<T extends EthereumProvider = EthereumProvider> extends EthereumConnector<T> {
+  name = InjectedConnector.name
+
   constructor(supportedNetworks: NetworkDetails[], defaultChainId: number, activeChainId: number[] = []) {
     super(supportedNetworks, defaultChainId, activeChainId)
   }

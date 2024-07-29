@@ -7,6 +7,8 @@ import { stringToHex } from '../utils'
 import { BaseConnector, ConnectResultEnum } from './BaseConnector'
 
 export class FortmaticConnector extends BaseConnector<AbstractProvider | null> {
+  name = FortmaticConnector.name
+
   private _providersMap: Map<number, AbstractProvider> = new Map<number, AbstractProvider>()
   private _provider: AbstractProvider | null = null
 

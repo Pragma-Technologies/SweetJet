@@ -3,6 +3,8 @@ import { NetworkDetails } from '../types'
 import { InjectedConnector } from './InjectedConnector'
 
 export class CoinbaseConnector extends InjectedConnector<CoinbaseWalletProvider> {
+  name = CoinbaseConnector.name
+
   constructor(
     supportedNetworks: NetworkDetails[],
     defaultChainId: number,

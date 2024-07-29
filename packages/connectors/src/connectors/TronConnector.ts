@@ -5,6 +5,8 @@ import { TronListener, TronProvider } from '../types'
 import { BaseConnector, ConnectResultEnum } from './BaseConnector' // for connectors that extends ethereum as provider
 
 export class TronConnector extends BaseConnector<TronProvider | null> {
+  name = TronConnector.name
+
   protected _provider: TronProvider | null = null
 
   constructor(defaultChainId: number) {

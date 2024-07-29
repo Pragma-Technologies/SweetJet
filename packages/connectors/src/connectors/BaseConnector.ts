@@ -8,6 +8,8 @@ export enum ConnectResultEnum {
 }
 
 export abstract class BaseConnector<T extends BaseProvider = BaseProvider> {
+  public abstract readonly name: string
+
   protected _chainId: number | undefined
 
   // make chainId field readonly for getting out of class

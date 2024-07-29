@@ -5,6 +5,8 @@ import { NetworkDetails } from '../types'
 import { EthereumConnector } from './EthereumConnector'
 
 export class WalletConnectConnector extends EthereumConnector<EthereumProvider> {
+  name = WalletConnectConnector.name
+
   // TODO: recheck error codes
   protected _network_not_exist_error_codes: number[] = [4902, -32000] // 4902 as default, -3200 for MetaMask app
 

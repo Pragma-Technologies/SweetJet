@@ -3,6 +3,8 @@ import { EthereumProvider } from '../types'
 import detectEthereumProvider from '@metamask/detect-provider'
 
 export class MetamaskConnector extends InjectedConnector {
+  name = MetamaskConnector.name
+
   protected async getEthereumProvider(): Promise<EthereumProvider | null> {
     const provider = (await detectEthereumProvider()) as EthereumProvider | null
     if (provider?.providers?.length) {

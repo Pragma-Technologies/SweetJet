@@ -1,6 +1,7 @@
 export * from './BaseConnector'
 export * from './CoinbaseConnector'
 export * from './EthereumConnector'
+export * from './ExternalSourceConnector'
 export * from './FortmaticConnect'
 export * from './InjectedConnector'
 export * from './MetamaskConnector'

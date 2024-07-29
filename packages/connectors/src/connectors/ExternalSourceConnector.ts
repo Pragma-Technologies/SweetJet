@@ -2,6 +2,8 @@ import { EthereumListener, EthereumProvider, NetworkDetails } from '../types'
 import { EthereumConnector } from './EthereumConnector'
 
 export class ExternalSourceConnector<T extends EthereumProvider = EthereumProvider> extends EthereumConnector<T> {
+  name = ExternalSourceConnector.name
+
   protected _externalSource: () => Promise<T | null> = () => Promise.resolve(null)
   protected _disconnectSource: () => Promise<void> = () => Promise.resolve()
 
