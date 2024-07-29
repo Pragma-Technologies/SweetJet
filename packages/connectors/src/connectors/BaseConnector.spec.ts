@@ -3,7 +3,6 @@ import { TestBaseConnector, TestEthereumConnector, TestEthereumProvider, TestWal
 import { NetworkDetails } from '../types'
 import { BaseConnector, ConnectResultEnum } from './BaseConnector'
 import { CoinbaseConnector } from './CoinbaseConnector'
-import { FortmaticConnector } from './FortmaticConnect'
 import { InjectedConnector } from './InjectedConnector'
 import { MetamaskConnector } from './MetamaskConnector'
 import { WalletConnectConnector } from './WalletConnectConnector'
@@ -97,11 +96,6 @@ describe.each<{ name: string; getConnector: () => BaseConnector; reset: () => vo
         showQrModal: true,
       }),
     reset: () => (testWalletConnectProvider = new TestWalletConnectProvider()),
-  },
-  {
-    name: 'FortmaticConnector',
-    getConnector: () => new FortmaticConnector(supportedNetworks, defaultNetwork.chainId, activeChainId, 'fakeApiKey'),
-    reset: () => (testProvider = new TestEthereumProvider()),
   },
 ])(`BaseConnector implementations`, ({ getConnector, name, reset }) => {
   beforeEach(() => {

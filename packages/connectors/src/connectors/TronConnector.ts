@@ -1,13 +1,24 @@
-import { Address, TvmChainIdsEnum } from '@pragma-web-utils/core'
+import { Address, LimitedTronWeb, TvmChainIdsEnum } from '@pragma-web-utils/core'
 import { RequestArguments } from 'web3-core'
-import { NetworkDetails, TronListener, TronProvider } from '../types'
+import { CancelError, isCancelError, SignatureError } from '../errors'
+import { TronListener, TronProvider } from '../types'
 import { BaseConnector, ConnectResultEnum } from './BaseConnector' // for connectors that extends ethereum as provider
 
 export class TronConnector extends BaseConnector<TronProvider | null> {
   protected _provider: TronProvider | null = null
 
-  constructor(supportedNetworks: NetworkDetails[], defaultChainId: number, activeChainId: number[] = []) {
-    super(supportedNetworks, defaultChainId, activeChainId)
+  constructor(defaultChainId: number) {
+    super([], defaultChainId, [TvmChainIdsEnum.MAINNET, TvmChainIdsEnum.SHASTA, TvmChainIdsEnum.NILE])
+  }
+
+  async signMessage(message: string): Promise<string> {
+    const tronWeb = this._provider?.tronWeb
+    if (!tronWeb || !this.account) {
+      throw new Error('Tron not connected')
+    }
+    return !tronWeb.trx.signMessageV2
+      ? this._signMessageV1(tronWeb, this.account, message)
+      : this._signMessageV2(tronWeb, this.account, message)
   }
 
   async connect(chainId?: number): Promise<ConnectResultEnum> {
@@ -18,7 +29,7 @@ export class TronConnector extends BaseConnector<TronProvider | null> {
     }
 
     try {
-      this._provider = this.getTronProvider()
+      this._provider = this._getTronProvider()
     } catch (e) {
       console.warn('Not found tron provider', e)
       this.emitEvent()
@@ -30,7 +41,7 @@ export class TronConnector extends BaseConnector<TronProvider | null> {
     }
 
     // subscribe on ethereum events
-    if (this.isProviderListenersSupported()) {
+    if (this._isProviderListenersSupported()) {
       this._provider.on('disconnect', this._onDisconnect as TronListener)
       this._provider.on('chainChanged', this._onChangeChainId as TronListener)
       this._provider.on('accountsChanged', this._onChangeAccount as TronListener)
@@ -40,17 +51,18 @@ export class TronConnector extends BaseConnector<TronProvider | null> {
     this._isActivating = true
     this.emitEvent()
     try {
-      const requestedAccount = await this.requestCurrentAccount()
-      const currentChainId = this.getCurrentChainId()
+      const requestedAccount = await this._requestCurrentAccount()
+      this._account = requestedAccount ?? undefined
       this._isActivating = false
-
-      if (!requestedAccount || !currentChainId) {
+      if (!this.account) {
         this.disconnect()
         return ConnectResultEnum.FAIL
       }
-      this._account = requestedAccount
-      this._chainId = currentChainId
-      this.emitEvent()
+      const currentChainId = await this._getCurrentChainId()
+      if (!!currentChainId) {
+        this._chainId = currentChainId
+        this.emitEvent()
+      }
 
       // if current chainId is not default try switch network
       if (!!chainId && this.activeChainIds.includes(chainId) && chainId !== this.chainId) {
@@ -84,12 +96,12 @@ export class TronConnector extends BaseConnector<TronProvider | null> {
     return this._provider
   }
 
-  protected getTronProvider(): TronProvider | null {
+  protected _getTronProvider(): TronProvider | null {
     const tronProvider = (global as { tron?: TronProvider }).tron
-    return tronProvider ? tronProvider : this.getCustomTronProvider()
+    return tronProvider ? tronProvider : this._getCustomTronProvider()
   }
 
-  protected getCustomTronProvider(): TronProvider | null {
+  protected _getCustomTronProvider(): TronProvider | null {
     const tronWeb = (global as { tronWeb?: TronProvider['tronWeb'] }).tronWeb
     return {
       isCustom: true,
@@ -106,11 +118,12 @@ export class TronConnector extends BaseConnector<TronProvider | null> {
     }
   }
 
-  protected isProviderListenersSupported(): boolean {
+  protected _isProviderListenersSupported(): boolean {
     // for mobile applications change chainId or wallet reload page, and listening changes not required
     return !!this._provider && !this._provider.isTokenPocket && !this._provider.isCustom
   }
-  protected async requestCurrentAccount(): Promise<Address | null> {
+
+  protected async _requestCurrentAccount(): Promise<Address | null> {
     if (!this._provider) {
       return null
     }
@@ -124,25 +137,43 @@ export class TronConnector extends BaseConnector<TronProvider | null> {
       // handle if eth_requestAccounts not supported
     }
 
+    const tronWeb = this._provider?.tronWeb ? this._provider.tronWeb : null
+    await tronWeb?.request({ method: 'tron_requestAccounts' })
     const defaultAddress = this._provider?.tronWeb ? this._provider.tronWeb.defaultAddress : false
     return defaultAddress ? Address.from(defaultAddress.base58) : null
   }
 
-  protected getCurrentChainId(): number | null {
-    const fullNode = this._provider?.tronWeb ? this._provider.tronWeb.fullNode : false
-    const host = fullNode ? fullNode.host : ''
-    switch (host) {
-      case 'https://api.trongrid.io':
-      case 'https://api.tronstack.io':
-      case 'https://trx.mytokenpocket.vip':
-        return TvmChainIdsEnum.MAINNET
-      case 'https://api.shasta.trongrid.io':
-        return TvmChainIdsEnum.SHASTA
-      case 'https://event.nileex.io':
-        return TvmChainIdsEnum.NILE
-      default:
-        return null
+  protected async _getCurrentChainId(): Promise<number | null> {
+    const CHAIN_ID_WAIT_DURATION = 60 * 1000 // wait changes about 60 seconds
+    const CHAIN_ID_PING_DURATION = 100 // check changes every 100 milliseconds
+
+    // workaround, on manually disconnecting TronLink, needs to wait some time for get current chainId
+    let chainIdResolver: (chainId: number | null) => void
+    const chainIdPromise = new Promise<number | null>((resolver) => {
+      chainIdResolver = resolver
+    })
+
+    const startTimestamp = Date.now()
+    const checkChainId = (): void => {
+      const fullNode = this._provider?.tronWeb ? this._provider.tronWeb.fullNode : false
+      const host = fullNode ? fullNode.host : ''
+      switch (host) {
+        case 'https://api.trongrid.io':
+        case 'https://api.tronstack.io':
+        case 'https://trx.mytokenpocket.vip':
+          return chainIdResolver(TvmChainIdsEnum.MAINNET)
+        case 'https://api.shasta.trongrid.io':
+          return chainIdResolver(TvmChainIdsEnum.SHASTA)
+        case 'https://event.nileex.io':
+          return chainIdResolver(TvmChainIdsEnum.NILE)
+        default:
+          return Date.now() - startTimestamp < CHAIN_ID_WAIT_DURATION
+            ? void setTimeout(checkChainId, CHAIN_ID_PING_DURATION)
+            : chainIdResolver(null)
+      }
     }
+    checkChainId()
+    return chainIdPromise
   }
 
   // unsubscribe from all ethereum events and clear state
@@ -154,7 +185,7 @@ export class TronConnector extends BaseConnector<TronProvider | null> {
     this.emitEvent()
     this.completeListeners()
 
-    if (this.isProviderListenersSupported()) {
+    if (this._isProviderListenersSupported()) {
       this._provider?.removeListener('disconnect', this._onDisconnect as TronListener)
       this._provider?.removeListener('chainChanged', this._onChangeChainId as TronListener)
       this._provider?.removeListener('accountsChanged', this._onChangeAccount as TronListener)
@@ -171,5 +202,47 @@ export class TronConnector extends BaseConnector<TronProvider | null> {
     this._isActivating = false
 
     this.emitEvent()
+  }
+
+  protected async _signMessageV1(tronWeb: LimitedTronWeb, account: Address, message: string): Promise<string> {
+    try {
+      const _message = message.startsWith('0x') ? message : tronWeb.toHex(message)
+      let signature = await tronWeb.trx.sign(_message)
+      signature = signature.replace(/^0x/, '')
+      const tail = signature.substring(128, 130)
+      if (tail == '01') {
+        signature = signature.substring(0, 128) + '1c'
+      } else if (tail == '00') {
+        signature = signature.substring(0, 128) + '1b'
+      }
+      const result = await tronWeb.trx.verifyMessage(_message, signature, account.toBase58())
+      if (!result) {
+        throw new SignatureError(message, account.toBase58(), signature, 'sign', tronWeb.version)
+      }
+      return signature
+    } catch (e) {
+      if (isCancelError(e)) {
+        throw new CancelError('sign')
+      }
+
+      throw e
+    }
+  }
+
+  protected async _signMessageV2(tronWeb: LimitedTronWeb, account: Address, message: string): Promise<string> {
+    try {
+      const signature = await tronWeb.trx.signMessageV2(message)
+      const result = await tronWeb.trx.verifyMessageV2(message, signature)
+      if (result !== account.toBase58()) {
+        throw new SignatureError(message, account.toBase58(), signature, 'signMessageV2', tronWeb.version)
+      }
+      return signature
+    } catch (e) {
+      if (isCancelError(e)) {
+        throw new CancelError('signMessageV2')
+      } else {
+        return this._signMessageV1(tronWeb, account, message)
+      }
+    }
   }
 }

@@ -20,12 +20,16 @@
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
   "exports": "./dist/index.js",
+  "dependencies": {
+    "tronweb-typings": "^1.0.1"
+  },
   "peerDependencies": {
     "@coinbase/wallet-sdk": "^3.3.0",
     "@metamask/detect-provider": "^2.0.0",
     "@walletconnect/ethereum-provider": "~2.8.1",
     "@walletconnect/modal": "^2.4.7",
     "ethereum-checksum-address": "^0.0.8",
+    "ethers": "^5.4.1",
     "fortmatic": "^2.4.0",
     "web3-core": "^1.8.1",
     "web3-core-helpers": "^1.8.1"

@@ -1,6 +1,7 @@
-import { Address } from '@pragma-web-utils/core'
+import { Address, LimitedTronWeb } from '@pragma-web-utils/core'
 import { HttpProvider, IpcProvider, RequestArguments, WebsocketProvider } from 'web3-core'
 import { JsonRpcPayload, JsonRpcResponse } from 'web3-core-helpers'
+import { TronWeb } from 'tronweb-typings'
 
 export interface AbstractProvider {
   connected?: boolean
@@ -64,13 +65,7 @@ export interface TronProvider {
   isCustom?: boolean
   isTokenPocket?: boolean
   isTronLink?: boolean
-  tronWeb:
-    | false
-    | {
-        fullNode: false | { host: string }
-        defaultAddress: false | { base58: string }
-        request<T = unknown>(args: RequestArguments): Promise<T>
-      }
+  tronWeb: false | (LimitedTronWeb & TronWeb)
 
   removeListener(eventName: string | symbol, listener: TronListener): void
 

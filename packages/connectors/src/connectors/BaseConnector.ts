@@ -54,7 +54,7 @@ export abstract class BaseConnector<T extends BaseProvider = BaseProvider> {
     if (!this.account) {
       return false
     }
-    return !this.supportedNetworks.length || this._supportedNetworks.some(({ chainId }) => this._chainId === chainId)
+    return !this._activeChainIds.length || this._activeChainIds.some((chainId) => this._chainId === chainId)
   }
 
   get isConnected(): boolean {
@@ -68,6 +68,8 @@ export abstract class BaseConnector<T extends BaseProvider = BaseProvider> {
     public defaultChainId: number,
     protected _activeChainIds: number[] = [],
   ) {}
+
+  public abstract signMessage(message: string): Promise<string>
 
   public abstract connect(chainId?: number): Promise<ConnectResultEnum>
 

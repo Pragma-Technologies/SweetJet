@@ -14,6 +14,10 @@ export class TestBaseConnector extends BaseConnector {
     super(supportedNetworks, defaultChainId, activeChainId)
   }
 
+  signMessage(message: string): Promise<string> {
+    throw new Error('Not implemented')
+  }
+
   connect(chainId?: number): Promise<ConnectResultEnum> {
     this._chainId = chainId ?? this.defaultChainId
     this._account = Address.from()
@@ -35,6 +39,7 @@ export class TestBaseConnector extends BaseConnector {
   async setupNetwork(networkDetails: NetworkDetails): Promise<void> {
     if (!this._supportedNetworks.some((item) => item.chainId === networkDetails.chainId)) {
       this._supportedNetworks = [...this._supportedNetworks, networkDetails]
+      this._activeChainIds = [...this._activeChainIds, networkDetails.chainId]
     }
     this._chainId = networkDetails.chainId
     this.emitEvent()
