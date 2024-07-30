@@ -1,5 +1,5 @@
 import { IStorable } from '@pragma-web-utils/core'
-import React, { FC, useContext } from 'react'
+import React, { FC, PropsWithChildren, useContext } from 'react'
 import { TxService } from '../classes'
 import { TransactionLike } from '../types'
 
@@ -13,6 +13,6 @@ export function useTxService<T extends IStorable<TransactionLike>>(): TxService<
   return contextValue as TxService<T>
 }
 
-export const TxServiceProvider: FC<{ txService: TxService }> = ({ children, txService }) => {
+export const TxServiceProvider: FC<{ txService: TxService } & PropsWithChildren> = ({ children, txService }) => {
   return <TxServiceContext.Provider value={txService}>{children}</TxServiceContext.Provider>
 }

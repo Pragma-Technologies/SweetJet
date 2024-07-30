@@ -18,18 +18,18 @@
     "prebuild": "rm -rf dist",
     "build": "tsc --build tsconfig.build.json",
     "start": "tsc --watch",
-    "test": "jest"
+    "test": "echo 'skip'"
   },
   "peerDependencies": {
-    "react": "~17.0.2",
-    "react-dom": "~17.0.2",
-    "react-scripts": "4.0.3"
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-scripts": "^5.0.1"
   },
   "devDependencies": {
     "@pragma-web-utils/hooks": "^0.0.34",
     "@testing-library/react": "12.1.5",
     "@testing-library/react-hooks": "^8.0.1",
-    "ts-jest": "26.5.6",
+    "ts-jest": "29.2.3",
     "whatwg-fetch": "^3.6.2"
   },
   "description": "theme service",

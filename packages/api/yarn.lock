@@ -912,20 +912,63 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@pragma-web-utils/common-state@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@pragma-web-utils/common-state/-/common-state-0.1.2.tgz#583def51a758d9c8617d809aecbd48942fd8dea5"
-  integrity sha512-dpdR34kYhKkSNuhCd7Ks02P+hHUsI+aAn/lZqhUKz71s2PSw+Kd9pfXPSzo4iHsrSOxzOU3IjcWV+gmJ6vSqBw==
+"@pragma-web-utils/common-state@^0.2.1":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/common-state/-/common-state-0.2.2.tgz#da0b03aa8a2577fb91fcc95909096b95aeb618a9"
+  integrity sha512-6o3xIls5D0ssyXdPklnfM3gA6YbcPvcAF0dfS9EVKsL+bYLh06rvW9EdaVSQ6rYwYWKfqDZct3yYvoyj4gXQrg==
   dependencies:
-    "@pragma-web-utils/hooks" "^0.1.2"
+    "@pragma-web-utils/hooks" "^0.2.1"
     my-package "^0.0.0"
 
-"@pragma-web-utils/hooks@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@pragma-web-utils/hooks/-/hooks-0.1.2.tgz#89d1a8a1e00e92d70ce1d028fd3271f5f39146e4"
-  integrity sha512-0Ee4d1siQj0GbXb+hVXV7ZyAaPI5+6j+KD4oMJMTIIuDliF14lQKL3vhrHnNAZ9IdRzuuR4IFlpKYW2Ahkq0GQ==
+"@pragma-web-utils/contract-utils@^0.0.14":
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/contract-utils/-/contract-utils-0.0.14.tgz#f1c6053ae3e2d86f761573099bc6c16f0d39b1c0"
+  integrity sha512-1HLfzDYLQ85kdSWQhFkLT8QTSi8R1cQ1YyZ1AK/rAFZxaHDQQ+LGkQQxJhNtZ4X5bLbYREvFIpKCsypYryGDZQ==
+  dependencies:
+    "@typechain/ethers-v5" "^10.1.0"
+    ethers "^5.7.2"
+    my-package "^0.0.0"
+    typechain "^8.1.1"
+
+"@pragma-web-utils/contract-utils@^0.0.15-alpha.0":
+  version "0.0.15-alpha.0"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/contract-utils/-/contract-utils-0.0.15-alpha.0.tgz#689fda2929d5912c28353bf0f04499d7202b917c"
+  integrity sha512-bpcp+mEEsTfWk7M7fUksc5EMcA1WZ4ItZtBLJ6Fj7RJechzRo5t3MkNpyctTs7R1nzLlGVJ4bzK7xQr4ZbRX1w==
+  dependencies:
+    "@typechain/ethers-v5" "^10.1.0"
+    ethers "^5.7.2"
+    my-package "^0.0.0"
+    typechain "^8.1.1"
+
+"@pragma-web-utils/core@^0.1.2", "@pragma-web-utils/core@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/core/-/core-0.1.3.tgz#f77050b54e645d76c104061504c31ad24fa835fc"
+  integrity sha512-1cdaPZaZXaQDO6eox/h4b0sV6vsKCJ4PuZLEvrPJg24NcDEKZQ1WcCuiBvvPDDoa/7XOrMidQD+9j26y1CdLww==
+  dependencies:
+    "@pragma-web-utils/contract-utils" "^0.0.15-alpha.0"
+
+"@pragma-web-utils/hooks@^0.0.34":
+  version "0.0.34"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/hooks/-/hooks-0.0.34.tgz#d24aea145bb4f448c2ef650cadd5ee84fc392ecc"
+  integrity sha512-XIc12XFSZ0R1s6xwhlcgS7QIWCNW3BpC6n6JoBuYEwVHPPc5AyW4vcgYKqRG48j9svb6CgbkhfIO1OJHxZ2Rcg==
   dependencies:
     my-package "^0.0.0"
+
+"@pragma-web-utils/hooks@^0.2.1":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/hooks/-/hooks-0.2.3.tgz#5ce9b7dc012ec54cfb767c06f2094b5d36c93efb"
+  integrity sha512-5P3QHt2OIQkYbFU6o0fIIV/oES++WlsfSwwopT8Y4cfOP4yajRmP75vhWosSM55zLl6gFKGeQkV16UNZ0bbfaA==
+  dependencies:
+    my-package "^0.0.0"
+
+"@pragma-web-utils/tx-service@^0.1.2":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@pragma-web-utils/tx-service/-/tx-service-0.1.4.tgz#1c98cf2ca336a0a80a06a7ca4a8a01cd84df3a01"
+  integrity sha512-xL52DCAg7HuxeSbFYeAklZYTSCAxvY/nExFxmMoc64t5f4c4nfTcW2xWtHx34NbU6d1nITlsVe3ouzWC7XTm3g==
+  dependencies:
+    "@pragma-web-utils/contract-utils" "^0.0.15-alpha.0"
+    "@pragma-web-utils/core" "^0.1.3"
+    "@pragma-web-utils/hooks" "^0.0.34"
 
 "@sinclair/typebox@^0.24.1":
   version "0.24.51"
@@ -2091,7 +2134,7 @@ ethereumjs-util@^7.1.0, ethereumjs-util@^7.1.1, ethereumjs-util@^7.1.2, ethereum
     ethereum-cryptography "^0.1.3"
     rlp "^2.2.4"
 
-ethers@^5.4.1:
+ethers@^5.4.1, ethers@^5.7.2:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.7.2.tgz#3a7deeabbb8c030d4126b24f84e525466145872e"
   integrity sha512-wswUsmWo1aOK8rR7DIKiWSw9DbLWe6x98Jrn8wcTflTVvaXhAMaB5zGAXy0GYQEQp9iO1iSHWVyARQm11zUtyg==

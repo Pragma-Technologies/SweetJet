@@ -1,8 +1,16 @@
-import { useAtom } from 'jotai'
-import { FC, PropsWithChildren } from 'react'
+import { Deps } from '@pragma-web-utils/hooks'
+import { atom, useAtom } from 'jotai'
+import { FC, PropsWithChildren, useState } from 'react'
 import { AtomStatesBaseStorage } from '../class'
 import { NOT_PROVIDED_STATE_STRICT_CONTEXT, NOT_REGISTERED_STATE } from '../constants'
-import { ActualStateValue, BaseStatesStorage, StateValue, StrictStorageState, StrictStorageWrapper } from '../types'
+import {
+  ActualStateValue,
+  BaseStatesStorage,
+  CommonState,
+  StateValue,
+  StrictStorageState,
+  StrictStorageWrapper,
+} from '../types'
 
 export function getAtomStrictWrapper<T extends BaseStatesStorage, K extends keyof T>(
   atomStorage: AtomStatesBaseStorage<T>,
@@ -22,6 +30,32 @@ export function getAtomStrictWrapper<T extends BaseStatesStorage, K extends keyo
 
     return <>{props.children}</>
   }
+}
+
+export function getAtomStoreWrapper<T extends BaseStatesStorage, K extends keyof T>(
+  atomStorage: AtomStatesBaseStorage<T>,
+): FC<{ stateKeys: Deps<K> } & Omit<PropsWithChildren<StrictStorageWrapper<T>>, 'stateKey'>> {
+  const AtomStoreWrapper: FC<{ stateKeys: Deps<K> } & Omit<PropsWithChildren<StrictStorageWrapper<T>>, 'stateKey'>> = ({
+    children,
+    stateKeys,
+    ...props
+  }) => {
+    const [atomStates] = useState(() =>
+      atom((get) => stateKeys.map((key) => get(atomStorage.getCommonStateAtom(key)) as CommonState)),
+    )
+    const [states] = useAtom(atomStates)
+
+    if (states.some((state) => !state.isActual)) {
+      return <props.skeleton />
+    }
+
+    if (states.some((state) => state === undefined || state === null || !!state.error)) {
+      return <props.error />
+    }
+
+    return <>{children}</>
+  }
+  return AtomStoreWrapper
 }
 
 export function useAtomStateValue<T extends BaseStatesStorage, K extends keyof T>(
