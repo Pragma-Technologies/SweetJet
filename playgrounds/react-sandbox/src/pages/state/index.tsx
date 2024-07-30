@@ -2,35 +2,19 @@ import {
   AtomStatesBaseStorage,
   BaseStatesStorage,
   CommonState,
-  getAtomStrictWrapper,
-  StrictStorageWrapper,
+  getAtomStoreWrapper,
   useAtomStateValue,
   useAtomStorageCommonState,
   useStrictAtomStateValue,
 } from '@pragma-web-utils/common-state'
 import { wait } from '@pragma-web-utils/core'
 import { Deps, useMountEffectFactory } from '@pragma-web-utils/hooks'
-import { FC, PropsWithChildren, useEffect, useRef, useState } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
 
 // ========= setup state utils
 const testStateStore = new AtomStatesBaseStorage<BaseStatesStorage>()
-const TestStoreCommonWrapper = getAtomStrictWrapper(testStateStore)
 // strict wrapper
-const TestStoreWrapper: FC<
-  { stateKeys: string[] } & Omit<PropsWithChildren<StrictStorageWrapper<BaseStatesStorage, string>>, 'stateKey'>
-> = ({ children, skeleton, error, stateKeys: [stateKey, ...stateKeys] }) => {
-  return (
-    <TestStoreCommonWrapper stateKey={stateKey} skeleton={skeleton} error={error}>
-      {stateKeys.length ? (
-        <TestStoreWrapper stateKeys={stateKeys} skeleton={skeleton} error={error}>
-          {children}
-        </TestStoreWrapper>
-      ) : (
-        children
-      )}
-    </TestStoreCommonWrapper>
-  )
-}
+const AtomStoreWrapper = getAtomStoreWrapper<BaseStatesStorage, counterKey>(testStateStore)
 
 const useStrictValue = (key: string) => useStrictAtomStateValue(testStateStore, key)
 const useStateValue = (key: string) => useAtomStateValue(testStateStore, key)
@@ -50,7 +34,7 @@ const counter: Record<counterKey, number> = {
   [global1]: 0,
   [global2]: 0,
 } as const
-// universal common state hook (in real cases use own custom hooks)
+// universal common state hook (in real cases, uses own custom hooks)
 const useTestCommonState = (
   key: counterKey,
   deps: Deps<string> = [],
@@ -136,9 +120,9 @@ const TestStateContent1: FC = () => {
   return (
     <>
       <button onClick={() => state.hardRefresh()}>new</button>
-      <TestStoreWrapper stateKeys={[local1, global1]} error={() => <>error</>} skeleton={() => <>loading</>}>
+      <AtomStoreWrapper stateKeys={[local1, global1]} error={() => <>error</>} skeleton={() => <>loading</>}>
         <TestStateStrictContent stateKey={local1} />
-      </TestStoreWrapper>
+      </AtomStoreWrapper>
     </>
   )
 }
@@ -151,10 +135,10 @@ const TestStateContent2: FC = () => {
   return (
     <>
       <button onClick={() => state.hardRefresh()}>refresh local</button>
-      <TestStoreWrapper stateKeys={[local2, global1, global2]} error={() => <>error</>} skeleton={() => <>loading</>}>
+      <AtomStoreWrapper stateKeys={[local2, global1, global2]} error={() => <>error</>} skeleton={() => <>loading</>}>
         <TestStateStrictContent stateKey={local2} />
         <TestStateStrictContent2 />
-      </TestStoreWrapper>
+      </AtomStoreWrapper>
     </>
   )
 }
