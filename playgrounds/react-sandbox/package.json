@@ -8,16 +8,15 @@
     "eject": "craco eject"
   },
   "dependencies": {
-    "@craco/craco": "6.4.5",
+    "@craco/craco": "^7.1.0",
     "@craco/types": "^7.0.0",
     "@pragma-web-utils/api": "^0.0.1",
-    "@pragma-web-utils/core": "^0.1.2",
-    "@pragma-web-utils/common-state": "^0.2.2",
-    "@pragma-web-utils/hooks": "^0.2.1",
-    "@pragma-web-utils/connectors": "^0.1.2",
-    "@pragma-web-utils/tx-service": "^0.1.2",
+    "@pragma-web-utils/common-state": "^0.4.0",
+    "@pragma-web-utils/connectors": "^0.4.0",
+    "@pragma-web-utils/core": "^0.4.0",
+    "@pragma-web-utils/hooks": "^0.4.0",
     "@pragma-web-utils/theme-service": "^0.1.0",
-    "@walletconnect/modal": "^2.4.7",
+    "@pragma-web-utils/tx-service": "^0.4.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
@@ -27,17 +26,26 @@
     "@types/react-dom": "^17.0.19",
     "@types/react-router-dom": "^5.1.8",
     "@types/styled-components": "^5.1.26",
+    "@walletconnect/modal": "^2.4.7",
+    "craco-alias": "^3.0.1",
+    "crypto": "npm:crypto-browserify@^3.12.0",
     "ethers": "^5.4.1",
     "jotai": "^2.5.0",
-    "styled-components": "^5.3.6",
-    "tronweb-typings": "^1.0.1",
     "react-router-dom": "^6.2.2",
-    "typescript": "^4.4.2"
+    "stream": "npm:stream-browserify@^3.0.0",
+    "styled-components": "^6.1.12",
+    "tronweb-typings": "^1.0.1",
+    "typescript": "^4.4.2",
+    "vm": "npm:vm-browserify@^1.1.2"
   },
   "peerDependencies": {
-    "react": "~17.0.2",
-    "react-dom": "~17.0.2",
-    "react-scripts": "4.0.3"
+    "postcss-normalize": "^10.0.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-scripts": "^5.0.1"
+  },
+  "devDependencies": {
+    "process": "0.11.10"
   },
   "browserslist": {
     "production": [

@@ -1,31 +1,8 @@
-import { ConnectionInfo, NetworkDetails, TronConnector } from '@pragma-web-utils/connectors'
+import { ConnectionInfo, TronConnector } from '@pragma-web-utils/connectors'
 import { TvmChainIdsEnum } from '@pragma-web-utils/core'
 import { FC, useCallback, useEffect, useState } from 'react'
 
-const supportedNetworks: NetworkDetails[] = [
-  {
-    chainId: TvmChainIdsEnum.MAINNET,
-    rpc: 'https://api.trongrid.io/',
-    nativeCurrency: {
-      name: 'TRX',
-      symbol: 'TRX',
-      decimals: 6,
-    },
-    chainName: 'Mainnet',
-  },
-  {
-    chainId: TvmChainIdsEnum.SHASTA,
-    rpc: 'https://api.shasta.trongrid.io/',
-    nativeCurrency: {
-      name: 'TRX',
-      symbol: 'TRX',
-      decimals: 6,
-    },
-    chainName: 'Shasta',
-  },
-]
-
-const tronConnector = new TronConnector(supportedNetworks, TvmChainIdsEnum.SHASTA)
+const tronConnector = new TronConnector(TvmChainIdsEnum.SHASTA)
 
 export const TronConnectorsPage: FC = () => {
   const [state1, setState1] = useState<ConnectionInfo | null>(null)

@@ -26,9 +26,9 @@
   },
   "peerDependencies": {
     "jotai": "^2.5.0",
-    "react": "~17.0.2",
-    "react-dom": "~17.0.2",
-    "react-scripts": "4.0.3"
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-scripts": "^5.0.1"
   },
   "devDependencies": {
     "@pragma-web-utils/core": "^0.4.0",
