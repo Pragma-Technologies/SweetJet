@@ -1,4 +1,4 @@
-import { EMPTY_ADDRESS } from '@pragma-web-utils/core'
+import { Address, EMPTY_ADDRESS } from '@pragma-web-utils/core'
 import { TestEthereumConnector, TestEthereumProvider, TestWalletConnectProvider } from '../testSuits'
 import { NetworkDetails } from '../types'
 import { ConnectResultEnum } from './BaseConnector'
@@ -179,7 +179,7 @@ describe.each<EthereumConnectorSuit>([
 
     expect(connector.chainId).toBe(defaultNetwork.chainId)
     expect(onNext).toHaveBeenLastCalledWith({
-      account: EMPTY_ADDRESS,
+      account: Address.from(),
       chainId: defaultNetwork.chainId,
       isActive: true,
       isActivating: false,
@@ -189,8 +189,8 @@ describe.each<EthereumConnectorSuit>([
     expect(onError).toBeCalledTimes(0)
     expect(onComplete).toBeCalledTimes(0)
 
-    const newAccount = '0x0000000000000000000000000000000000000001'
-    changeAccount(newAccount)
+    const newAccount = Address.from('0x0000000000000000000000000000000000000001')
+    changeAccount(newAccount.toHex())
 
     expect(connector.chainId).toBe(defaultNetwork.chainId)
     expect(onNext).toHaveBeenLastCalledWith({
@@ -217,7 +217,7 @@ describe.each<EthereumConnectorSuit>([
 
     expect(connector.chainId).toBe(defaultNetwork.chainId)
     expect(onNext).toHaveBeenLastCalledWith({
-      account: EMPTY_ADDRESS,
+      account: Address.from(),
       chainId: defaultNetwork.chainId,
       isActive: true,
       isActivating: false,
@@ -232,7 +232,7 @@ describe.each<EthereumConnectorSuit>([
 
     expect(connector.chainId).toBe(additionalNetwork.chainId)
     expect(onNext).toHaveBeenLastCalledWith({
-      account: EMPTY_ADDRESS,
+      account: Address.from(),
       chainId: additionalNetwork.chainId,
       isActive: true,
       isActivating: false,
@@ -263,12 +263,12 @@ describe.each<EthereumConnectorSuit>([
     expect(status).toBe(ConnectResultEnum.SUCCESS)
     expect(connector.defaultChainId).toBe(defaultNetwork.chainId)
     expect(connector.chainId).toBe(defaultNetwork.chainId)
-    expect(connector.account).toBe(EMPTY_ADDRESS)
+    expect(connector.account?.toHex()).toBe(EMPTY_ADDRESS)
     expect(connector.isConnected).toBe(true)
     expect(connector.isActivating).toBe(false)
     expect(connector.isActive).toBe(true)
     expect(onNext).toHaveBeenLastCalledWith({
-      account: EMPTY_ADDRESS,
+      account: Address.from(),
       chainId: defaultNetwork.chainId,
       isActive: true,
       isActivating: false,

@@ -1,3 +1,4 @@
+import { Address } from '@pragma-web-utils/core'
 import { BaseProvider, ConnectionInfo, Destructor, Listener, NetworkDetails } from '../types'
 
 export enum ConnectResultEnum {
@@ -7,6 +8,8 @@ export enum ConnectResultEnum {
 }
 
 export abstract class BaseConnector<T extends BaseProvider = BaseProvider> {
+  public abstract readonly name: string
+
   protected _chainId: number | undefined
 
   // make chainId field readonly for getting out of class
@@ -14,10 +17,10 @@ export abstract class BaseConnector<T extends BaseProvider = BaseProvider> {
     return this._chainId
   }
 
-  protected _account: string | undefined
+  protected _account: Address | undefined
 
   // make account field readonly for getting out of class
-  get account(): string | undefined {
+  get account(): Address | undefined {
     return this._account
   }
 
@@ -53,7 +56,7 @@ export abstract class BaseConnector<T extends BaseProvider = BaseProvider> {
     if (!this.account) {
       return false
     }
-    return !this.supportedNetworks.length || this._supportedNetworks.some(({ chainId }) => this._chainId === chainId)
+    return !this._activeChainIds.length || this._activeChainIds.some((chainId) => this._chainId === chainId)
   }
 
   get isConnected(): boolean {
@@ -67,6 +70,8 @@ export abstract class BaseConnector<T extends BaseProvider = BaseProvider> {
     public defaultChainId: number,
     protected _activeChainIds: number[] = [],
   ) {}
+
+  public abstract signMessage(message: string): Promise<string>
 
   public abstract connect(chainId?: number): Promise<ConnectResultEnum>
 
@@ -82,7 +87,7 @@ export abstract class BaseConnector<T extends BaseProvider = BaseProvider> {
     return this.chainId
   }
 
-  public getAccount(): string | undefined {
+  public getAccount(): Address | undefined {
     return this.account
   }
 

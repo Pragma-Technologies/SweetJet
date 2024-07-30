@@ -1,9 +1,14 @@
-import { toChecksumAddress } from 'ethereum-checksum-address'
+import { Address } from '@pragma-web-utils/core'
+import { ethers } from 'ethers'
 import Fortmatic from 'fortmatic'
+import { CancelError, isCancelError, SignatureError } from '../errors'
 import { AbstractProvider, NetworkDetails } from '../types'
+import { stringToHex } from '../utils'
 import { BaseConnector, ConnectResultEnum } from './BaseConnector'
 
 export class FortmaticConnector extends BaseConnector<AbstractProvider | null> {
+  name = FortmaticConnector.name
+
   private _providersMap: Map<number, AbstractProvider> = new Map<number, AbstractProvider>()
   private _provider: AbstractProvider | null = null
 
@@ -14,6 +19,28 @@ export class FortmaticConnector extends BaseConnector<AbstractProvider | null> {
     private _apiKey: string,
   ) {
     super(supportedNetworks, defaultChainId, activeChainId)
+  }
+
+  public async signMessage(message: string): Promise<string> {
+    if (!this._provider || !this.account) {
+      throw new Error('Provider not connected')
+    }
+    try {
+      const params = [stringToHex(message), this.account.toHex()]
+      const account = this.account
+      const signature = (await this._provider.request?.({ method: 'personal_sign', params })) as string
+      const validatedAccount = ethers.utils.verifyMessage(message, signature)
+      if (account.toHex().toLowerCase() !== validatedAccount.toLowerCase()) {
+        throw new SignatureError(message, account.toHex(), signature, 'personal_sign', 'unknown')
+      }
+      return signature
+    } catch (e) {
+      if (isCancelError(e)) {
+        throw new CancelError('personal_sign')
+      }
+
+      throw e
+    }
   }
 
   async connect(chainId: number = this.defaultChainId): Promise<ConnectResultEnum> {
@@ -38,8 +65,8 @@ export class FortmaticConnector extends BaseConnector<AbstractProvider | null> {
     this.emitEvent()
     try {
       this._chainId = chainId
-      const accounts = (await this._provider.request({ method: 'eth_accounts' })) as string[]
-      this._account = toChecksumAddress(accounts[0])
+      const [account] = (await this._provider.request({ method: 'eth_accounts' })) as string[]
+      this._account = account ? Address.from(account) : undefined
       this._isActivating = false
       this.emitEvent()
       return ConnectResultEnum.SUCCESS

@@ -1,9 +1,8 @@
-import { EMPTY_ADDRESS } from '@pragma-web-utils/core'
+import { Address, EMPTY_ADDRESS } from '@pragma-web-utils/core'
 import { TestBaseConnector, TestEthereumConnector, TestEthereumProvider, TestWalletConnectProvider } from '../testSuits'
 import { NetworkDetails } from '../types'
 import { BaseConnector, ConnectResultEnum } from './BaseConnector'
 import { CoinbaseConnector } from './CoinbaseConnector'
-import { FortmaticConnector } from './FortmaticConnect'
 import { InjectedConnector } from './InjectedConnector'
 import { MetamaskConnector } from './MetamaskConnector'
 import { WalletConnectConnector } from './WalletConnectConnector'
@@ -98,11 +97,6 @@ describe.each<{ name: string; getConnector: () => BaseConnector; reset: () => vo
       }),
     reset: () => (testWalletConnectProvider = new TestWalletConnectProvider()),
   },
-  {
-    name: 'FortmaticConnector',
-    getConnector: () => new FortmaticConnector(supportedNetworks, defaultNetwork.chainId, activeChainId, 'fakeApiKey'),
-    reset: () => (testProvider = new TestEthereumProvider()),
-  },
 ])(`BaseConnector implementations`, ({ getConnector, name, reset }) => {
   beforeEach(() => {
     reset()
@@ -128,12 +122,12 @@ describe.each<{ name: string; getConnector: () => BaseConnector; reset: () => vo
     expect(status).toBe(ConnectResultEnum.SUCCESS)
     expect(connector.defaultChainId).toBe(defaultNetwork.chainId)
     expect(connector.chainId).toBe(defaultNetwork.chainId)
-    expect(connector.account).toBe(EMPTY_ADDRESS)
+    expect(connector.account?.toHex()).toBe(EMPTY_ADDRESS)
     expect(connector.isConnected).toBe(true)
     expect(connector.isActivating).toBe(false)
     expect(connector.isActive).toBe(true)
     expect(onNext).toHaveBeenLastCalledWith({
-      account: EMPTY_ADDRESS,
+      account: Address.from(),
       chainId: defaultNetwork.chainId,
       isActive: true,
       isActivating: false,
@@ -179,12 +173,12 @@ describe.each<{ name: string; getConnector: () => BaseConnector; reset: () => vo
     expect(status).toBe(ConnectResultEnum.SUCCESS)
     expect(connector.defaultChainId).toBe(defaultNetwork.chainId)
     expect(connector.chainId).toBe(additionalNetwork.chainId)
-    expect(connector.account).toBe(EMPTY_ADDRESS)
+    expect(connector.account?.toHex()).toBe(EMPTY_ADDRESS)
     expect(connector.isConnected).toBe(true)
     expect(connector.isActivating).toBe(false)
     expect(connector.isActive).toBe(true)
     expect(onNext).toHaveBeenLastCalledWith({
-      account: EMPTY_ADDRESS,
+      account: Address.from(),
       chainId: additionalNetwork.chainId,
       isActive: true,
       isActivating: false,
@@ -207,7 +201,7 @@ describe.each<{ name: string; getConnector: () => BaseConnector; reset: () => vo
 
     expect(connector.chainId).toBe(defaultNetwork.chainId)
     expect(onNext).toHaveBeenLastCalledWith({
-      account: EMPTY_ADDRESS,
+      account: Address.from(),
       chainId: defaultNetwork.chainId,
       isActive: true,
       isActivating: false,
@@ -221,7 +215,7 @@ describe.each<{ name: string; getConnector: () => BaseConnector; reset: () => vo
 
     expect(connector.chainId).toBe(additionalNetwork.chainId)
     expect(onNext).toHaveBeenLastCalledWith({
-      account: EMPTY_ADDRESS,
+      account: Address.from(),
       chainId: additionalNetwork.chainId,
       isActive: true,
       isActivating: false,
@@ -244,7 +238,7 @@ describe.each<{ name: string; getConnector: () => BaseConnector; reset: () => vo
 
     expect(connector.chainId).toBe(defaultNetwork.chainId)
     expect(onNext).toHaveBeenLastCalledWith({
-      account: EMPTY_ADDRESS,
+      account: Address.from(),
       chainId: defaultNetwork.chainId,
       isActive: true,
       isActivating: false,
@@ -263,7 +257,7 @@ describe.each<{ name: string; getConnector: () => BaseConnector; reset: () => vo
 
     expect(connector.chainId).toBe(3)
     expect(onNext).toHaveBeenLastCalledWith({
-      account: EMPTY_ADDRESS,
+      account: Address.from(),
       chainId: 3,
       isActive: true,
       isActivating: false,

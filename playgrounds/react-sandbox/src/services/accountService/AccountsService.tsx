@@ -49,7 +49,7 @@ const InnerAccountContextProvider = ({ children }: { children: React.ReactNode }
     return {
       [ConnectorBaseEnum.EVM]: {
         library: !!provider ? { provider } : null,
-        account: connectionState.account ?? EMPTY_ADDRESS,
+        account: connectionState.account?.toHex() ?? EMPTY_ADDRESS,
         chainId: connectionState.chainId,
         connected: connectionState.isConnected,
         active: connectionState.isActive,

@@ -52,6 +52,8 @@ export class TestEthereumProvider implements EthereumProvider {
 }
 
 export class TestEthereumConnector extends EthereumConnector {
+  name = TestEthereumConnector.name
+
   constructor(
     public _testProvider: EthereumProvider,
     supportedNetworks: NetworkDetails[],
