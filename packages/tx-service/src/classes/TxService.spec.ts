@@ -39,10 +39,11 @@ const dto3: TxInfo = {
 }
 
 const testChecker = new TestTxChecker()
-const storable1 = new StorableTx(dto1, testChecker)
-const storable2 = new StorableTx(dto2, testChecker)
-const storable2_1 = new StorableTx(dto2_1, testChecker)
-const storable3 = new StorableTx(dto3, testChecker)
+const checkersMap = new Map([[1, testChecker]])
+const storable1 = new StorableTx(dto1, checkersMap, () => Promise.resolve(null))
+const storable2 = new StorableTx(dto2, checkersMap, () => Promise.resolve(null))
+const storable2_1 = new StorableTx(dto2_1, checkersMap, () => Promise.resolve(null))
+const storable3 = new StorableTx(dto3, checkersMap, () => Promise.resolve(null))
 
 describe('TxService', () => {
   it('init and adding items', () => {

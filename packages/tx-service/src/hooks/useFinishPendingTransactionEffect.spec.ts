@@ -1,6 +1,6 @@
-import { ConnectorBaseEnum, EMPTY_ADDRESS } from '@pragma-web-utils/core'
+import { ConnectorBaseEnum, EMPTY_ADDRESS, wait } from '@pragma-web-utils/core'
 import { Deps } from '@pragma-web-utils/hooks'
-import { act, renderHook } from '@testing-library/react-hooks'
+import { act, renderHook } from '@testing-library/react'
 import { StorableRequestedTx, StorableTx, TxService } from '../classes'
 // @ts-ignore
 import * as TxServiceContext from '../core/context'
@@ -9,6 +9,7 @@ import { TestTxChecker } from '../utils'
 import { useFinishPendingTransactionEffect } from './useFinishPendingTransactionEffect'
 
 const testChecker = new TestTxChecker()
+const checkersMap = new Map([[1, testChecker]])
 
 const relatedInfo: Pick<TransactionLike, 'account' | 'chainId' | 'base'> = {
   base: ConnectorBaseEnum.EVM,
@@ -26,7 +27,8 @@ const tx1 = new StorableTx(
     payload: { action: 'test2' },
     hash: 'testHash1',
   },
-  testChecker,
+  checkersMap,
+  () => Promise.resolve(null),
 )
 const tx2 = new StorableTx(
   {
@@ -34,7 +36,8 @@ const tx2 = new StorableTx(
     payload: { action: 'test3' },
     hash: 'testHash2',
   },
-  testChecker,
+  checkersMap,
+  () => Promise.resolve(null),
 )
 
 describe('useFinishPendingTransactionEffect', () => {
