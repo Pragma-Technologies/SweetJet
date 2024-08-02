@@ -3,8 +3,7 @@ import { getTxStatus } from './getTxStatus'
 
 const grpc = 'https://api.shasta.trongrid.io/'
 
-// TODO: fix fetch api issue
-describe.skip('getTxStatus', () => {
+describe('getTxStatus', () => {
   it('success', async () => {
     const status = await getTxStatus(grpc, 'f50a9feb2eb7eb82227c9ed186f9076e2ba53e6ed76dc975db9c280fcc68ba46')
     expect(status).toBe(TransactionStatusEnum.SUCCESS)

@@ -1,5 +1,5 @@
 import { wait } from '@pragma-web-utils/core'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react'
 import { useRequestMemo } from './useRequestMemo'
 
 const delay = 120

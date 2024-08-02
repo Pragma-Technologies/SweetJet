@@ -1,5 +1,5 @@
 import { wait } from '@pragma-web-utils/core'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react'
 import { CANCEL_PROMISE } from '../constants'
 import { useCancelableFactory } from './useCancelableFactory'
 

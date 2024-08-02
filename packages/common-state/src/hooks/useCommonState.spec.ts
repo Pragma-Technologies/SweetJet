@@ -1,4 +1,4 @@
-import { act, renderHook } from '@testing-library/react-hooks'
+import { act, renderHook } from '@testing-library/react'
 import { NOT_PROVIDED_REFRESH_FUNCTION } from '../constants'
 import { TestIncrementor } from '../testUtils'
 import { CacheableState } from '../types'
