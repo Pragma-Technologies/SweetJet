@@ -1,3 +1,4 @@
+import { ethers } from 'ethers'
 import { FC } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { API_TEST_PAGE, CONNECTOR_PAGE, STATE, TRON_CONNECTOR_PAGE } from './core/constants/routers'
@@ -32,3 +33,5 @@ export const App: FC = () => {
     </AccountContextProvider>
   )
 }
+
+console.log(ethers)

@@ -1,7 +1,7 @@
-import { Payload, RequestedTransaction, TxRequestedInfo } from '../types'
+import { Chain, Payload, RequestedTransaction, TxRequestedInfo } from '../types'
 import { StorableTransactionLike } from './StorableTransactionLike'
 
-function getTxDTO<C extends string | number = string | number, P extends Payload = Payload>(
+function getTxDTO<C extends Chain = Chain, P extends Payload = Payload>(
   txInfo: TxRequestedInfo<C, P>,
 ): RequestedTransaction<C, P> {
   const created = txInfo.created ?? Date.now()
@@ -9,10 +9,11 @@ function getTxDTO<C extends string | number = string | number, P extends Payload
   return { ...txInfo, created, id }
 }
 
-export class StorableRequestedTx<
-  C extends string | number = string | number,
-  P extends Payload = Payload,
-> extends StorableTransactionLike<C, P, RequestedTransaction<C, P>> {
+export class StorableRequestedTx<C extends Chain = Chain, P extends Payload = Payload> extends StorableTransactionLike<
+  C,
+  P,
+  RequestedTransaction<C, P>
+> {
   constructor(txInfo: TxRequestedInfo<C, P>) {
     super(getTxDTO(txInfo))
   }

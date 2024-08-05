@@ -3,7 +3,7 @@ import { Deps, Destructor } from '@pragma-web-utils/hooks'
 import { useEffect, useRef } from 'react'
 import { pendingStatuses, useTxService } from '../core'
 import { Chain, Payload, TransactionLike } from '../types'
-import { isMultichainTx, isTransaction } from '../utils'
+import { isTransaction } from '../utils'
 
 export const useFinishPendingTransactionEffect = <P extends Payload>(
   relationInfo: Pick<TransactionLike, 'account' | 'chainId' | 'base'>,
@@ -38,9 +38,7 @@ export const useFinishPendingTransactionEffect = <P extends Payload>(
         )
       }
       const isFiltered = () => !filter || filter(tx.payload)
-      const isPending = isMultichainTx(tx)
-        ? pendingStatuses.has(tx.status) || pendingStatuses.has(tx.destination.status)
-        : isTransaction(tx) && pendingStatuses.has(tx.status)
+      const isPending = isTransaction(tx) && pendingStatuses.has(tx.status)
       return isPending && isFiltered() && isRelated()
     }
 

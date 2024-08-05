@@ -1,4 +1,3 @@
-export * from './StorableMultichainTx'
 export * from './StorableRequestedTx'
 export * from './StorableTransactionLike'
 export * from './TxEthStatusChecker'

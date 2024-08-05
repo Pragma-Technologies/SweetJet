@@ -1,7 +1,7 @@
 import { ConnectorBaseEnum, EMPTY_ADDRESS, TransactionStatusEnum } from '@pragma-web-utils/core'
 import { Deps } from '@pragma-web-utils/hooks'
-import { act, renderHook } from '@testing-library/react-hooks'
-import { StorableMultichainTx, StorableRequestedTx, StorableTx, TxService } from '../classes'
+import { act, renderHook } from '@testing-library/react'
+import { StorableRequestedTx, StorableTx, TxService } from '../classes'
 // @ts-ignore
 import * as TxServiceContext from '../core/context'
 import { TransactionLike } from '../types'
@@ -9,6 +9,7 @@ import { isRequestedTx, isTransaction, TestTxChecker } from '../utils'
 import { useTransactionListChangesEffect } from './useTransactionListChangesEffect'
 
 const testChecker = new TestTxChecker()
+const checkersMap = new Map([[1, testChecker]])
 
 let txService: TxService
 const txLike1 = new StorableRequestedTx({
@@ -25,23 +26,8 @@ const tx1 = new StorableTx(
     account: EMPTY_ADDRESS,
     hash: 'testHash1',
   },
-  testChecker,
-)
-const multichainTx1 = new StorableMultichainTx(
-  {
-    base: ConnectorBaseEnum.EVM,
-    chainId: 1,
-    payload: { action: 'test' },
-    account: EMPTY_ADDRESS,
-    hash: 'testHash1',
-    destination: {
-      base: ConnectorBaseEnum.EVM,
-      chainId: 2,
-    },
-  },
-  testChecker,
-  testChecker,
-  async () => '',
+  checkersMap,
+  () => Promise.resolve(null),
 )
 
 describe('useTransactionListChangesEffect', () => {
@@ -76,15 +62,6 @@ describe('useTransactionListChangesEffect', () => {
         status: TransactionStatusEnum.SUCCESS,
       },
     ])
-
-    await act(async () => {
-      txService.add(multichainTx1)
-      // wait updating status on tx
-      await Promise.resolve()
-    })
-
-    // multichainTx1 hash same as tx1, and list not updated
-    expect(_callback).toBeCalledTimes(3)
   })
 
   it('with filter, but without deps', async () => {
@@ -112,15 +89,6 @@ describe('useTransactionListChangesEffect', () => {
     // calls on add and on update
     expect(_callback).toBeCalledTimes(3)
     expect(_callback).toHaveBeenLastCalledWith([{ ...tx1.getValue(), status: TransactionStatusEnum.SUCCESS }])
-
-    await act(async () => {
-      txService.add(multichainTx1)
-      // wait updating status on tx
-      await Promise.resolve()
-    })
-
-    // multichainTx1 hash same as tx1, and list not updated
-    expect(_callback).toBeCalledTimes(3)
   })
 
   it('with filter and deps', async () => {
@@ -154,16 +122,6 @@ describe('useTransactionListChangesEffect', () => {
     // calls on add and on update
     expect(_callback).toBeCalledTimes(3)
     expect(_callback).toHaveBeenLastCalledWith([{ ...tx1.getValue(), status: TransactionStatusEnum.SUCCESS }])
-    expect(_destructor).toBeCalledTimes(1)
-
-    await act(async () => {
-      txService.add(multichainTx1)
-      // wait updating status on tx
-      await Promise.resolve()
-    })
-
-    // multichainTx1 hash same as tx1, and list not updated
-    expect(_callback).toBeCalledTimes(3)
     expect(_destructor).toBeCalledTimes(1)
   })
 })
