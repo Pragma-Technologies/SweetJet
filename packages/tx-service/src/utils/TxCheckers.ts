@@ -1,8 +1,4 @@
-import { MultichainTransaction, RequestedTransaction, Transaction, TransactionLike, TxCheckInfo } from '../types'
-
-export function isMultichainTx(tx: TransactionLike): tx is MultichainTransaction {
-  return isTransaction(tx) && 'destination' in tx
-}
+import { RequestedTransaction, Transaction, TransactionLike, TxCheckInfo } from '../types'
 
 export function isTransaction(tx: TransactionLike): tx is Transaction {
   return 'hash' in tx && 'status' in tx

@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react'
 import { FAST_INTERVAL, SLOW_INTERVAL, TIME_REFRESH_INTERVAL } from '../constants'
 import { useIntervalRefresh } from './useIntervalRefresh'
 

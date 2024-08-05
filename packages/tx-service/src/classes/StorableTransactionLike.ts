@@ -1,8 +1,8 @@
 import { IStorable, StorageManager } from '@pragma-web-utils/core'
-import { Payload, TransactionLike } from '../types'
+import { Chain, Payload, TransactionLike } from '../types'
 
 export class StorableTransactionLike<
-  C extends string | number = string | number,
+  C extends Chain = Chain,
   P extends Payload = Payload,
   Tx extends TransactionLike<C, P> = TransactionLike<C, P>,
 > implements IStorable<Tx>

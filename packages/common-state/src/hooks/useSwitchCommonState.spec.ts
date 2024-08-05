@@ -1,4 +1,4 @@
-import { act, renderHook } from '@testing-library/react-hooks'
+import { act, renderHook } from '@testing-library/react'
 import { useEffect } from 'react'
 import { TestIncrementor } from '../testUtils'
 import { useCommonState } from './useCommonState'

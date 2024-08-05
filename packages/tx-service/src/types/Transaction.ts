@@ -1,15 +1,17 @@
 import { ConnectorBaseEnum } from '@pragma-web-utils/core'
 import { TransactionStatusEnum } from '../enums'
 
-export type Chain = string | number
-export type Tx = RequestedTransaction | Transaction | MultichainTransaction
-
+export type Chain = number
 export type Payload<Action extends string = string> = { action: Action } & { [key in string]: unknown }
+export type DestinationPayload<Action extends string = string> = Payload<Action> & { destinationTxIndex: number }
+export type DestinationIndexPayload<P extends Payload = Payload> = P & { destinationTxIndex: number }
+export type Tx<C extends Chain = Chain, P extends Payload = Payload> = RequestedTransaction<C, P> | Transaction<C, P>
 
+export type PayloadAction<T extends Payload> = T extends Payload<infer Action> ? Action : never
 export type TransactionChain<T extends TransactionLike> = T extends TransactionLike<infer C> ? C : never
 export type TransactionPayload<T extends TransactionLike> = T extends TransactionLike<Chain, infer P> ? P : never
 
-export interface TransactionLike<C extends Chain = Chain, P = Payload> {
+export interface TransactionLike<C extends Chain = Chain, P extends Payload = Payload> {
   readonly id: string
   readonly account: string
   readonly chainId: C
@@ -20,31 +22,16 @@ export interface TransactionLike<C extends Chain = Chain, P = Payload> {
 
 export interface Transaction<C extends Chain = Chain, P extends Payload = Payload> extends TransactionLike<C, P> {
   // `${base}_${chainId}_${hash}`
-  readonly id: `${ConnectorBaseEnum}_${string | number}_${string}`
+  readonly id: `${ConnectorBaseEnum}_${C}_${string}`
   readonly hash: string
   status: TransactionStatusEnum
+  nextTx?: Transaction<C, DestinationIndexPayload<P>>
 }
 
 export interface RequestedTransaction<C extends Chain = Chain, P extends Payload = Payload>
   extends TransactionLike<C, P> {
   // `${base}_${chainId}_${created}`
-  readonly id: `${ConnectorBaseEnum}_${string | number}_${number}`
-}
-
-export interface MultichainTransaction<
-  OriginChain extends Chain = Chain,
-  DestinationChain extends Chain = Chain,
-  P extends Payload = Payload,
-> extends Transaction<OriginChain, P> {
-  // `${base}_${chainId}_${hash}` (all values relate to origin transaction)
-  readonly id: `${ConnectorBaseEnum}_${string | number}_${string}`
-  readonly destination: {
-    hash?: string
-    created?: number
-    status: TransactionStatusEnum
-    readonly chainId: DestinationChain
-    readonly base: ConnectorBaseEnum
-  }
+  readonly id: `${ConnectorBaseEnum}_${C}_${number}`
 }
 
 export type TxRequestedInfo<C extends Chain = Chain, P extends Payload = Payload> = {
@@ -63,32 +50,7 @@ export type TxInfo<C extends Chain = Chain, P extends Payload = Payload> = {
   hash: string
   status?: TransactionStatusEnum
   created?: number
-}
-
-export type MultichainTxInfo<
-  OriginChain extends Chain = Chain,
-  DestinationChain extends Chain = Chain,
-  P extends Payload = Payload,
-> = {
-  account: string
-  chainId: OriginChain
-  base: ConnectorBaseEnum
-  payload: P
-  hash: string
-  status?: TransactionStatusEnum
-  created?: number
-  destination:
-    | {
-        chainId: DestinationChain
-        base: ConnectorBaseEnum
-      }
-    | {
-        hash: string
-        created: number
-        status: TransactionStatusEnum
-        chainId: DestinationChain
-        base: ConnectorBaseEnum
-      }
+  nextTx?: TxInfo<C, P>
 }
 
 export type TxCheckInfo<C extends Chain = Chain> = {

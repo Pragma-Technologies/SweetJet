@@ -1,12 +1,13 @@
 import { ConnectorBaseEnum, EMPTY_ADDRESS } from '@pragma-web-utils/core'
-import { act, renderHook } from '@testing-library/react-hooks'
-import { StorableMultichainTx, StorableRequestedTx, StorableTx, TxService } from '../classes'
+import { act, renderHook } from '@testing-library/react'
+import { StorableRequestedTx, StorableTx, TxService } from '../classes'
 // @ts-ignore
 import * as TxServiceContext from '../core/context'
 import { TestTxChecker } from '../utils'
-import { useMultichainTxList, useTransactionList, useTxList } from './useTxList'
+import { useTransactionList, useTxList } from './useTxList'
 
 const testChecker = new TestTxChecker()
+const checkersMap = new Map([[1, testChecker]])
 
 let txService: TxService
 const txLike1 = new StorableRequestedTx({
@@ -23,23 +24,8 @@ const tx1 = new StorableTx(
     account: EMPTY_ADDRESS,
     hash: 'testHash1',
   },
-  testChecker,
-)
-const multichainTx1 = new StorableMultichainTx(
-  {
-    base: ConnectorBaseEnum.EVM,
-    chainId: 1,
-    payload: { action: 'test' },
-    account: EMPTY_ADDRESS,
-    hash: 'testHash1',
-    destination: {
-      base: ConnectorBaseEnum.EVM,
-      chainId: 2,
-    },
-  },
-  testChecker,
-  testChecker,
-  async () => '',
+  checkersMap,
+  () => Promise.resolve(null),
 )
 
 describe('useTxList', () => {
@@ -66,40 +52,6 @@ describe('useTxList', () => {
     act(() => txService.add(txLike1))
 
     expect(result.current.length).toBe(0)
-
-    await act(async () => {
-      txService.add(tx1)
-      // wait updating status on tx
-      await Promise.resolve()
-    })
-
-    expect(result.current.length).toBe(1)
-
-    await act(async () => {
-      txService.add(multichainTx1)
-      // wait updating status on tx
-      await Promise.resolve()
-    })
-
-    expect(result.current.length).toBe(1)
-  })
-
-  it('useMultichainTxList', async () => {
-    const { result } = renderHook(() => useMultichainTxList())
-
-    expect(result.current.length).toBe(0)
-
-    act(() => txService.add(txLike1))
-
-    expect(result.current.length).toBe(0)
-
-    await act(async () => {
-      txService.add(multichainTx1)
-      // wait updating status on tx
-      await Promise.resolve()
-    })
-
-    expect(result.current.length).toBe(1)
 
     await act(async () => {
       txService.add(tx1)
